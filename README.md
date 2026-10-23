@@ -52,3 +52,11 @@ Su diferencia principal: **asistir antes de disparar**, no limitarse a reparar d
 No lanzar la aplicación públicamente hasta verificar las bases oficiales del Shipaton 2027 y superar nuestras puertas de calidad. No subir al repositorio imágenes con datos personales, credenciales ni material confidencial.
 
 Actualmente no existe aún una aplicación funcional ni se ha elegido un stack definitivo.
+
+## Primer estudio contrastado (2026-10-23)
+
+- [Investigación comparativa inicial](docs/RESEARCH_2026-10-23.md)
+- [Viabilidad técnica documentada](docs/TECHNICAL_FEASIBILITY_2026-10-23.md)
+- [EXP-001: protocolo de validación](docs/EXPERIMENT_001.md)
+
+La investigación no equivale a un prototipo implementado; las características de terceros corresponden a declaraciones y documentación pública, pendientes de pruebas directas.
