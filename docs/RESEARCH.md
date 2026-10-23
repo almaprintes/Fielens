@@ -28,3 +28,7 @@
 - Evaluar APIs iOS nativas de cámara, sensores y visión.
 - Investigar equivalentes Android y complejidad multiplataforma.
 - Minimizar SDK, telemetría y dependencia de servidores.
+
+## Primera ronda completada (documental, no experimental)
+
+Consultar [Investigación competitiva 01](RESEARCH_2026-10-23.md), [Viabilidad técnica 01](TECHNICAL_FEASIBILITY_2026-10-23.md) y [Experimento 001](EXPERIMENT_001.md). Se verificó documentación oficial de productos y frameworks. Siguen pendientes pruebas en mano y selección tecnológica final.
