@@ -25,3 +25,14 @@ Nombre **Fielens** elegido por el creador. Repositorio de documentación inicial
 ## Próxima iteración
 
 Primer experimento instrumental de cámara real + IMU en iPhone, con registro de condiciones y limitaciones. Nada de funcionalidades secundarias antes de probar el núcleo técnico.
+
+## Investigación técnica 01 — 2026-10-23
+
+Documentos creados y publicados en main:
+- docs/RESEARCH_2026-10-23.md — competencia y límites de las afirmaciones
+- docs/TECHNICAL_FEASIBILITY_2026-10-23.md — APIs y supuestos a validar
+- docs/EXPERIMENT_001.md — protocolo de prueba con referencia
+
+Hechos: las apps de Apple, Genius Scan, PhotoScan, Adobe Scan y SwiftScan ya cubren varias funciones que inicialmente parecían diferenciales. PaintingLens también atiende fotografías de arte. No se ha probado aún ninguna en hardware bajo condiciones comparables.
+
+**Siguiente trabajo:** construir experimento Swift iOS de cámara + inclinación usando sensores (sin prometer perpendicularidad), probar en iPhone y tomar datos para EXP-001. No se ha programado todavía. El framework definitivo sigue pendiente.
