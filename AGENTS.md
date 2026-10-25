@@ -14,3 +14,12 @@
 12. No publicar públicamente la app ni iniciar distribución abierta sin verificar las reglas oficiales Shipaton 2027.
 13. «Fielens» es el nombre elegido; la protección legal de marca y disponibilidad comercial todavía deben investigarse.
 14. No declarar un resultado como verificado sin prueba y condiciones de dispositivo identificadas.
+
+## Registro obligatorio por iteración (desde DEV 0.1.2)
+
+- Actualizar `docs/MILESTONES.md`: ID, fecha, versión, estado y evidencia.
+- Actualizar `docs/DEVELOPMENT_LOG.md`: objetivo, commits, cambios, pruebas, errores, correcciones y siguiente paso.
+- Actualizar `PROJECT_HANDOFF.md` con la situación **real** del código, dispositivo y pruebas pendientes.
+- Para cada versión funcional, registrar un protocolo de QA en `docs/DEV_<version>_*.md` y distinguir **código subido**, **Build Succeeded**, **arranque** y **prueba funcional**.
+- Nunca declarar probada una función que solo se haya revisado estáticamente. En iOS, solicitar datos de ejecución real en el iPhone del creador.
+- Mantener el proyecto en rama main y evitar cambios grandes sin pruebas intermedias. No crear AAB, APK ni lanzamiento público por iniciativa propia.
