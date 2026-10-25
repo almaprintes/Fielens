@@ -89,3 +89,11 @@ Nunca registrar identificadores personales de los teléfonos, fotos de terceros,
 ### Aclaración del creador — 2026-10-25 23:45
 
 La pantalla de cámara negra de las dos capturas se debía a que era de noche y no había luz. El creador confirma que no era un fallo. No atribuir una regresión a esas capturas. El nivel digital funciona en la prueba inicial; calibración, pruebas de inclinación y regresiones generales siguen pendientes.
+
+## 2026-10-25 — CI remoto sin Mac del creador
+
+- Por solicitud del creador, que apagó el Mac, se habilitó GitHub Actions en `main` usando `macos-26` y Xcode 26.6, sin firma ni distribución pública.
+- **Compilación verificada:** [run #1](https://github.com/almaprintes/Fielens/actions/runs/40246527085), SHA `adb1b0be4a0e5b6e469a7df5c3ee4dd99fc11061`, resultado **success** en el job `Compile iOS without signing`.
+- Se extendió el workflow para añadir ejecución de pruebas `Swift Testing` del target `FielensTests` con un simulador iOS 26.5 en GitHub; resultado de primera ejecución pendiente al incorporar el job. No se ejecutan tests UI ni se accede a cámara física.
+- Política: el build en la nube asegura compilabilidad bajo el SDK indicado; NO equivale a prueba en dispositivo ni a calidad fotográfica medida.
+- [Manual CI](IOS_CI.md).
