@@ -29,7 +29,7 @@ nonisolated enum TemporaryPhotoStore {
         }
 
         guard let source = CGImageSourceCreateWithData(data as CFData, nil),
-              let rawProperties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any],
+              let rawProperties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as NSDictionary?,
               let width = (rawProperties[kCGImagePropertyPixelWidth] as? NSNumber)?.intValue,
               let height = (rawProperties[kCGImagePropertyPixelHeight] as? NSNumber)?.intValue,
               width > 0, height > 0 else {
