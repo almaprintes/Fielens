@@ -22,7 +22,7 @@
 - [ ] Capturar un patrón A4 con cuadrícula y letras, sin datos privados.
 - [x] Capturar y registrar las dimensiones reportadas en la pantalla de revisión: **8064 × 6048 px, 48,77 MP, 11,5 MB**. Falta revisar encuadre y orientación.
 - [x] Compartir → Guardar en Archivos **funciona según usuario**; archivo en Archivos indicado como **11,7 MB**. **Pendiente** confirmar dimensiones/formato e identidad de bytes (la app mostró ~11,5 MB). Los servicios de terceros pueden alterar los ficheros; comparar el original en Archivos, no la copia subida al chat.
-- [ ] Pulsar Repetir; comprobar regreso a cámara, nuevo disparo y desaparición de archivo temporal anterior.
+- [x] Pulsar Repetir: el creador confirma funcionalidad (23:28); eliminación exacta del fichero temporal y múltiples ciclos todavía sin medir.
 - [ ] Hacer varios ciclos foto→repetir→foto para localizar bloqueos o consumo excesivo de memoria.
 - [ ] Bloquear/desbloquear y salir/volver antes y después de foto; registrar cualquier cámara congelada o error.
 - [ ] Comprobar que el permiso de Fotos no se solicita.
@@ -60,3 +60,7 @@ Se recibió una imagen de ratón/teclado, apta para observación visual cualitat
 ## Confirmación del creador — 2026-10-25, 23:25
 
 El fichero se guardó desde Fielens mediante «Compartir original → Guardar en Archivos» y ocupa **11,7 MB** según Archivos. El chat recibió una copia más pequeña; atribuirlo a ChatGPT es una hipótesis plausible, no prueba. En concreto, **guardar y encontrar el archivo original está verificado funcionalmente**, mientras que la preservación bit a bit y dimensiones de ese archivo guardado **aún no se han medido**. Falta asimismo la prueba de Repetir.
+
+## Confirmación adicional — 2026-10-25 23:28
+
+El creador responde «funciona» tras probar **Repetir**. Se da por confirmado el comportamiento funcional de repetir fotografía. No se equipara a una prueba automatizada de borrado, múltiples ciclos o comparación de hash. Se continúa con el nivel en DEV 0.1.3 sin cerrar estas tareas de QA.
