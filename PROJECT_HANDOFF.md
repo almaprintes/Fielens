@@ -61,3 +61,10 @@ Las capturas muestran fondo de cámara negro; aún no sabemos si lente tapada, e
 ### Aclaración del creador — 2026-10-25 23:45
 
 La pantalla de cámara negra de las dos capturas se debía a que era de noche y no había luz. El creador confirma que no era un fallo. No atribuir una regresión a esas capturas. El nivel digital funciona en la prueba inicial; calibración, pruebas de inclinación y regresiones generales siguen pendientes.
+
+## CI sin Mac — 2026-10-25
+
+- Workflow `.github/workflows/ios-build.yml`: `macos-26` Xcode 26.6, compilación genérica iOS sin firma al modificar `apps/ios/**`; `workflow_dispatch` disponible.
+- [Compilación verde](https://github.com/almaprintes/Fielens/actions/runs/40246527085) del commit `adb1b0be`, confirmada en GitHub.
+- Se añadió ejecución separada de tests `FielensTests` en simulador iOS 26.5; todavía no se puede afirmar que hayan pasado hasta recibir el resultado.
+- Documentación `docs/IOS_CI.md`. GitHub CI no reemplaza QA de cámara, nivel y óptica en dispositivo real.
