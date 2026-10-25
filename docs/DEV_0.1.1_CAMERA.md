@@ -44,3 +44,14 @@
 
 - Apple — AVFoundation / autorización: https://developer.apple.com/documentation/avfoundation/requesting-authorization-to-capture-and-save-media
 - Apple — AVCam: https://developer.apple.com/documentation/avfoundation/avcam-building-a-camera-app
+
+## Primer intento de compilación — 2026-10-25, 22:56
+
+**Resultado comunicado:** Build Failed en Xcode 26.6, seis errores, mostrados mediante captura de la lista de issues.
+
+- `CameraViewModel.swift`: no conformidad ObservableObject, wrapper de `@Published` no disponible sin `Combine`.
+- `ContentView.swift`: referencias no resueltas a tipos de cámara (posiblemente errores en cascada), y cierre `onChange` con 2 argumentos rechazado por la sobrecarga elegida.
+
+**Correcciones en main:** `import Combine` explícito en CameraViewModel y observación de `scenePhase` con una sola variable en ContentView.
+
+**Estado:** cambios revisados en repositorio, sin nueva compilación confirmada. Repetir `git pull --ff-only`, `⌘B` y, si compila, `⌘R` en el dispositivo. Si quedan errores de `CameraPreview` o `CameraViewModel` no encontrados, comprobar File Inspector > Target Membership y sincronización del grupo Fielens, sin duplicar archivos ni añadir referencias a ciegas.
