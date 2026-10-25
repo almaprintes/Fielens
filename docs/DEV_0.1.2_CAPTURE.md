@@ -50,3 +50,9 @@ La función se da por validada solo si iPhone completa un ciclo `abrir cámara �
 - **Aprobado provisionalmente:** dispositivo produce fotografía, y la app presenta los metadatos de resolución y peso al usuario.
 - **Pendiente de aprobar:** Guardar en Archivos y verificar integridad del JPEG, repetir/discard y múltiples capturas, rotaciones, claridad de la imagen, tests automáticos y comportamiento al suspender/reactivar.
 - **Resultado:** H-008 en curso con evidencia real parcial, no terminado.
+
+## Imagen de ensayo recibida — 2026-10-25, 23:22
+
+Se recibió una imagen de ratón/teclado, apta para observación visual cualitativa: contraste de iluminación, sombras e irregularidad aparente de nitidez. La copia recibida fue inspeccionada como **JPEG 1536 × 2048, 503.960 bytes, sin EXIF**. No se puede tratar como el original de **8064 × 6048, ~11,5 MB** reportado anteriormente.
+
+**Consecuencia de QA:** mantener pendientes la integridad de exportación y los ciclos repetir→repetir. No subir imagen de prueba al repositorio. Solicitar confirmación del usuario de las operaciones e inspección de un archivo guardado directamente desde Fielens en Archivos sin intermediación de servicios que puedan recomprimir.
