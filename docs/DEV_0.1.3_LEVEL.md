@@ -67,3 +67,7 @@ Las muestras son coherentes con una pose cercana a horizontal, **pero el máximo
 - [ ] Muestreo estable sobre referencia conocida, prueba de signos y poses inválidas.
 - [ ] Vista previa sobre hoja iluminada, disparo/repetición/compartir.
 - [ ] Salida/retorno, giro de pantalla y tests automáticos.
+
+## Aclaración posterior del creador — 2026-10-25 23:45
+
+El fondo negro de ambas capturas correspondía a una prueba de noche y sin iluminación. Según confirma el creador, **no fue un fallo de la cámara**. La sospecha de regresión de la vista previa queda descartada para estas capturas. Continúan pendientes las pruebas generales de cámara y estabilidad, sin incidencia específica abierta por la imagen negra.
