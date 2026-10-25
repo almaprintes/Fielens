@@ -11,7 +11,7 @@
 | H-005 · Entorno iOS funcional | 2026-10-25 | Verificado por el creador en Mac/iPhone | Xcode 26.6 + soporte iOS 26.5 + firma Personal Team; `Hello, world!` ejecutado físicamente |
 | H-006 · Versión inicial respaldada en GitHub | 2026-10-25 | Confirmado en repositorio | Proyecto `apps/ios/Fielens` en `main`; commit `070d908` inicial de Xcode |
 | H-007 · Cámara DEV 0.1.1 | 2026-10-25 ~23:00 | **Verificado: cámara en directo** | El creador confirmó «funciona» tras `⌘B`/`⌘R` en iPhone; AVFoundation + gestión básica de permiso. Pruebas de ciclo de vida/denegación y métricas aún pendientes |
-| H-008 · Captura DEV 0.1.2 | 2026-10-25 23:17 | **Captura y lectura de resolución verificadas por el creador; QA parcial** | Primera fotografía reportada desde iPhone: 8064 × 6048 píxeles (48,77 MP), JPEG ~11,5 MB. Aún sin confirmar repetir, exportar archivo intacto, ciclo de vida ni pruebas automáticas |
+| H-008 · Captura DEV 0.1.2 | 2026-10-25 23:17–23:25 | **Captura y exportación a Archivos confirmadas; QA parcial** | Imagen en Fielens: 8064 × 6048 (48,77 MP), tamaño mostrado ~11,5 MB; usuario confirma archivo guardado mediante «Compartir original → Guardar en Archivos» de 11,7 MB. Pendientes dimensiones/hash del archivo exportado, función Repetir, ciclo de vida y tests automáticos |
 | H-009 · Nivel digital (posterior) | Pendiente | Sin implementar | Core Motion; calibración, estabilidad y comparación EXP-001 |
 | H-010 · Candidatura Shipaton 2027 | Ago–sep 2027 objetivo | Condicional | Comprobar reglas de la convocatoria 2027 antes de primera publicación pública |
 
@@ -30,3 +30,7 @@ Un hito con software solo pasa a **validado** si incluye: commit, compilación r
 ### Evidencia adicional de H-008, 23:22
 
 Recibida imagen de ensayo y revisada una copia de chat (JPEG 1536 × 2048, 503.960 bytes); no coincide en dimensiones ni peso con la captura indicada en Fielens (8064 × 6048, 11,5 MB). No supone fallo demostrado de la cámara: aún no se ha comparado el archivo original compartido mediante «Guardar en Archivos». Mantener H-008 **parcialmente verificado** hasta confirmar «Repetir» e integridad de la exportación.
+
+### Aclaración adicional H-008 — 23:25
+
+El creador confirma que **utilizó Guardar en Archivos desde Fielens**, donde la imagen conservada tiene **11,7 MB**. La copia recibida en ChatGPT es una versión de 1536 × 2048 píxeles mucho menor; es plausible una transformación durante el envío al chat, **no demostrada por una comparación binaria**. Se confirma la ruta funcional de exportación a Archivos, sin afirmar todavía identidad de bytes ni ausencia de cambios en intermediarios. Verificación final: dimensiones en Archivos, preferiblemente comparación del archivo original sin pasarlo por el chat.
