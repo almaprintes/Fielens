@@ -165,7 +165,7 @@ nonisolated final class PhotoCaptureDelegate: NSObject, AVCapturePhotoCaptureDel
         error: Error?
     ) {
         if error != nil {
-            if case .success(let photo) = processed {
+            if case .success(let photo)? = processed {
                 TemporaryPhotoStore.discard(photo)
             }
             finish(.failure(.failed("No se ha podido completar la fotografía.")))
