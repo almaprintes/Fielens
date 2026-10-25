@@ -1,8 +1,8 @@
 # DEV 0.1.2 — Captura fotográfica original y revisión
 
-**Estado:** implementación subida a main; compilación y validación en iPhone pendientes.
+**Estado:** primera fotografía y lectura de resolución confirmadas por el creador en iPhone (25/10/2026 23:17); QA y exportación pendientes.
 **Fecha:** 2026-10-25.
-**Ámbito:** captura manual de una sola foto. La vista previa de DEV 0.1.1 ya se ha confirmado en iPhone, pero los cambios de esta versión todavía NO.
+**Ámbito:** captura manual de una sola foto. La vista previa de DEV 0.1.1 ya se ha confirmado en iPhone, y ya se ha reportado una primera fotografía real de la DEV 0.1.2.
 
 ## Implementación prevista y decisiones
 
@@ -18,9 +18,9 @@
 
 - [ ] `git pull --ff-only` en `~/Developer/Fielens` y `git status -sb`.
 - [ ] Abrir Xcode, seleccionar iPhone físico, `⌘B` — anotar `Build Succeeded` o error exacto.
-- [ ] `⌘R` — comprobar permiso y vista previa sin pantalla negra.
+- [x] `⌘R` — ejecución de la versión con cámara y disparo inferida de la foto reportada; queda pendiente prueba específica de permiso.
 - [ ] Capturar un patrón A4 con cuadrícula y letras, sin datos privados.
-- [ ] Ver la foto completa en la pantalla de revisión; registrar **anchura × altura** y tamaño MB mostrados.
+- [x] Capturar y registrar las dimensiones reportadas en la pantalla de revisión: **8064 × 6048 px, 48,77 MP, 11,5 MB**. Falta revisar encuadre y orientación.
 - [ ] Compartir vía Archivos/Guardar imagen u otra opción del sistema; comprobar que el archivo resultante es JPEG y tiene los mismos píxeles y bytes. Los servicios de terceros pueden alterar los ficheros; usar `Guardar en Archivos` para comparación fiable.
 - [ ] Pulsar Repetir; comprobar regreso a cámara, nuevo disparo y desaparición de archivo temporal anterior.
 - [ ] Hacer varios ciclos foto→repetir→foto para localizar bloqueos o consumo excesivo de memoria.
@@ -42,3 +42,11 @@
 ## Criterio de aceptación
 
 La función se da por validada solo si iPhone completa un ciclo `abrir cámara → disparar → revisar → repetir → compartir`, guardando un archivo JPEG íntegro y obteniendo datos de resolución verificables. Un fallo de compilación o ejecución mantiene el hito abierto.
+
+## Primer resultado de campo — 2026-10-25 23:17
+
+- **Origen del dato:** mediciones mostradas en Fielens según informe directo del creador. No hay archivo JPEG adjunto ni logs de Build; no se han inspeccionado los bytes del fichero exportado.
+- **Imagen:** 8064 × 6048 = 48.771.072 píxeles (48,77 MP); relación 4:3; tamaño JPEG indicado: ~11,5 MB.
+- **Aprobado provisionalmente:** dispositivo produce fotografía, y la app presenta los metadatos de resolución y peso al usuario.
+- **Pendiente de aprobar:** Guardar en Archivos y verificar integridad del JPEG, repetir/discard y múltiples capturas, rotaciones, claridad de la imagen, tests automáticos y comportamiento al suspender/reactivar.
+- **Resultado:** H-008 en curso con evidencia real parcial, no terminado.
