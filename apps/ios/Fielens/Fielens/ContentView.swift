@@ -51,7 +51,7 @@ struct ContentView: View {
                 camera.start()
             }
         }
-        .onChange(of: scenePhase) { _, newPhase in
+        .onChange(of: scenePhase) { newPhase in
             if newPhase == .active {
                 camera.start()
             } else {
