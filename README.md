@@ -12,9 +12,9 @@ Su diferencia principal: **asistir antes de disparar**, no limitarse a reparar d
 
 - Inicio del proyecto: 23 de octubre de 2026.
 - Nombre Fielens: elegido para el proyecto; registro de marca, tiendas y dominios pendientes de verificar.
-- Fase: definición, investigación y especificación.
+- Fase: prototipo experimental iOS + investigación y pruebas.
 - Objetivo de primera publicación: agosto/septiembre de 2027, condicionado a las reglas oficiales del Shipaton 2027.
-- Tecnología y arquitectura definitivas: por evaluar experimentalmente.
+- Prototipo actual: iOS nativo con SwiftUI/AVFoundation; arquitectura definitiva multiplataforma pendiente de decidir.
 - El repositorio puede ser público; **el lanzamiento público de la app es una decisión distinta**.
 
 ## Principios
@@ -51,7 +51,7 @@ Su diferencia principal: **asistir antes de disparar**, no limitarse a reparar d
 
 No lanzar la aplicación públicamente hasta verificar las bases oficiales del Shipaton 2027 y superar nuestras puertas de calidad. No subir al repositorio imágenes con datos personales, credenciales ni material confidencial.
 
-Actualmente no existe aún una aplicación funcional ni se ha elegido un stack definitivo.
+La **DEV 0.1.1** ya mostró la cámara en vivo en un iPhone real, confirmado por el creador. La **DEV 0.1.2** está implementada en GitHub pero todavía NO está compilada ni probada en el dispositivo. El nivel Core Motion sigue pendiente.
 
 ## Primer estudio contrastado (2026-10-23)
 
@@ -63,4 +63,14 @@ La investigación no equivale a un prototipo implementado; las características 
 
 ## Fielens DEV 0.1.1 — Primer experimento de cámara
 
-El primer prototipo de AVFoundation con permiso y vista previa está en `apps/ios/Fielens` y documentado en [DEV_0.1.1_CAMERA.md](docs/DEV_0.1.1_CAMERA.md). **Su compilación y funcionamiento en iPhone aún no están verificados**; no hay todavía captura ni nivel.
+El primer prototipo de AVFoundation con permiso y vista previa está en `apps/ios/Fielens` y documentado en [DEV_0.1.1_CAMERA.md](docs/DEV_0.1.1_CAMERA.md). su compilación y vista previa en un iPhone real fueron confirmadas el 25/10/2026. El nivel aún no está implementado.
+
+## Estado de versiones y evidencias
+
+- [Registro de hitos](docs/MILESTONES.md)
+- [Diario cronológico](docs/DEVELOPMENT_LOG.md)
+- [DEV 0.1.2: capturar, revisar y compartir](docs/DEV_0.1.2_CAPTURE.md) — código en main; pendiente de Build y prueba en dispositivo.
+- [DEV 0.1.1: primera cámara](docs/DEV_0.1.1_CAMERA.md) — vista previa confirmada por el creador.
+- [Prueba experimental de captura asistida](docs/EXPERIMENT_001.md) — sin resultados medidos todavía.
+
+**No introducir datos sensibles ni fotos de usuarios en GitHub.**
