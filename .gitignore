@@ -17,3 +17,14 @@ node_modules/
 __pycache__/
 private/
 sensitive-test-data/
+
+# Xcode: per-user state and build output
+xcuserdata/
+*.xcuserstate
+*.xccheckout
+*.xcscmblueprint
+*.hmap
+*.ipa
+*.dSYM/
+*.dSYM.zip
+.swiftpm/xcode/package.xcworkspace/xcuserdata/
