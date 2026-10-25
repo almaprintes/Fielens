@@ -17,8 +17,8 @@ Fielens es una cámara de captura asistida universal (no solo escáner de docume
 
 - Instalación de plataforma, firma Personal Team y primera ejecución Hello World: **confirmadas** por el creador.
 - DEV 0.1.1: AVFoundation cámara y permiso, primera compilación fallida corregida, cámara en directo **confirmada en iPhone** por el creador («funciona!!!», 25/10/2026 ~23:00). No hay mediciones de latencia ni regresiones documentadas.
-- DEV 0.1.2: **primera captura funcional reportada por el creador en el iPhone el 25/10/2026 a las 23:17**. Resolución 8064 × 6048 px (48,77 MP), JPEG mostrado como 11,5 MB. El creador confirma también que exportó mediante «Compartir original → Guardar en Archivos» y encuentra un archivo de **11,7 MB**. Quedan por verificar dimensiones exactas y bytes del archivo guardado, repetir, lifecycle y tests. Incluye `AVCapturePhotoOutput`, intento de JPEG de máxima resolución admitida, revisión, dimensiones, bytes y hoja nativa de compartir archivo original. Archivos en almacenamiento privado temporal; no guardado permanente.
-- El nivel con Core Motion, autodetección de bordes y comparación de calidad todavía **no existen**.
+- DEV 0.1.2: **primera captura funcional reportada por el creador en el iPhone el 25/10/2026 a las 23:17**. Resolución 8064 × 6048 px (48,77 MP), JPEG mostrado como 11,5 MB. El creador confirma también que exportó mediante «Compartir original → Guardar en Archivos» y encuentra un archivo de **11,7 MB**. El usuario confirmó además que **Repetir funciona**. Aún faltan dimensiones y hash del archivo guardado, pruebas prolongadas de ciclo de vida y tests automáticos. Incluye `AVCapturePhotoOutput`, intento de JPEG de máxima resolución admitida, revisión, dimensiones, bytes y hoja nativa de compartir archivo original. Archivos en almacenamiento privado temporal; no guardado permanente.
+- DEV 0.1.3 **nivel de dos ejes con Core Motion implementado en main**, aún SIN compilar ni probar físicamente. Archivos: `LevelMath.swift`, `LevelMotionModel.swift`, `LevelOverlay.swift`, `LevelMathTests.swift`; autorización `NSMotionUsageDescription`; versión 0.1.3 build 4. Protocolo `docs/DEV_0.1.3_LEVEL.md`. Autodetección de bordes y comparación de calidad NO existen.
 
 ## Acciones prioritarias
 
@@ -27,7 +27,7 @@ Fielens es una cámara de captura asistida universal (no solo escáner de docume
 3. La primera fotografía y el guardado en Archivos ya están confirmados; completar prueba de `repetir → nueva foto`, comprobar en Archivos **dimensiones 8064 × 6048 px** y orientación, e idealmente verificar hash/bytes del JPEG sin pasar por el chat.
 4. Ejecutar pruebas automáticas `OriginalPhotoTests` en iPhone o destino de pruebas disponible.
 5. Documentar cualquier corrección, rendimiento y comportamiento de primer plano/cámara interrumpida.
-6. Solo después estudiar DEV 0.1.3 (nivel Core Motion de dos ejes y calibración). No confundir gravedad con perpendicularidad respecto a plano inclinado.
+6. Probar la DEV 0.1.3 desde iPhone: `git pull --ff-only`, `⌘B`, `⌘R`; confirmar que la burbuja se mueve, muestra X/Y y no declara verde en poses erróneas. Ver protocolo `docs/DEV_0.1.3_LEVEL.md`. No confundir gravedad con perpendicularidad respecto a plano inclinado.
 
 ## Archivos principales
 
@@ -45,3 +45,8 @@ Fielens es una cámara de captura asistida universal (no solo escáner de docume
 - Los datos temporales no equivalen a guardado duradero; exportar explícitamente para conservar.
 - No usar fotos privadas ni claves en GitHub. No publicar app al público hasta verificar elegibilidad Shipaton 2027.
 - El registro de QA está en `docs/DEV_0.1.2_CAPTURE.md` y `docs/EXPERIMENT_001.md`.
+
+## Actualización de sesión: 2026-10-25 23:28
+
+- DEV 0.1.2: captura, Repetir y guardado en Archivos confirmados por el creador; QA de integridad y estabilidad pendiente.
+- DEV 0.1.3: implementación documental/code review solamente; **no se ha podido ejecutar Xcode desde este entorno** y no hay confirmación Build Succeeded. Solo avanzar después del resultado del iPhone.
