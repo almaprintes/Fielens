@@ -11,10 +11,14 @@ enum CameraStatus: Equatable {
     case unavailable(String)
 }
 
-/// Coordinates permissions and status on MainActor, and camera operations on a serial queue.
+/// Coordinates camera permissions, captures and UI state on MainActor.
+/// Photo bytes remain unmodified in a private temporary JPEG file.
 @MainActor
 final class CameraViewModel: ObservableObject {
     @Published private(set) var status: CameraStatus = .idle
+    @Published private(set) var photo: CapturedPhoto?
+    @Published private(set) var isCapturing = false
+    @Published private(set) var captureErrorMessage: String?
 
     private let cameraSession = CameraSession()
     private var isRequestingPermission = false
@@ -23,7 +27,13 @@ final class CameraViewModel: ObservableObject {
 
     var session: AVCaptureSession { cameraSession.session }
 
+    init() {
+        // Avoid keeping captured documents on disk across separate app launches.
+        TemporaryPhotoStore.clearPreviousLaunch()
+    }
+
     func start() {
+        guard photo == nil else { return }
         shouldRun = true
         guard !isRequestingPermission else { return }
         guard status != .running && status != .starting else { return }
@@ -62,6 +72,45 @@ final class CameraViewModel: ObservableObject {
         if status == .running || status == .starting {
             status = .idle
         }
+    }
+
+    func capturePhoto() {
+        guard status == .running && !isCapturing && photo == nil else { return }
+        isCapturing = true
+        captureErrorMessage = nil
+
+        cameraSession.capture { [weak self] result in
+            guard let self else {
+                if case .success(let captured) = result {
+                    TemporaryPhotoStore.discard(captured)
+                }
+                return
+            }
+
+            self.isCapturing = false
+            switch result {
+            case .success(let captured):
+                self.photo = captured
+                self.stop() // No running preview or battery use while reviewing.
+            case .failure(let error):
+                self.captureErrorMessage = error.localizedDescription
+            }
+        }
+    }
+
+    func retake() {
+        if let previous = photo {
+            TemporaryPhotoStore.discard(previous)
+        }
+        photo = nil
+        captureErrorMessage = nil
+        isCapturing = false
+        status = .idle
+        start()
+    }
+
+    func clearCaptureError() {
+        captureErrorMessage = nil
     }
 
     private func beginSession() {
