@@ -13,6 +13,7 @@
 | H-007 · Cámara DEV 0.1.1 | 2026-10-25 ~23:00 | **Verificado: cámara en directo** | El creador confirmó «funciona» tras `⌘B`/`⌘R` en iPhone; AVFoundation + gestión básica de permiso. Pruebas de ciclo de vida/denegación y métricas aún pendientes |
 | H-008 · Captura DEV 0.1.2 | 2026-10-25 23:17–23:28 | **Captura, Repetir y Guardar en Archivos confirmados; QA parcial** | 8064 × 6048 (48,77 MP), ~11,5 MB en app; guardado en Archivos ~11,7 MB. El creador confirma que Repetir funciona. Sin hash de exportación, pruebas automáticas ni ciclo de vida |
 | H-009 · Nivel digital DEV 0.1.3 | 2026-10-25 23:41 | **Lectura física y ejecución en iPhone confirmadas; QA parcial** | Capturas del creador: A X −0,2°, Y −0,2°; B X −0,1°, Y −0,4°, ambas verdes. Prueba al borde de mesa para sortear resalte de cámara; precisión sin calibrar. [Protocolo](DEV_0.1.3_LEVEL.md) |
+| H-011 · Compilación remota GitHub Actions | 2026-10-25 | **Compilación confirmada en verde** | [Run #1](https://github.com/almaprintes/Fielens/actions/runs/40246527085) con Xcode 26.6 y iOS SDK 26.5; segundo job de tests en simulador añadido, primera ejecución pendiente |
 | H-010 · Candidatura Shipaton 2027 | Ago–sep 2027 objetivo | Condicional | Comprobar reglas de la convocatoria 2027 antes de primera publicación pública |
 
 ## Lecciones y fallos útiles
