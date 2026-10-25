@@ -1,0 +1,43 @@
+# DEV 0.1.2 — Captura fotográfica original y revisión
+
+**Estado:** implementación subida a main; compilación y validación en iPhone pendientes.
+**Fecha:** 2026-10-25.
+**Ámbito:** captura manual de una sola foto. La vista previa de DEV 0.1.1 ya se ha confirmado en iPhone, pero los cambios de esta versión todavía NO.
+
+## Implementación prevista y decisiones
+
+- `CameraSession.swift`: salida `AVCapturePhotoOutput`, una captura cada vez, petición de JPEG y priorización de calidad, dimensiones máximas válidas del formato activo cuando la API las comunica.
+- `CapturedPhoto.swift`: conserva exactamente `AVCapturePhoto.fileDataRepresentation()` (incluidos metadatos asociados) y extrae ancho/alto y tamaño real para la interfaz. No realiza escala, recorte ni recompresión.
+- `CameraViewModel.swift`: gestiona captura, errores, revisión y repetir. Detiene sesión mientras se revisa la foto.
+- `ContentView.swift`: botón disparador accesible, revisión y compartir el JPEG original con la hoja de compartir del sistema.
+- `project.pbxproj`: `MARKETING_VERSION 0.1.2`, build 3.
+- Directorio temporal privado `Fielens-Capture-Preview`: descartar borra el archivo, una nueva ejecución limpia las imágenes temporales de sesiones anteriores. **No equivale a guardado duradero**. El usuario debe guardar/exportar explícitamente desde Compartir. En caso de cierre inesperado podrían quedar archivos temporales hasta el próximo inicio o limpieza del sistema; esta limitación debe verificarse.
+- Solo se requiere permiso de cámara. Fotos, Internet, cuenta y servidor quedan fuera de alcance.
+
+## Pruebas obligatorias en iPhone
+
+- [ ] `git pull --ff-only` en `~/Developer/Fielens` y `git status -sb`.
+- [ ] Abrir Xcode, seleccionar iPhone físico, `⌘B` — anotar `Build Succeeded` o error exacto.
+- [ ] `⌘R` — comprobar permiso y vista previa sin pantalla negra.
+- [ ] Capturar un patrón A4 con cuadrícula y letras, sin datos privados.
+- [ ] Ver la foto completa en la pantalla de revisión; registrar **anchura × altura** y tamaño MB mostrados.
+- [ ] Compartir vía Archivos/Guardar imagen u otra opción del sistema; comprobar que el archivo resultante es JPEG y tiene los mismos píxeles y bytes. Los servicios de terceros pueden alterar los ficheros; usar `Guardar en Archivos` para comparación fiable.
+- [ ] Pulsar Repetir; comprobar regreso a cámara, nuevo disparo y desaparición de archivo temporal anterior.
+- [ ] Hacer varios ciclos foto→repetir→foto para localizar bloqueos o consumo excesivo de memoria.
+- [ ] Bloquear/desbloquear y salir/volver antes y después de foto; registrar cualquier cámara congelada o error.
+- [ ] Comprobar que el permiso de Fotos no se solicita.
+- [ ] Confirmar visualmente si la vista previa recorta respecto al archivo final; `.resizeAspectFill` puede hacerlo.
+- [ ] Comprobar que el modo paisaje y vertical no giran ni recortan inadecuadamente la imagen final; la orientación EXIF debe preservarse.
+- [ ] Registrar modelo, iOS, fecha, hora, commit y observaciones. No subir las fotos personales ni documentos al repositorio público.
+
+## Advertencias a comprobar
+
+- La resolución máxima *solicitada* no garantiza la resolución entregada; registrar los píxeles reales. Se escogerá más adelante la mejor política de captura tras ensayos de calidad y rendimiento.
+- El archivo conserva metadatos EXIF de cámara; la limpieza opcional de metadatos en copias compartidas será trabajo posterior. No declarar «sin metadatos».
+- Al compartir, el usuario controla la exportación; Fielens no envía el archivo automáticamente.
+- Todavía no existe nivel, perpendicularidad, detección de bordes, corrección de perspectiva, OCR ni filtros.
+- No publicar públicamente la app hasta verificar las normas de Shipaton 2027.
+
+## Criterio de aceptación
+
+La función se da por validada solo si iPhone completa un ciclo `abrir cámara → disparar → revisar → repetir → compartir`, guardando un archivo JPEG íntegro y obteniendo datos de resolución verificables. Un fallo de compilación o ejecución mantiene el hito abierto.
