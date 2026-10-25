@@ -11,7 +11,7 @@
 | H-005 · Entorno iOS funcional | 2026-10-25 | Verificado por el creador en Mac/iPhone | Xcode 26.6 + soporte iOS 26.5 + firma Personal Team; `Hello, world!` ejecutado físicamente |
 | H-006 · Versión inicial respaldada en GitHub | 2026-10-25 | Confirmado en repositorio | Proyecto `apps/ios/Fielens` en `main`; commit `070d908` inicial de Xcode |
 | H-007 · Cámara DEV 0.1.1 | 2026-10-25 ~23:00 | **Verificado: cámara en directo** | El creador confirmó «funciona» tras `⌘B`/`⌘R` en iPhone; AVFoundation + gestión básica de permiso. Pruebas de ciclo de vida/denegación y métricas aún pendientes |
-| H-008 · Captura DEV 0.1.2 | 2026-10-25 | En preparación | Captura JPEG original, revisión, dimensiones de foto y compartir; pendiente de compilación y pruebas físicas |
+| H-008 · Captura DEV 0.1.2 | 2026-10-25 | **Implementada en GitHub; pendiente de validación** | Captura JPEG sin recodificar, revisión, dimensiones, descarte y compartir. No compilada ni probada todavía en iPhone |
 | H-009 · Nivel digital (posterior) | Pendiente | Sin implementar | Core Motion; calibración, estabilidad y comparación EXP-001 |
 | H-010 · Candidatura Shipaton 2027 | Ago–sep 2027 objetivo | Condicional | Comprobar reglas de la convocatoria 2027 antes de primera publicación pública |
 
