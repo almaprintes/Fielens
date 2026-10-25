@@ -1,50 +1,47 @@
 # PROJECT_HANDOFF — Fielens
 
-**Actualización:** 2026-10-25 (segunda sesión)
+**Actualizado:** 2026-10-25 · DEV 0.1.2
 
-## Estado confirmado (por ejecución reportada desde Mac/iPhone)
+## Contexto
 
-- Xcode 26.6, macOS 26.5, Apple Git 2.50.1.
-- Clonado `almaprintes/Fielens` en `~/Developer/Fielens` (rama main).
-- Xcode project creado en `apps/ios/Fielens/Fielens.xcodeproj` **en el Mac**, aún no confirmado en GitHub.
-- Resuelto soporte de plataforma iOS 26.5 y firma de desarrollo mediante equipo personal.
-- El usuario confirmó **Build Succeeded** y la ejecución de **Hello, world!** en el iPhone físico con desarrollador confiable.
-- Estado de código funcional: únicamente la plantilla iOS inicial. No hay todavía cámara, nivel ni captura.
-- La etiqueta experimental para el siguiente hito es DEV 0.1.0; no se ha configurado/verificado aún número de versión en el bundle.
+Fielens es una cámara de captura asistida universal (no solo escáner de documentos), privada por defecto y fiel a la imagen original. Objetivo Shipaton 2027 (agosto/septiembre orientativo), sujeto a las bases oficiales. Nombre de proyecto elegido, validación registral pendiente.
 
-## Criterios de producto
+- GitHub: `almaprintes/Fielens`, rama `main` (repositorio público).
+- Mac del creador: `~/Developer/Fielens`.
+- Proyecto: `apps/ios/Fielens/Fielens.xcodeproj`.
+- Entorno reportado: Xcode 26.6, macOS 26.5, iOS 26.5 / iPhone físico.
+- Documentación histórica: [MILESTONES](docs/MILESTONES.md) y [DEVELOPMENT_LOG](docs/DEVELOPMENT_LOG.md).
+- Normas del proyecto: [AGENTS.md](AGENTS.md).
 
-- Cámara asistida universal; no exclusiva para documentos.
-- Captura fiel, procesamiento local por defecto, conservar originales.
-- El nivel respecto a gravedad no garantiza perpendicularidad a un soporte inclinado.
-- Estrategia de medición en `docs/EXPERIMENT_001.md`.
-- Objetivo Shipaton 2027: comprobar bases oficiales antes de publicación pública; no convertir las pruebas privadas en un lanzamiento prematuro.
+## Estado realmente verificado
 
-## Seguridad del repositorio
+- Instalación de plataforma, firma Personal Team y primera ejecución Hello World: **confirmadas** por el creador.
+- DEV 0.1.1: AVFoundation cámara y permiso, primera compilación fallida corregida, cámara en directo **confirmada en iPhone** por el creador («funciona!!!», 25/10/2026 ~23:00). No hay mediciones de latencia ni regresiones documentadas.
+- DEV 0.1.2: **implementada en GitHub pero todavía NO compilada ni probada en iPhone**. Incluye `AVCapturePhotoOutput`, intento de JPEG de máxima resolución admitida, revisión, dimensiones, bytes y ShareLink original. Archivos en almacenamiento privado temporal; no guardado permanente.
+- El nivel con Core Motion, autodetección de bordes y comparación de calidad todavía **no existen**.
 
-GitHub informa visibilidad **pública**. `.gitignore` incluye exclusión de estado personal de Xcode y archivos sensibles conocidos. Revisar la lista de archivos antes de su primer push local. No incluir certificados, claves, documentos personales, capturas sensibles ni datos internos de otros proyectos.
+## Acciones prioritarias
 
-## Próximas acciones
+1. `cd ~/Developer/Fielens && git pull --ff-only`.
+2. Abrir Xcode, seleccionar iPhone, `⌘B`. Registrar errores exactos o Build Succeeded.
+3. Si compila, `⌘R`, probar cámara→disparo→revisión→repetir→compartir JPEG en Archivos, registrar dimensiones, orientación y bytes.
+4. Ejecutar pruebas automáticas `OriginalPhotoTests` en iPhone o destino de pruebas disponible.
+5. Documentar cualquier corrección, rendimiento y comportamiento de primer plano/cámara interrumpida.
+6. Solo después estudiar DEV 0.1.3 (nivel Core Motion de dos ejes y calibración). No confundir gravedad con perpendicularidad respecto a plano inclinado.
 
-1. Guardar el proyecto Xcode local inicial en main (inspeccionar primero el staging y después push).
-2. Implementar por incrementos verificados: preview AVFoundation y permisos; captura/revisión local; Core Motion nivel de dos ejes; contraste con EXP-001.
-3. Confirmar dispositivo físico, versión iOS, formato de capturas y condiciones de ensayo. Solo avanzar tras medir.
-4. Actualizar documentación con commits, resultados y fallos.
+## Archivos principales
 
-## Investigación inicial
+- `apps/ios/Fielens/Fielens/CameraSession.swift`: sesión AVFoundation y captura JPEG.
+- `apps/ios/Fielens/Fielens/CameraViewModel.swift`: permisos, captura y revisión.
+- `apps/ios/Fielens/Fielens/CameraPreview.swift`: vista en vivo.
+- `apps/ios/Fielens/Fielens/CapturedPhoto.swift`: original en carpeta temporal + metadatos de dimensiones.
+- `apps/ios/Fielens/Fielens/ContentView.swift`: disparador, revisión y compartir.
+- `apps/ios/Fielens/FielensTests/OriginalPhotoTests.swift`: pruebas escritas, **todavía no ejecutadas**.
 
-- `docs/RESEARCH_2026-10-23.md`
-- `docs/TECHNICAL_FEASIBILITY_2026-10-23.md`
-- `docs/EXPERIMENT_001.md`
+## Riesgos y principios
 
-No se ha elegido aún el framework definitivo para Android u otras plataformas.
-
-## DEV 0.1.1 (2026-10-25)
-
-- Confirmado desde GitHub que ya está publicada en main la plantilla Xcode inicial y el commit de primer Hello World en dispositivo.
-- Incorporados en main CameraSession.swift, CameraPreview.swift, CameraViewModel.swift y nueva ContentView.swift.
-- Ajustadas configuraciones de la app: permiso NSCameraUsageDescription, versión DEV 0.1.1 (build 2).
-- Diseño técnico: AVFoundation en cola serie para configurar e iniciar/detener, UIKit preview desde SwiftUI, autorización en UI, sin captura ni micrófono ni guardado.
-- **No probado aún el nuevo código en Mac/iPhone**. Próxima acción obligatoria: pull + ⌘B + ⌘R en iPhone, anotar errores y observar comportamiento.
-- Protocolo: docs/DEV_0.1.1_CAMERA.md. EXP-001 sigue abierto; todavía no hay nivel ni datos experimentales.
-- Fase siguiente *solo tras prueba*: fotografía real con revisión y conservación de original; después Core Motion. No confundir estado del dispositivo horizontal con perpendicularidad respecto a soportes inclinados.
+- La previsualización `.resizeAspectFill` recorta según pantalla; la foto final puede tener otro encuadre.
+- La foto JPEG contiene metadatos EXIF; no se alteran ni eliminan todavía.
+- Los datos temporales no equivalen a guardado duradero; exportar explícitamente para conservar.
+- No usar fotos privadas ni claves en GitHub. No publicar app al público hasta verificar elegibilidad Shipaton 2027.
+- El registro de QA está en `docs/DEV_0.1.2_CAPTURE.md` y `docs/EXPERIMENT_001.md`.
