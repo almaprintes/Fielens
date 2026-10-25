@@ -1,6 +1,6 @@
 # PROJECT_HANDOFF — Fielens
 
-**Actualización:** 2026-10-25
+**Actualización:** 2026-10-25 (segunda sesión)
 
 ## Estado confirmado (por ejecución reportada desde Mac/iPhone)
 
@@ -38,3 +38,13 @@ GitHub informa visibilidad **pública**. `.gitignore` incluye exclusión de esta
 - `docs/EXPERIMENT_001.md`
 
 No se ha elegido aún el framework definitivo para Android u otras plataformas.
+
+## DEV 0.1.1 (2026-10-25)
+
+- Confirmado desde GitHub que ya está publicada en main la plantilla Xcode inicial y el commit de primer Hello World en dispositivo.
+- Incorporados en main CameraSession.swift, CameraPreview.swift, CameraViewModel.swift y nueva ContentView.swift.
+- Ajustadas configuraciones de la app: permiso NSCameraUsageDescription, versión DEV 0.1.1 (build 2).
+- Diseño técnico: AVFoundation en cola serie para configurar e iniciar/detener, UIKit preview desde SwiftUI, autorización en UI, sin captura ni micrófono ni guardado.
+- **No probado aún el nuevo código en Mac/iPhone**. Próxima acción obligatoria: pull + ⌘B + ⌘R en iPhone, anotar errores y observar comportamiento.
+- Protocolo: docs/DEV_0.1.1_CAMERA.md. EXP-001 sigue abierto; todavía no hay nivel ni datos experimentales.
+- Fase siguiente *solo tras prueba*: fotografía real con revisión y conservación de original; después Core Motion. No confundir estado del dispositivo horizontal con perpendicularidad respecto a soportes inclinados.
