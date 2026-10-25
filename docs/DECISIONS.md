@@ -29,3 +29,11 @@ No decidir aún el framework. Probar cámara, sensores y visión en iPhone real;
 ## D-007 — 2026-10-23 — Observación — Visibilidad del repositorio
 
 GitHub informa que almaprintes/Fielens es público. No confundir publicación del código con lanzamiento público de la app. Decidir visibilidad final antes de incluir materiales reservados.
+
+## D-008 — 2026-10-25 — Aceptada provisionalmente — Captura JPEG temporal en DEV 0.1.2
+
+La primera captura utiliza `AVCapturePhotoOutput`; se solicita JPEG a máxima resolución disponible y se preservan los bytes devueltos por `fileDataRepresentation()` sin tratamientos propios. El archivo se conserva temporalmente en espacio privado para revisión y compartir. No se crea una biblioteca permanente ni se pide permiso para Fotos. Esto **no** garantiza que Apple no aplique procesamiento propio de cámara; la fidelidad real requerirá medición. No implica que se haya validado todavía la implementación en dispositivo.
+
+## D-009 — 2026-10-25 — Aceptada — Evidencias e hitos por versión
+
+Mantener `docs/MILESTONES.md` y `docs/DEVELOPMENT_LOG.md`, con estados separados (implementado, compilado, probado, validado), errores reproducibles, dispositivo utilizado y pruebas pendientes. Cada DEV debe tener protocolo verificable. La publicación de código no equivale a validación.
