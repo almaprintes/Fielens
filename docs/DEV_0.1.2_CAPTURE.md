@@ -28,6 +28,7 @@
 - [ ] Comprobar que el permiso de Fotos no se solicita.
 - [ ] Confirmar visualmente si la vista previa recorta respecto al archivo final; `.resizeAspectFill` puede hacerlo.
 - [ ] Comprobar que el modo paisaje y vertical no giran ni recortan inadecuadamente la imagen final; la orientación EXIF debe preservarse.
+- [ ] Ejecutar las pruebas automáticas de `OriginalPhotoTests` y registrar resultados.
 - [ ] Registrar modelo, iOS, fecha, hora, commit y observaciones. No subir las fotos personales ni documentos al repositorio público.
 
 ## Advertencias a comprobar
