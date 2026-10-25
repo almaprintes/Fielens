@@ -66,3 +66,12 @@ Nunca registrar identificadores personales de los teléfonos, fotos de terceros,
 - La aplicación informó previamente **8064 × 6048 píxeles, 48,77 MP, 11,5 MB**. La discrepancia de tamaños de visualización requiere determinar las unidades y redondeo o comparar el mismo archivo; no se asume corrupción.
 - La imagen llegada al chat es mucho menor (**1536 × 2048**): se sospecha redimensionado por el canal de conversación, pero no se ha comprobado la cadena de procesamiento.
 - **Estado:** captura y exportación en Archivos funcionan según prueba manual del creador; aún falta confirmar las dimensiones del JPEG en Archivos, identidad exacta del contenido, el botón Repetir, orientación y regresiones.
+
+## 2026-10-25 23:28 — Confirmación y comienzo DEV 0.1.3
+
+- El creador confirma «funciona» después de la solicitud de probar **Repetir**. Se registra como confirmación funcional del botón en la 0.1.2, sin afirmar pruebas de múltiples ciclos, identidad hash del JPEG o recuperación tras interrupciones.
+- Implementada DEV 0.1.3 en GitHub: `LevelMath.swift`, `LevelMotionModel.swift`, `LevelOverlay.swift`, actualización `ContentView.swift`, Info.plist generado con `NSMotionUsageDescription` y versión 0.1.3 (build 4). Añadidas pruebas `LevelMathTests.swift`.
+- Indicador usa Core Motion fusionado a unos **20 Hz**, filtro ligero alfa 0,25 y publicación de muestra en actor principal. Solo se evalúan X/Y de la gravedad y el teléfono con pantalla hacia arriba. Tolerancia ±2° **experimental**. Los datos no se guardan ni envían.
+- El nivel se detiene en segundo plano, al pasar a revisión fotográfica y al desaparecer la pantalla. Se pretende mantener intacta la captura JPEG de la 0.1.2.
+- **Estado real:** código subido y revisado documentalmente; no disponemos de compilación ni prueba del nivel en un iPhone. No marcarlo como hito validado todavía.
+- Referencia del plan de pruebas: [DEV_0.1.3_LEVEL.md](DEV_0.1.3_LEVEL.md). Próximo paso `git pull --ff-only`, `⌘B`, `⌘R`; registrar precisión observada, fallos y estabilidad en el dispositivo.
