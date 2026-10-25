@@ -74,3 +74,9 @@ El primer prototipo de AVFoundation con permiso y vista previa está en `apps/io
 - [Prueba experimental de captura asistida](docs/EXPERIMENT_001.md) — sin resultados medidos todavía.
 
 **No introducir datos sensibles ni fotos de usuarios en GitHub.**
+
+## DEV 0.1.3 — Nivel digital (pendiente de pruebas)
+
+El primer nivel digital de dos ejes está implementado en `apps/ios/Fielens` con Core Motion y documentado en [DEV_0.1.3_LEVEL.md](docs/DEV_0.1.3_LEVEL.md). **El código está en main, pero todavía no está compilado ni probado en el iPhone.** El horizonte de gravedad NO es la perpendicular al soporte.
+
+La DEV 0.1.2 ya tiene confirmadas por el creador captura, botón Repetir y exportación a Archivos. La identidad binaria del JPEG exportado, las pruebas automatizadas y las pruebas prolongadas siguen pendientes.
