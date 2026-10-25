@@ -17,7 +17,7 @@ Fielens es una cámara de captura asistida universal (no solo escáner de docume
 
 - Instalación de plataforma, firma Personal Team y primera ejecución Hello World: **confirmadas** por el creador.
 - DEV 0.1.1: AVFoundation cámara y permiso, primera compilación fallida corregida, cámara en directo **confirmada en iPhone** por el creador («funciona!!!», 25/10/2026 ~23:00). No hay mediciones de latencia ni regresiones documentadas.
-- DEV 0.1.2: **implementada en GitHub pero todavía NO compilada ni probada en iPhone**. Incluye `AVCapturePhotoOutput`, intento de JPEG de máxima resolución admitida, revisión, dimensiones, bytes y ShareLink original. Archivos en almacenamiento privado temporal; no guardado permanente.
+- DEV 0.1.2: **implementada en GitHub pero todavía NO compilada ni probada en iPhone**. Incluye `AVCapturePhotoOutput`, intento de JPEG de máxima resolución admitida, revisión, dimensiones, bytes y hoja nativa de compartir archivo original. Archivos en almacenamiento privado temporal; no guardado permanente.
 - El nivel con Core Motion, autodetección de bordes y comparación de calidad todavía **no existen**.
 
 ## Acciones prioritarias
