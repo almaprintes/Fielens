@@ -36,13 +36,15 @@
 - **Confirmado por el creador a las 23:00:** «funciona!!!» en su iPhone, cámara en directo.
 - Por comprobar: interrupciones, recuperación en primer plano, orientación y permiso denegado. No hay datos métricos ni foto guardada.
 
-## 2026-10-25 — DEV 0.1.2 fotografía y revisión (pendiente de prueba física)
+## 2026-10-25 — DEV 0.1.2 fotografía y revisión (primera captura en iPhone)
 
 - Diseñada captura `AVCapturePhotoOutput` solicitando JPEG, calidad alta y mayores dimensiones admitidas por formato activo.
 - `fileDataRepresentation()` se conserva sin recodificar; registro del tamaño original de píxeles y bytes mediante ImageIO.
 - La foto queda solo en el directorio temporal privado de la app. Vista de revisión, opción repetir (descartar) y compartir el fichero original mediante el sistema.
 - Sin permiso de Fotos, sin cuenta, sin red, sin filtros, sin nivel todavía.
-- El código y documentación están en GitHub; **no consta Build Succeeded ni ejecución física de 0.1.2**.
+- **23:17, informe del creador desde el iPhone:** primera fotografía realizada y resolución mostrada por Fielens: **8064 × 6048 píxeles (48,77 MP), 11,5 MB**. Demuestra el funcionamiento del flujo de captura y obtención de metadatos en dispositivo; compilación y ejecución quedan implícitas por la prueba reportada, sin disponer del log de compilación.
+- Resolución calculada: **48.771.072 píxeles**, relación **4:3**; el tamaño en disco lo indica la app y se considera aproximado (formato localizado). La alta resolución **no** demuestra nitidez, exactitud geométrica ni fidelidad del color.
+- **Prueba aún parcial:** no consta validación de exportar JPEG sin transformación, de repetir/descartar, de permisos, orientación, ciclos de vida ni de tests automáticos. El hito H-008 permanece abierto hasta completar estas pruebas.
 
 ## Esquema exigido para futuras sesiones
 
