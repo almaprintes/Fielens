@@ -40,7 +40,7 @@
 
 - Diseñada captura `AVCapturePhotoOutput` solicitando JPEG, calidad alta y mayores dimensiones admitidas por formato activo.
 - `fileDataRepresentation()` se conserva sin recodificar; registro del tamaño original de píxeles y bytes mediante ImageIO.
-- La foto queda solo en el directorio temporal privado de la app. Vista de revisión, opción repetir (descartar) y compartir el fichero original vía sistema.
+- La foto queda solo en el directorio temporal privado de la app. Vista de revisión, opción repetir (descartar) y compartir el fichero original mediante el sistema.
 - Sin permiso de Fotos, sin cuenta, sin red, sin filtros, sin nivel todavía.
 - El código y documentación están en GitHub; **no consta Build Succeeded ni ejecución física de 0.1.2**.
 
