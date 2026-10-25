@@ -26,3 +26,7 @@
 ## Política de cierre
 
 Un hito con software solo pasa a **validado** si incluye: commit, compilación reproducible, ejecución en dispositivo indicado, prueba funcional observada y defectos residuales anotados. Si faltan pruebas de regresión, describir la validación con su alcance real, nunca como auditoría completa.
+
+### Evidencia adicional de H-008, 23:22
+
+Recibida imagen de ensayo y revisada una copia de chat (JPEG 1536 × 2048, 503.960 bytes); no coincide en dimensiones ni peso con la captura indicada en Fielens (8064 × 6048, 11,5 MB). No supone fallo demostrado de la cámara: aún no se ha comparado el archivo original compartido mediante «Guardar en Archivos». Mantener H-008 **parcialmente verificado** hasta confirmar «Repetir» e integridad de la exportación.
