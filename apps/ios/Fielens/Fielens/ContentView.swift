@@ -3,6 +3,7 @@ import UIKit
 
 struct ContentView: View {
     @StateObject private var camera = CameraViewModel()
+    @StateObject private var level = LevelMotionModel()
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
@@ -18,17 +19,28 @@ struct ContentView: View {
         .onAppear {
             if scenePhase == .active {
                 camera.start()
+                if camera.photo == nil { level.start() }
             }
         }
         .onChange(of: scenePhase) { newPhase in
             if newPhase == .active {
                 camera.start()
+                if camera.photo == nil { level.start() }
             } else {
                 camera.stop()
+                level.stop()
+            }
+        }
+        .onChange(of: camera.photo?.id) { newPhotoID in
+            if newPhotoID == nil && scenePhase == .active {
+                level.start()
+            } else {
+                level.stop()
             }
         }
         .onDisappear {
             camera.stop()
+            level.stop()
         }
     }
 
@@ -54,13 +66,15 @@ struct ContentView: View {
                         .font(.headline)
                         .tracking(2)
                     Spacer()
-                    Text("DEV 0.1.2")
+                    Text("DEV 0.1.3")
                         .font(.caption.monospaced())
                         .foregroundStyle(.white.opacity(0.8))
                 }
                 .foregroundStyle(.white)
 
                 Spacer()
+
+                LevelOverlay(status: level.status, reading: level.reading)
 
                 statusPanel
 
@@ -163,7 +177,7 @@ private struct PhotoReviewView: View {
                     .font(.headline)
                     .tracking(2)
                 Spacer()
-                Text("DEV 0.1.2")
+                Text("DEV 0.1.3")
                     .font(.caption.monospaced())
             }
             .foregroundStyle(.white)
