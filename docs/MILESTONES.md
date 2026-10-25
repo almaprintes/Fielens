@@ -11,8 +11,8 @@
 | H-005 · Entorno iOS funcional | 2026-10-25 | Verificado por el creador en Mac/iPhone | Xcode 26.6 + soporte iOS 26.5 + firma Personal Team; `Hello, world!` ejecutado físicamente |
 | H-006 · Versión inicial respaldada en GitHub | 2026-10-25 | Confirmado en repositorio | Proyecto `apps/ios/Fielens` en `main`; commit `070d908` inicial de Xcode |
 | H-007 · Cámara DEV 0.1.1 | 2026-10-25 ~23:00 | **Verificado: cámara en directo** | El creador confirmó «funciona» tras `⌘B`/`⌘R` en iPhone; AVFoundation + gestión básica de permiso. Pruebas de ciclo de vida/denegación y métricas aún pendientes |
-| H-008 · Captura DEV 0.1.2 | 2026-10-25 23:17–23:25 | **Captura y exportación a Archivos confirmadas; QA parcial** | Imagen en Fielens: 8064 × 6048 (48,77 MP), tamaño mostrado ~11,5 MB; usuario confirma archivo guardado mediante «Compartir original → Guardar en Archivos» de 11,7 MB. Pendientes dimensiones/hash del archivo exportado, función Repetir, ciclo de vida y tests automáticos |
-| H-009 · Nivel digital (posterior) | Pendiente | Sin implementar | Core Motion; calibración, estabilidad y comparación EXP-001 |
+| H-008 · Captura DEV 0.1.2 | 2026-10-25 23:17–23:28 | **Captura, Repetir y Guardar en Archivos confirmados; QA parcial** | 8064 × 6048 (48,77 MP), ~11,5 MB en app; guardado en Archivos ~11,7 MB. El creador confirma que Repetir funciona. Sin hash de exportación, pruebas automáticas ni ciclo de vida |
+| H-009 · Nivel digital DEV 0.1.3 | 2026-10-25 | **Código en main; sin compilar ni probar en iPhone** | Core Motion 20 Hz, burbuja/ejes, postura válida, pausa de sensores y tests matemáticos preparados. [Protocolo](DEV_0.1.3_LEVEL.md); calibración y comparación EXP-001 pendientes |
 | H-010 · Candidatura Shipaton 2027 | Ago–sep 2027 objetivo | Condicional | Comprobar reglas de la convocatoria 2027 antes de primera publicación pública |
 
 ## Lecciones y fallos útiles
