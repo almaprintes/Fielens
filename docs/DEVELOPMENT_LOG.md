@@ -59,3 +59,10 @@ Nunca registrar identificadores personales de los teléfonos, fotos de terceros,
 - No hay evidencia suficiente para atribuir el cambio de dimensiones al código de Fielens; los sistemas de envío y mensajería pueden crear copias redimensionadas. Para validar integridad, guardar el fichero desde la hoja de compartir de Fielens en Archivos y comparar con el tamaño/dimensiones registrados antes de exportar.
 - La recepción en el chat tampoco prueba por sí sola que el botón **Repetir** ni la exportación de archivo sin cambios estén validados. **Ambas pruebas siguen pendientes de confirmación**.
 - Imagen de ensayo **no incorporada al repositorio público**.
+
+### 23:25 — Confirmación de exportación a Archivos
+
+- El creador aclara que utilizó «Compartir original → Guardar en Archivos» en Fielens y que allí el fichero ocupa **11,7 MB**.
+- La aplicación informó previamente **8064 × 6048 píxeles, 48,77 MP, 11,5 MB**. La discrepancia de tamaños de visualización requiere determinar las unidades y redondeo o comparar el mismo archivo; no se asume corrupción.
+- La imagen llegada al chat es mucho menor (**1536 × 2048**): se sospecha redimensionado por el canal de conversación, pero no se ha comprobado la cadena de procesamiento.
+- **Estado:** captura y exportación en Archivos funcionan según prueba manual del creador; aún falta confirmar las dimensiones del JPEG en Archivos, identidad exacta del contenido, el botón Repetir, orientación y regresiones.
