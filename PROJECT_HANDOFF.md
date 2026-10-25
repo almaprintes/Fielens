@@ -1,38 +1,40 @@
 # PROJECT_HANDOFF — Fielens
 
-**Actualización:** 2026-10-23
+**Actualización:** 2026-10-25
 
-## Estado
+## Estado confirmado (por ejecución reportada desde Mac/iPhone)
 
-Nombre **Fielens** elegido por el creador. Repositorio de documentación inicial; no existe aún una app funcional y no se ha elegido stack. Objetivo: preparación rigurosa para Shipaton 2027, con posible lanzamiento agosto-septiembre 2027 sujeto a reglas oficiales.
+- Xcode 26.6, macOS 26.5, Apple Git 2.50.1.
+- Clonado `almaprintes/Fielens` en `~/Developer/Fielens` (rama main).
+- Xcode project creado en `apps/ios/Fielens/Fielens.xcodeproj` **en el Mac**, aún no confirmado en GitHub.
+- Resuelto soporte de plataforma iOS 26.5 y firma de desarrollo mediante equipo personal.
+- El usuario confirmó **Build Succeeded** y la ejecución de **Hello, world!** en el iPhone físico con desarrollador confiable.
+- Estado de código funcional: únicamente la plantilla iOS inicial. No hay todavía cámara, nivel ni captura.
+- La etiqueta experimental para el siguiente hito es DEV 0.1.0; no se ha configurado/verificado aún número de versión en el bundle.
 
-## Decisiones firmes
+## Criterios de producto
 
-- Cámara inteligente universal para reproducir fielmente soportes físicos.
-- Prioridad a orientación, encuadre, iluminación y enfoque **antes** de capturar.
-- Captura original conservada, transformación no destructiva, privacidad local por defecto.
-- Nivel de sensores y perpendicularidad real son dos problemas diferentes.
-- Ensayos físicos y métricas comparables antes de declarar calidad.
-- No publicación pública de la app hasta revisar bases oficiales de 2027.
+- Cámara asistida universal; no exclusiva para documentos.
+- Captura fiel, procesamiento local por defecto, conservar originales.
+- El nivel respecto a gravedad no garantiza perpendicularidad a un soporte inclinado.
+- Estrategia de medición en `docs/EXPERIMENT_001.md`.
+- Objetivo Shipaton 2027: comprobar bases oficiales antes de publicación pública; no convertir las pruebas privadas en un lanzamiento prematuro.
 
-## Pendiente
+## Seguridad del repositorio
 
-- Comprobar registros de marca y dominios; no afirmar exclusividad comercial.
-- Construir protocolo comparativo con cámara estándar y escáneres existentes.
-- Investigar APIs nativas y alternativa Android.
-- Definir criterios de aceptación para v0.1 sin cifras arbitrarias.
+GitHub informa visibilidad **pública**. `.gitignore` incluye exclusión de estado personal de Xcode y archivos sensibles conocidos. Revisar la lista de archivos antes de su primer push local. No incluir certificados, claves, documentos personales, capturas sensibles ni datos internos de otros proyectos.
 
-## Próxima iteración
+## Próximas acciones
 
-Primer experimento instrumental de cámara real + IMU en iPhone, con registro de condiciones y limitaciones. Nada de funcionalidades secundarias antes de probar el núcleo técnico.
+1. Guardar el proyecto Xcode local inicial en main (inspeccionar primero el staging y después push).
+2. Implementar por incrementos verificados: preview AVFoundation y permisos; captura/revisión local; Core Motion nivel de dos ejes; contraste con EXP-001.
+3. Confirmar dispositivo físico, versión iOS, formato de capturas y condiciones de ensayo. Solo avanzar tras medir.
+4. Actualizar documentación con commits, resultados y fallos.
 
-## Investigación técnica 01 — 2026-10-23
+## Investigación inicial
 
-Documentos creados y publicados en main:
-- docs/RESEARCH_2026-10-23.md — competencia y límites de las afirmaciones
-- docs/TECHNICAL_FEASIBILITY_2026-10-23.md — APIs y supuestos a validar
-- docs/EXPERIMENT_001.md — protocolo de prueba con referencia
+- `docs/RESEARCH_2026-10-23.md`
+- `docs/TECHNICAL_FEASIBILITY_2026-10-23.md`
+- `docs/EXPERIMENT_001.md`
 
-Hechos: las apps de Apple, Genius Scan, PhotoScan, Adobe Scan y SwiftScan ya cubren varias funciones que inicialmente parecían diferenciales. PaintingLens también atiende fotografías de arte. No se ha probado aún ninguna en hardware bajo condiciones comparables.
-
-**Siguiente trabajo:** construir experimento Swift iOS de cámara + inclinación usando sensores (sin prometer perpendicularidad), probar en iPhone y tomar datos para EXP-001. No se ha programado todavía. El framework definitivo sigue pendiente.
+No se ha elegido aún el framework definitivo para Android u otras plataformas.
