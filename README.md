@@ -60,3 +60,7 @@ Actualmente no existe aún una aplicación funcional ni se ha elegido un stack d
 - [EXP-001: protocolo de validación](docs/EXPERIMENT_001.md)
 
 La investigación no equivale a un prototipo implementado; las características de terceros corresponden a declaraciones y documentación pública, pendientes de pruebas directas.
+
+## Fielens DEV 0.1.1 — Primer experimento de cámara
+
+El primer prototipo de AVFoundation con permiso y vista previa está en `apps/ios/Fielens` y documentado en [DEV_0.1.1_CAMERA.md](docs/DEV_0.1.1_CAMERA.md). **Su compilación y funcionamiento en iPhone aún no están verificados**; no hay todavía captura ni nivel.
