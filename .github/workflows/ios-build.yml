@@ -1,0 +1,63 @@
+name: Fielens iOS Build
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/ios/**"
+      - ".github/workflows/ios-build.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "apps/ios/**"
+      - ".github/workflows/ios-build.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fielens-ios-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  compile:
+    name: Compile iOS without signing
+    runs-on: macos-26
+    timeout-minutes: 25
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Verify Xcode 26.6 is installed
+        shell: bash
+        run: |
+          test -d "$DEVELOPER_DIR"
+          xcodebuild -version
+          xcodebuild -showsdks
+
+      - name: Compile Fielens for iOS device (no signing)
+        shell: bash
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project "apps/ios/Fielens/Fielens.xcodeproj" \
+            -scheme Fielens \
+            -configuration Debug \
+            -sdk iphoneos \
+            -destination "generic/platform=iOS" \
+            -derivedDataPath "$RUNNER_TEMP/FielensBuild" \
+            CODE_SIGNING_ALLOWED=NO \
+            -quiet build 2>&1 | tee "$RUNNER_TEMP/fielens-build.log"
+
+      - name: Upload build log if compilation fails
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fielens-ios-build-log
+          path: ${{ runner.temp }}/fielens-build.log
+          if-no-files-found: ignore
+          retention-days: 7
