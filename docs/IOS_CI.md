@@ -1,6 +1,7 @@
 # Compilación iOS sin Mac local — GitHub Actions
 
 **Fecha de incorporación:** 2026-10-25
+**Primera compilación verificada:** [Build verde en Xcode 26.6, commit adb1b0be](https://github.com/almaprintes/Fielens/actions/runs/40246527085)
 **Automatización:** [Fielens iOS Build](../.github/workflows/ios-build.yml)
 **Runner:** `macos-26` (Apple Silicon), Xcode 26.6, sin firma para distribución.
 
@@ -19,7 +20,7 @@ Si falla, GitHub Actions proporciona los logs; el workflow intenta subir un arte
 - No instala ni ejecuta la app en un iPhone.
 - No mide precisión ni latencia de acelerómetro/giroscopio, enfoque, captura fotográfica o temperatura.
 - No comprueba permisos en ejecución, cámara tapada o escenas reales.
-- No ejecuta tests `Swift Testing` en dispositivo; éstos requieren infraestructura de ejecución adicional.
+- Incorpora además un **segundo job de tests Swift en simulador iOS 26.5**, sin ejecutar UI Tests ni usar cámara real. La primera ejecución de ese job está pendiente de confirmación. No sustituye las pruebas de sensores sobre iPhone real.
 - No crea IPA ni firma un binario listo para distribución.
 - No reemplaza la compilación firmada y QA manual en un dispositivo físico.
 
@@ -35,7 +36,7 @@ Referencias:
 ## Puerta de calidad para futuros cambios
 
 1. La compilación en Actions debe finalizar correctamente.
-2. Para cambios puramente algorítmicos, ejecutar también los tests automáticos disponibles cuando configuremos un runner que los soporte.
+2. Ejecutar el job de tests Swift en el simulador iOS 26.5. Distinguir entre test **configurado** y test **pasado**; documentar siempre el resultado.
 3. Para cambios de cámara/sensores: exigir adicionalmente ejecución y test en iPhone.
 4. Registrar el SHA exacto del commit que superó la compilación en el diario de desarrollo.
 5. No etiquetar «validado» un build con solo compilación en la nube.
