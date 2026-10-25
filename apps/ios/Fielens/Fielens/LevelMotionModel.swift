@@ -47,7 +47,21 @@ final class LevelMotionModel: ObservableObject {
         manager.deviceMotionUpdateInterval = 1.0 / 20.0
 
         manager.startDeviceMotionUpdates(to: motionQueue) { [weak self] motion, error in
-            guard error == nil, let motion else { return }
+            if error != nil {
+                Task { @MainActor [weak self] in
+                    guard let self, self.isActive, self.generation == currentGeneration else {
+                        return
+                    }
+                    self.manager.stopDeviceMotionUpdates()
+                    self.isActive = false
+                    self.generation += 1
+                    self.filteredGravity = nil
+                    self.reading = nil
+                    self.status = .unavailable
+                }
+                return
+            }
+            guard let motion else { return }
             let x = motion.gravity.x
             let y = motion.gravity.y
             let z = motion.gravity.z
