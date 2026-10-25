@@ -154,6 +154,7 @@ struct ContentView: View {
 private struct PhotoReviewView: View {
     let photo: CapturedPhoto
     let onRetake: () -> Void
+    @State private var showingShareSheet = false
 
     var body: some View {
         VStack(spacing: 18) {
@@ -209,7 +210,9 @@ private struct PhotoReviewView: View {
                 .buttonStyle(.bordered)
                 .tint(.white)
 
-                ShareLink(item: photo.fileURL) {
+                Button {
+                    showingShareSheet = true
+                } label: {
                     Label("Compartir original", systemImage: "square.and.arrow.up")
                         .frame(maxWidth: .infinity)
                 }
@@ -226,7 +229,22 @@ private struct PhotoReviewView: View {
                 .padding(.horizontal, 20)
                 .padding(.bottom, 8)
         }
+        .sheet(isPresented: $showingShareSheet) {
+            OriginalFileShareSheet(fileURL: photo.fileURL)
+        }
     }
+}
+
+/// Shares a *file* rather than a URL string or a re-encoded SwiftUI image.
+/// Sharing is explicitly initiated by the user.
+private struct OriginalFileShareSheet: UIViewControllerRepresentable {
+    let fileURL: URL
+
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        UIActivityViewController(activityItems: [fileURL], applicationActivities: nil)
+    }
+
+    func updateUIViewController(_ controller: UIActivityViewController, context: Context) { }
 }
 
 #Preview {
