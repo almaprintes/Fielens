@@ -57,3 +57,7 @@ Fielens es una cámara de captura asistida universal (no solo escáner de docume
 El creador compartió dos capturas de nivel funcionando sobre iPhone: X −0,2°/Y −0,2° y X −0,1°/Y −0,4°. Ambos estados verdes. La prueba se hizo al borde de mesa, porque el módulo de cámaras sobresale. Esto prueba la visualización y lectura inicial, **no calibración absoluta**.
 
 Las capturas muestran fondo de cámara negro; aún no sabemos si lente tapada, escena oscura o problema de preview. Próxima prueba: apuntar a hoja iluminada y repetir inclinaciones en ambos ejes usando soporte que deje cámara libre. No cambiar offsets ni tolerancia sin referencia independiente. Pruebas automáticas y regresiones pendientes.
+
+### Aclaración del creador — 2026-10-25 23:45
+
+La pantalla de cámara negra de las dos capturas se debía a que era de noche y no había luz. El creador confirma que no era un fallo. No atribuir una regresión a esas capturas. El nivel digital funciona en la prueba inicial; calibración, pruebas de inclinación y regresiones generales siguen pendientes.
