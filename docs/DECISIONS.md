@@ -37,3 +37,7 @@ La primera captura utiliza `AVCapturePhotoOutput`; se solicita JPEG a máxima re
 ## D-009 — 2026-10-25 — Aceptada — Evidencias e hitos por versión
 
 Mantener `docs/MILESTONES.md` y `docs/DEVELOPMENT_LOG.md`, con estados separados (implementado, compilado, probado, validado), errores reproducibles, dispositivo utilizado y pruebas pendientes. Cada DEV debe tener protocolo verificable. La publicación de código no equivale a validación.
+
+## D-010 — 2026-10-25 — Provisional para experimento — Nivel digital de dos ejes
+
+Se adopta Core Motion (`CMMotionManager`) y `CMDeviceMotion.gravity` en el prototipo iOS; muestreo objetivo 20 Hz, suavizado de gravedad (alfa 0,25), bloqueo de falsas lecturas en pose invertida y tolerancia inicial ±2°. La tolerancia está **sin calibrar** y no certifica precisión. La lectura es relativa al horizonte, jamás prueba perpendicularidad respecto a una hoja o cuadro inclinado. Detener sensores fuera de la vista de cámara. Evaluar el rendimiento, orientación horizontal y errores en hardware real antes de dar la decisión por definitiva.
