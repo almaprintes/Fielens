@@ -17,10 +17,13 @@ final class CameraViewModel: ObservableObject {
 
     private let cameraSession = CameraSession()
     private var isRequestingPermission = false
+    private var shouldRun = false
+    private var runID = 0
 
     var session: AVCaptureSession { cameraSession.session }
 
     func start() {
+        shouldRun = true
         guard !isRequestingPermission else { return }
         guard status != .running && status != .starting else { return }
 
@@ -35,6 +38,7 @@ final class CameraViewModel: ObservableObject {
                 let granted = await AVCaptureDevice.requestAccess(for: .video)
                 guard let self else { return }
                 self.isRequestingPermission = false
+                guard self.shouldRun else { return }
                 if granted {
                     self.beginSession()
                 } else {
@@ -51,6 +55,8 @@ final class CameraViewModel: ObservableObject {
     }
 
     func stop() {
+        shouldRun = false
+        runID += 1
         cameraSession.stop()
         if status == .running || status == .starting {
             status = .idle
@@ -58,9 +64,12 @@ final class CameraViewModel: ObservableObject {
     }
 
     private func beginSession() {
+        guard shouldRun else { return }
+        runID += 1
+        let requestedRun = runID
         status = .starting
         cameraSession.start { [weak self] started, errorMessage in
-            guard let self else { return }
+            guard let self, self.shouldRun, self.runID == requestedRun else { return }
             self.status = started
                 ? .running
                 : .unavailable(errorMessage ?? "La cámara no está disponible.")
