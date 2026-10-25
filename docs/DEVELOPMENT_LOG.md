@@ -85,3 +85,7 @@ Nunca registrar identificadores personales de los teléfonos, fotos de terceros,
 - Descubierta limitación de la prueba: el saliente del módulo de cámaras impide apoyar plana la trasera; se apoyó el iPhone en borde de mesa. Para calibrar debe existir una referencia independiente y un apoyo estable con cámara libre.
 - La vista previa se ve negra en las capturas pese al estado «Cámara activa». Puede ser escena oscura/objetivo obstruido o regresión; verificar con hoja iluminada antes de diagnosticar. NO subir las imágenes del usuario al repositorio público.
 - **Estado H-009:** lectura y presentación funcionales; faltan pruebas de inclinación, pose vertical/invertida, reanudación, lectura sobre referencia nivelada, preview y fotografías, más tests automáticos.
+
+### Aclaración del creador — 2026-10-25 23:45
+
+La pantalla de cámara negra de las dos capturas se debía a que era de noche y no había luz. El creador confirma que no era un fallo. No atribuir una regresión a esas capturas. El nivel digital funciona en la prueba inicial; calibración, pruebas de inclinación y regresiones generales siguen pendientes.
