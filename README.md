@@ -80,3 +80,7 @@ El primer prototipo de AVFoundation con permiso y vista previa está en `apps/io
 El primer nivel digital de dos ejes está implementado en `apps/ios/Fielens` con Core Motion y documentado en [DEV_0.1.3_LEVEL.md](docs/DEV_0.1.3_LEVEL.md). **El código está en main, pero todavía no está compilado ni probado en el iPhone.** El horizonte de gravedad NO es la perpendicular al soporte.
 
 La DEV 0.1.2 ya tiene confirmadas por el creador captura, botón Repetir y exportación a Archivos. La identidad binaria del JPEG exportado, las pruebas automatizadas y las pruebas prolongadas siguen pendientes.
+
+## Calidad y compilación cloud
+
+[Fielens iOS Build](.github/workflows/ios-build.yml) permite compilar en GitHub Actions con Xcode 26.6 sin el Mac local. [Primer build verde](https://github.com/almaprintes/Fielens/actions/runs/40246527085). Se añadió un job de tests Swift en simulador iOS 26.5, sujeto a validación del primer resultado. Ver [manual CI](docs/IOS_CI.md).
