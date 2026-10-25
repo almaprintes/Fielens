@@ -42,7 +42,7 @@ struct LevelOverlay: View {
                             .monospacedDigit()
                         Text(aligned ? "Alineado con el horizonte" : "Ajusta la inclinación")
                             .font(.caption.weight(.semibold))
-                            .foregroundStyle(aligned ? .green : .orange)
+                            .foregroundStyle(aligned ? Color.green : Color.orange)
                     } else {
                         Text(statusDescription)
                             .font(.subheadline)
