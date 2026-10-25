@@ -75,3 +75,13 @@ Nunca registrar identificadores personales de los teléfonos, fotos de terceros,
 - El nivel se detiene en segundo plano, al pasar a revisión fotográfica y al desaparecer la pantalla. Se pretende mantener intacta la captura JPEG de la 0.1.2.
 - **Estado real:** código subido y revisado documentalmente; no disponemos de compilación ni prueba del nivel en un iPhone. No marcarlo como hito validado todavía.
 - Referencia del plan de pruebas: [DEV_0.1.3_LEVEL.md](DEV_0.1.3_LEVEL.md). Próximo paso `git pull --ff-only`, `⌘B`, `⌘R`; registrar precisión observada, fallos y estabilidad en el dispositivo.
+
+
+## 2026-10-25 23:41–23:43 — Primera prueba física del nivel DEV 0.1.3
+
+- El creador reporta «funciona casi perfecto» y facilita dos capturas reales de DEV 0.1.3. Queda confirmada su ejecución en iPhone y lectura de Core Motion.
+- Captura A: **X = −0,2°, Y = −0,2°**. Captura B: **X = −0,1°, Y = −0,4°**. Indicador verde («Alineado con el horizonte») en ambos casos, coherente con tolerancia experimental ±2°.
+- Máximo valor absoluto visto: **0,4°**; esto NO mide el error absoluto ni la precisión del instrumento, pues no hay nivel físico de referencia ni condiciones controladas. La diferencia entre capturas de 0,1°/0,2° tampoco representa repetibilidad cuantificada.
+- Descubierta limitación de la prueba: el saliente del módulo de cámaras impide apoyar plana la trasera; se apoyó el iPhone en borde de mesa. Para calibrar debe existir una referencia independiente y un apoyo estable con cámara libre.
+- La vista previa se ve negra en las capturas pese al estado «Cámara activa». Puede ser escena oscura/objetivo obstruido o regresión; verificar con hoja iluminada antes de diagnosticar. NO subir las imágenes del usuario al repositorio público.
+- **Estado H-009:** lectura y presentación funcionales; faltan pruebas de inclinación, pose vertical/invertida, reanudación, lectura sobre referencia nivelada, preview y fotografías, más tests automáticos.
