@@ -51,3 +51,11 @@
 Fecha/hora · versión · commit · entorno/dispositivo · objetivo · cambios · pruebas ejecutadas · evidencias · fallos abiertos · conclusión · siguiente iteración.
 
 Nunca registrar identificadores personales de los teléfonos, fotos de terceros, claves, documentos sensibles ni datos privados en este repositorio público.
+
+### 23:22 — Fotografía de prueba compartida en conversación
+
+- El creador compartió una imagen de ensayo con un ratón sobre soporte y teclado en escena de luz desigual. Observación visual: sombras intensas en la parte superior izquierda, luz lateral fuerte, algunas teclas menos nítidas.
+- **Metadatos comprobados de la copia recibida en el chat:** JPEG de **1536 × 2048 píxeles**, **503.960 bytes** (aprox. 0,50 MB), sin etiquetas EXIF expuestas. **No coincide** con los 8064 × 6048 píxeles y 11,5 MB reportados por Fielens en la captura anterior.
+- No hay evidencia suficiente para atribuir el cambio de dimensiones al código de Fielens; los sistemas de envío y mensajería pueden crear copias redimensionadas. Para validar integridad, guardar el fichero desde la hoja de compartir de Fielens en Archivos y comparar con el tamaño/dimensiones registrados antes de exportar.
+- La recepción en el chat tampoco prueba por sí sola que el botón **Repetir** ni la exportación de archivo sin cambios estén validados. **Ambas pruebas siguen pendientes de confirmación**.
+- Imagen de ensayo **no incorporada al repositorio público**.
