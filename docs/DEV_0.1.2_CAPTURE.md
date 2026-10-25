@@ -21,7 +21,7 @@
 - [x] `⌘R` — ejecución de la versión con cámara y disparo inferida de la foto reportada; queda pendiente prueba específica de permiso.
 - [ ] Capturar un patrón A4 con cuadrícula y letras, sin datos privados.
 - [x] Capturar y registrar las dimensiones reportadas en la pantalla de revisión: **8064 × 6048 px, 48,77 MP, 11,5 MB**. Falta revisar encuadre y orientación.
-- [ ] Compartir vía Archivos/Guardar imagen u otra opción del sistema; comprobar que el archivo resultante es JPEG y tiene los mismos píxeles y bytes. Los servicios de terceros pueden alterar los ficheros; usar `Guardar en Archivos` para comparación fiable.
+- [x] Compartir → Guardar en Archivos **funciona según usuario**; archivo en Archivos indicado como **11,7 MB**. **Pendiente** confirmar dimensiones/formato e identidad de bytes (la app mostró ~11,5 MB). Los servicios de terceros pueden alterar los ficheros; comparar el original en Archivos, no la copia subida al chat.
 - [ ] Pulsar Repetir; comprobar regreso a cámara, nuevo disparo y desaparición de archivo temporal anterior.
 - [ ] Hacer varios ciclos foto→repetir→foto para localizar bloqueos o consumo excesivo de memoria.
 - [ ] Bloquear/desbloquear y salir/volver antes y después de foto; registrar cualquier cámara congelada o error.
@@ -56,3 +56,7 @@ La función se da por validada solo si iPhone completa un ciclo `abrir cámara �
 Se recibió una imagen de ratón/teclado, apta para observación visual cualitativa: contraste de iluminación, sombras e irregularidad aparente de nitidez. La copia recibida fue inspeccionada como **JPEG 1536 × 2048, 503.960 bytes, sin EXIF**. No se puede tratar como el original de **8064 × 6048, ~11,5 MB** reportado anteriormente.
 
 **Consecuencia de QA:** mantener pendientes la integridad de exportación y los ciclos repetir→repetir. No subir imagen de prueba al repositorio. Solicitar confirmación del usuario de las operaciones e inspección de un archivo guardado directamente desde Fielens en Archivos sin intermediación de servicios que puedan recomprimir.
+
+## Confirmación del creador — 2026-10-25, 23:25
+
+El fichero se guardó desde Fielens mediante «Compartir original → Guardar en Archivos» y ocupa **11,7 MB** según Archivos. El chat recibió una copia más pequeña; atribuirlo a ChatGPT es una hipótesis plausible, no prueba. En concreto, **guardar y encontrar el archivo original está verificado funcionalmente**, mientras que la preservación bit a bit y dimensiones de ese archivo guardado **aún no se han medido**. Falta asimismo la prueba de Repetir.
