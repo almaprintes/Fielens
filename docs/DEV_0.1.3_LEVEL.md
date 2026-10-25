@@ -1,6 +1,6 @@
 # DEV 0.1.3 — Nivel digital de dos ejes (Core Motion)
 
-**Fecha:** 2026-10-25 · **Estado: IMPLEMENTADO EN MAIN, SIN COMPILACIÓN NI PRUEBA FÍSICA CONFIRMADA**.
+**Fecha:** 2026-10-25 · **Estado: lectura de nivel confirmada por capturas del usuario a las 23:43; calibración, regresiones y tests pendientes**.
 **Alcance:** asistencia visual experimental al fotografiar soportes **horizontales**. No se ha implementado aún análisis de la perspectiva de un soporte inclinado ni nivelado respecto al papel.
 
 ## Implementación técnica
@@ -47,3 +47,23 @@ No marcar H-009 como «funciona» ni desarrollar auto-disparo ligado al nivel ha
 - Apple Core Motion CMMotionManager: https://developer.apple.com/documentation/coremotion/cmmotionmanager
 - Apple CMDeviceMotion gravedad: https://developer.apple.com/documentation/coremotion/cmdevicemotion/gravity
 - Apple uso de movimiento NSMotionUsageDescription: https://developer.apple.com/documentation/bundleresources/information-property-list/nsmotionusagedescription
+
+
+## Primer ensayo real — 2026-10-25 23:41
+
+| Muestra | X | Y | Interfaz |
+| --- | ---: | ---: | --- |
+| A | −0,2° | −0,2° | Verde |
+| B | −0,1° | −0,4° | Verde |
+
+Las muestras son coherentes con una pose cercana a horizontal, **pero el máximo observado de 0,4° no es error de precisión verificado**. El módulo de cámara sobresale de la trasera; el usuario apoyó el móvil al borde de la mesa. Se debe mejorar la referencia antes de calibrar o tocar umbrales.
+
+**Banco de pruebas recomendado:** soporte rígido con hueco bajo cámaras (o apoyos paralelos idénticos bajo ambos lados que dejen las lentes libres), superficie verificada con un nivel externo, prueba de quietud durante 10 s y luego inclinaciones controladas en ambos ejes. No tomar el propio Fielens como patrón de referencia.
+
+**Preview por comprobar:** ambas capturas muestran fondo de cámara negro pese a «Cámara activa». Puede ser la escena oscura o una obstrucción durante la prueba; antes de afirmar regresión, apuntar a una hoja muy iluminada y comprobar imagen en directo.
+
+- [x] DEV 0.1.3 instalada/ejecutada en iPhone, nivel visible y muestras X/Y reportadas.
+- [x] Estado verde coherente con lecturas dentro de ±2°.
+- [ ] Muestreo estable sobre referencia conocida, prueba de signos y poses inválidas.
+- [ ] Vista previa sobre hoja iluminada, disparo/repetición/compartir.
+- [ ] Salida/retorno, giro de pantalla y tests automáticos.
