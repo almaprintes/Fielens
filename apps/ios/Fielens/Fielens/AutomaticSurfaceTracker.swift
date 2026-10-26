@@ -22,10 +22,10 @@ nonisolated enum AutomaticSurfaceTracker {
         var tracked: [DetectedSurface] = []
 
         for candidate in candidates {
-            let center = center(of: candidate)
+            let candidateCenter = center(of: candidate)
             let match = previousAvailable.enumerated().compactMap { index, old
                 -> (index: Int, distance: Double)? in
-                let centerDistance = distance(center, center(of: old))
+                let centerDistance = distance(candidateCenter, center(of: old))
                 let ratio = candidate.areaFraction / max(old.areaFraction, 0.00001)
                 guard centerDistance < matchingCenterDistance,
                       ratio > 0.45, ratio < 2.2 else { return nil }
