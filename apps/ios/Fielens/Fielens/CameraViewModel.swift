@@ -21,6 +21,7 @@ final class CameraViewModel: ObservableObject {
     @Published private(set) var captureErrorMessage: String?
     @Published private(set) var surfaceCandidates: [DetectedSurface] = []
     @Published private(set) var selectedSurfaceID: UUID?
+    @Published private(set) var correctedSurfaceCorners: [UUID: [SurfaceViewPoint]] = [:]
     @Published private(set) var pendingSurfaceTap: SurfacePendingTap?
     @Published private(set) var isScanningSurface = false
     @Published private(set) var surfaceMessage = "Toca el objeto o pulsa Buscar contorno."
@@ -76,6 +77,7 @@ final class CameraViewModel: ObservableObject {
         isScanningSurface = false
         surfaceCandidates = []
         selectedSurfaceID = nil
+        correctedSurfaceCorners = [:]
         pendingSurfaceTap = nil
         shouldRun = false
         runID += 1
@@ -125,6 +127,7 @@ final class CameraViewModel: ObservableObject {
         isScanningSurface = true
         surfaceCandidates = []
         selectedSurfaceID = nil
+        correctedSurfaceCorners = [:]
         pendingSurfaceTap = touchedPoint.map { SurfacePendingTap(id: UUID(), point: $0) }
         surfaceMessage = "Buscando rectángulos…"
         scanID += 1
@@ -181,6 +184,20 @@ final class CameraViewModel: ObservableObject {
         }
         selectedSurfaceID = renderedSurfaceID
         surfaceMessage = "Contorno seleccionado · No mide perpendicularidad. Repite búsqueda si mueves el móvil."
+    }
+
+    func applyManualCornerAdjustment(surfaceID: UUID, corners: [SurfaceViewPoint]) {
+        guard selectedSurfaceID == surfaceID,
+              surfaceCandidates.contains(where: { $0.id == surfaceID }),
+              SurfaceScreenPolygon(id: surfaceID, corners: corners).isConvex else { return }
+        correctedSurfaceCorners[surfaceID] = corners
+        surfaceMessage = "Contorno ajustado manualmente. No mide perpendicularidad."
+    }
+
+    func resetManualCornerAdjustment() {
+        guard let selectedSurfaceID else { return }
+        correctedSurfaceCorners.removeValue(forKey: selectedSurfaceID)
+        surfaceMessage = "Ajuste restablecido. Arrastra las esquinas para corregirlas."
     }
 
     func selectAnotherSurface() {
