@@ -161,8 +161,11 @@ final class PreviewView: UIView {
         let suggestions = UIBezierPath()
         let selected = UIBezierPath()
 
+        // Normal camera mode shows only the automatic primary target.
+        // Other polygons stay available for hit testing and the correction menu.
         for surface in surfaces where surface.isValid {
-            let path = selectedSurfaceID == surface.id ? selected : suggestions
+            guard surface.id == selectedSurfaceID else { continue }
+            let path = selected
             let points = projectedCorners(of: surface)
             guard let first = points.first else { continue }
             path.move(to: first)
