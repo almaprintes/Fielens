@@ -88,3 +88,7 @@ La DEV 0.1.2 ya tiene confirmadas por el creador captura, botón Repetir y expor
 ## EXP-002 — Selección por toque y guía relativa al soporte
 
 [Diseño de detección de superficies y perpendicularidad](docs/SURFACE_TARGETING_DESIGN.md). La DEV 0.1.4a aporta un primer módulo de detección de cuadriláteros con Vision y selección por toque, actualmente **sin UI conectada ni orientación relativa al objeto**. La detección es un candidato para soportes planos rectangulares, no un detector universal de plano/normal.
+
+## DEV 0.1.4 — Resolución al compartir
+
+Se puede elegir **Ligera (1600 px), Compartir (2400 px, predeterminada), Detalle (4000 px) u Original**. Fielens aún fotografía a resolución completa, pero crea solo al compartir una copia más ligera que no copia EXIF original; el JPEG original se mantiene intacto temporalmente. **Pendiente prueba real y regresiones en iPhone.** [Plan de validación](docs/DEV_0.1.4_EXPORT.md).
