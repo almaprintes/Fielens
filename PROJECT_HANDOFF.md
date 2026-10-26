@@ -161,3 +161,12 @@ Captura del usuario: Git fast-forward `a96bc9d..6ada2ba` y Xcode con errores de 
 ### Verificación CI — 2026-10-26
 
 [GitHub Actions run 40313464522](https://github.com/almaprintes/Fielens/actions/runs/40313464522) para commit `1d716519ddfca19f5d22b47287666ef7ddeda002`: **compilación iOS y todos los tests Swift del job superados** (Xcode 26.6 / simulador iOS). Los cambios posteriores a ese commit son únicamente documentales. **NO existe aún prueba del seguimiento automático en el iPhone físico** ni medición de FPS/temperatura; ese es el próximo paso antes de aceptar H-016.
+
+## DEV 0.1.12 — El objeto debe llenar la foto (26/10/2026 11:50)
+
+- Usuario: «relativamente fácil, mejor detección, pero la foto el encuadre no ocupa solo el objeto, ocupa mucho más». No se ha solicitado más interacción manual; necesita resultado automático final.
+- Causa detectada: Vision antes solo dibujaba un overlay; `AVCapturePhotoOutput` guardaba foto completa. DEV 0.1.12 cambia la **revisión y exportación** de Ligera/Compartir/Detalle: detector Vision analiza el still y Core Image `CIFilter.perspectiveCorrection` recorta/endereza el cuadrilátero fiable. Si no existe se conserva imagen entera y se avisa. Toggle para desactivar en revisión. `Original` nunca altera bytes ni recorta.
+- Archivos nuevos `SurfacePhotoProcessor.swift`, `SurfacePhotoProcessorTests.swift`; modificados `PhotoExportService.swift`, `ContentView.swift`, project.pbxproj versión 0.1.12 build 13; protocolo `docs/DEV_0.1.12_OBJECT_FRAMING.md`.
+- Compilación Xcode 26.6 superada en [run 40318890182](https://github.com/almaprintes/Fielens/actions/runs/40318890182), commit `a71f9003`. Tests del simulador pendientes de conclusión al documentar. No afirmar fotografía física validada.
+- **Próximo test iPhone:** apuntar hoja A4 rodeada de mesa, disparar Compartir, revisar que solo aparezca papel; apagar toggle debe mostrar escena completa; Original intacto. Comparar textos/dimensiones/posibles esquinas cortadas, consumo y errores. Documento ficticio, nunca DNI real en GitHub.
+- Limitación crítica: el contorno de la foto se redetecta y elige por área/centralidad/confianza; aún no está vinculado al contorno seleccionado en preview; múltiples objetos pueden equivocarse. Segunda fase: asociar objetivo y mejorar precisión/resolución del recorte sin perder píxeles.
