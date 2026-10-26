@@ -62,3 +62,8 @@ El lado mayor real **nunca crece** por encima de la imagen fuente; los valores s
 - Causa plausible según inspección de fixture: `UIGraphicsImageRenderer` sin escala explícita hereda la densidad de pantalla del simulador y genera más píxeles que los puntos solicitados. El test comparaba contra tamaños en puntos.
 - Corregido fixture de tests para fijar `UIGraphicsImageRendererFormat.scale = 1` en ambas imágenes de la batería de exportación. Commit `4eb6809e`.
 - [Nueva ejecución](https://github.com/almaprintes/Fielens/actions/runs/40288358518): resultado todavía pendiente al redactar esta nota. No dar el módulo por testado hasta comprobar verde.
+
+
+## Aclaración y corrección de UX — 2026-10-26 07:56
+
+El creador precisa que el selector **después de tomar la foto funciona correctamente**. La incidencia afecta solo al menú desplegable sobre la vista previa de cámara, antes del disparo. La reparación final **conserva el Picker ya probado de revisión** y cambia exclusivamente el selector previo al disparo por un botón legible que abre una hoja con cuatro filas de tamaño, una selección marcada y cierre inmediato. Ambas pantallas siguen compartiendo la elección de exportación. Commit de ajuste final: `f541d4ae`. Confirmar compilación cloud y probar físicamente el desplegable previo; no cambiar el sistema de captura fotográfica ni afirmar que la elección reduce la resolución del sensor.
