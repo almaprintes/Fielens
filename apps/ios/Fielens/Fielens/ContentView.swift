@@ -5,6 +5,7 @@ struct ContentView: View {
     @StateObject private var camera = CameraViewModel()
     @StateObject private var level = LevelMotionModel()
     @State private var exportResolution: ExportResolution = .share
+    @State private var showingResolutionSheet = false
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
@@ -12,10 +13,18 @@ struct ContentView: View {
             Color.black.ignoresSafeArea()
 
             if let photo = camera.photo {
-                PhotoReviewView(photo: photo, selectedResolution: $exportResolution, onRetake: camera.retake)
+                PhotoReviewView(
+                    photo: photo,
+                    selectedResolution: $exportResolution,
+                    onChooseResolution: { showingResolutionSheet = true },
+                    onRetake: camera.retake
+                )
             } else {
                 liveCamera
             }
+        }
+        .sheet(isPresented: $showingResolutionSheet) {
+            ResolutionSelectionSheet(selectedResolution: $exportResolution)
         }
         .onAppear {
             if scenePhase == .active {
@@ -79,18 +88,35 @@ struct ContentView: View {
 
                 statusPanel
 
-                Menu {
-                    Picker("Resolución para compartir", selection: $exportResolution) {
-                        ForEach(ExportResolution.allCases) { choice in
-                            Text(choice.title).tag(choice)
-                        }
-                    }
+                Button {
+                    showingResolutionSheet = true
                 } label: {
-                    Label("Envío: \(exportResolution.title)", systemImage: "slider.horizontal.3")
-                        .font(.footnote.weight(.medium))
-                        .foregroundStyle(.white)
+                    HStack(spacing: 10) {
+                        Image(systemName: "slider.horizontal.3")
+                            .foregroundStyle(.mint)
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text("TAMAÑO AL COMPARTIR")
+                                .font(.caption2.weight(.medium))
+                                .foregroundStyle(.white.opacity(0.7))
+                            Text(exportResolution.title)
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(.white)
+                        }
+                        Spacer(minLength: 8)
+                        Image(systemName: "chevron.up.chevron.down")
+                            .foregroundStyle(.white.opacity(0.8))
+                    }
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 12)
+                    .background(.black.opacity(0.72), in: RoundedRectangle(cornerRadius: 14))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 14)
+                            .strokeBorder(.white.opacity(0.4), lineWidth: 1)
+                    }
                 }
-                .accessibilityHint("El original se captura a máxima resolución; eliges el tamaño de la copia para enviar")
+                .buttonStyle(.plain)
+                .accessibilityLabel("Elegir resolución: \(exportResolution.title)")
+                .accessibilityHint("Abre cuatro tamaños de archivo para compartir")
 
                 if camera.status == .running {
                     Button(action: camera.capturePhoto) {
@@ -182,6 +208,7 @@ struct ContentView: View {
 private struct PhotoReviewView: View {
     let photo: CapturedPhoto
     @Binding var selectedResolution: ExportResolution
+    let onChooseResolution: () -> Void
     let onRetake: () -> Void
     @State private var showingShareSheet = false
     @State private var isPreparing = false
@@ -234,21 +261,33 @@ private struct PhotoReviewView: View {
                     .foregroundStyle(.white.opacity(0.8))
             }
 
-            VStack(alignment: .leading, spacing: 6) {
-                Picker("Resolución de envío", selection: $selectedResolution) {
-                    ForEach(ExportResolution.allCases) { choice in
-                        Text(choice.title).tag(choice)
+            Button(action: onChooseResolution) {
+                HStack(spacing: 12) {
+                    Image(systemName: "slider.horizontal.3")
+                        .foregroundStyle(.mint)
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Tamaño para compartir")
+                            .font(.caption)
+                            .foregroundStyle(.white.opacity(0.8))
+                        Text(selectedResolution.title)
+                            .font(.headline)
+                            .foregroundStyle(.white)
+                        Text(selectedResolution.recommendation)
+                            .font(.caption)
+                            .foregroundStyle(.white.opacity(0.8))
+                            .fixedSize(horizontal: false, vertical: true)
                     }
+                    Spacer(minLength: 4)
+                    Image(systemName: "chevron.up.chevron.down")
+                        .foregroundStyle(.white)
                 }
-                .pickerStyle(.menu)
-                .tint(.mint)
-                .disabled(isPreparing)
-                Text(selectedResolution.recommendation)
-                    .font(.footnote)
-                    .foregroundStyle(.white.opacity(0.83))
+                .padding(14)
+                .background(.white.opacity(0.11), in: RoundedRectangle(cornerRadius: 14))
             }
-            .padding(.horizontal, 20)
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .buttonStyle(.plain)
+            .disabled(isPreparing)
+            .padding(.horizontal, 16)
+            .accessibilityLabel("Cambiar resolución. Actual: \(selectedResolution.title)")
 
             if let shareErrorMessage {
                 Text(shareErrorMessage)
@@ -318,6 +357,75 @@ private struct PhotoReviewView: View {
             PhotoExportService.discardTemporaryCopy(temporaryShareURL, original: photo)
         }
         temporaryShareURL = nil
+    }
+}
+
+/// One explicit, readable choice per row. Both camera and review use
+/// the same selection state; no nested Picker inside Menu.
+private struct ResolutionSelectionSheet: View {
+    @Binding var selectedResolution: ExportResolution
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("La fotografía se captura a máxima resolución. Aquí eliges el tamaño de la copia que vas a enviar.")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .padding(.bottom, 4)
+
+                    ForEach(ExportResolution.allCases) { choice in
+                        Button {
+                            selectedResolution = choice
+                            dismiss()
+                        } label: {
+                            HStack(alignment: .center, spacing: 12) {
+                                Image(systemName: choice == selectedResolution
+                                      ? "checkmark.circle.fill"
+                                      : "circle")
+                                    .font(.title2)
+                                    .foregroundStyle(choice == selectedResolution ? Color.mint : Color.secondary)
+                                    .accessibilityHidden(true)
+
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(choice.title)
+                                        .font(.headline)
+                                        .foregroundStyle(.primary)
+                                    Text(choice.recommendation)
+                                        .font(.footnote)
+                                        .foregroundStyle(.secondary)
+                                        .fixedSize(horizontal: false, vertical: true)
+                                }
+                                Spacer(minLength: 0)
+                            }
+                            .frame(maxWidth: .infinity, minHeight: 60, alignment: .leading)
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 8)
+                            .background(
+                                choice == selectedResolution
+                                    ? Color.mint.opacity(0.14)
+                                    : Color.secondary.opacity(0.10),
+                                in: RoundedRectangle(cornerRadius: 14)
+                            )
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("\(choice.title). \(choice.recommendation)")
+                        .accessibilityAddTraits(choice == selectedResolution ? .isSelected : [])
+                    }
+                }
+                .padding(18)
+            }
+            .navigationTitle("Resolución de envío")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Cerrar") { dismiss() }
+                }
+            }
+        }
+        .presentationDetents([.medium, .large])
+        .presentationDragIndicator(.visible)
     }
 }
 
