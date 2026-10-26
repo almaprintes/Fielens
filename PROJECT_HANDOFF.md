@@ -139,3 +139,12 @@ Captura del usuario: Git fast-forward `a96bc9d..6ada2ba` y Xcode con errores de 
 - `CameraSession` intenta videoRotationAngle=0 en videoDataOutput (sin forzar preview/photo output), `SurfaceFrameSampler` rechaza frames no apaisados para no mostrar geometría falsa. Tests de conversión incluyen esquinas que habrían fallado con el mapeo anterior.
 - DEV 0.1.9 build 10. [Protocolo](docs/DEV_0.1.9_ORIENTATION_MAPPING.md), *pendiente CI y prueba física*, no anunciar como éxito en el iPhone hasta comparar 4 esquinas.
 - Foto sin recorte automático del papel sigue siendo comportamiento actual. Recorte opcional con conservación del original es siguiente proyecto, no parte de 0.1.9.
+
+## DEV 0.1.10 — Edición de vértices tras prueba 10:40
+
+- El creador envió dos capturas de DEV 0.1.9: hoja delimitada por tres esquinas aproximadamente correctas pero vértice superior derecho muy bajo (diagonal verde). Pantalla de revisión demuestra Compartir **1800 × 2400, 4,32 MP, 1,4 MB**. Fotos siguen SIN recortar, deliberadamente.
+- En `main` está DEV 0.1.10 build 11: `SurfaceScreenPolygon.isConvex`, gestos de arrastre de las 4 esquinas y handles menta sobre PreviewView, correcciones temporales en `CameraViewModel`, estado UI `isAdjustingSurface`, pantalla de ajuste despejada Restaurar/Listo.
+- `RectangularSurfaceDetector` aplica primer intento estricto 22°/0,45/0,12 y fallback anterior 35°/0,35/0,08 si no hay rectángulo grande; NO suponer que mejora sin medir.
+- [CI](https://github.com/almaprintes/Fielens/actions/runs/40310449733) compilación iOS del commit `eb7628c5` correcta; comprobar tests en simulador para ese mismo SHA. QA física con iPhone PENDIENTE. [Protocolo](docs/DEV_0.1.10_MANUAL_CORNERS.md).
+- En el Mac: `git status --short`, si limpio `git pull --ff-only`, `⌘B`, `⌘R`. Elegir hoja → Ajustar esquinas → arrastrar esquina superior derecha a vértice de papel → Listo. Comprobar persiste, Restablecer restaura, Buscar de nuevo reinicia, capturas Ligera/Compartir no regresan.
+- No publicar fotos del usuario en GitHub público. Aún no hay rectificación/crop 3D ni modo de congelación de imagen para ajustar.
