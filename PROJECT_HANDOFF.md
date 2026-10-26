@@ -101,3 +101,8 @@ La pantalla de cámara negra de las dos capturas se debía a que era de noche y 
 ## Aclaración y corrección de UX — 2026-10-26 07:56
 
 El creador precisa que el selector **después de tomar la foto funciona correctamente**. La incidencia afecta solo al menú desplegable sobre la vista previa de cámara, antes del disparo. La reparación final **conserva el Picker ya probado de revisión** y cambia exclusivamente el selector previo al disparo por un botón legible que abre una hoja con cuatro filas de tamaño, una selección marcada y cierre inmediato. Ambas pantallas siguen compartiendo la elección de exportación. Commit de ajuste final: `f541d4ae`. Confirmar compilación cloud y probar físicamente el desplegable previo; no cambiar el sistema de captura fotográfica ni afirmar que la elección reduce la resolución del sensor.
+
+
+## Xcode tras pull — 2026-10-26 08:00
+
+Captura del usuario: Git fast-forward `a96bc9d..6ada2ba` y Xcode con errores de `ExportResolution`/`PhotoExportService`, pero Build Succeeded a las 07:59 (anterior al pull de 08:00). CI compila el commit `6ada2ba` correctamente: [build](https://github.com/almaprintes/Fielens/actions/runs/40289092036). Antes de editar código: Clean Build Folder ⇧⌘K → ⌘B → ⌘R. Solo investigar logs si fallan de nuevo. No asumir error de target ni añadir import sin prueba.
