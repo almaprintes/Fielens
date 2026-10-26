@@ -208,3 +208,14 @@ El creador precisa que el selector **después de tomar la foto funciona correcta
 ### Verificación CI — 2026-10-26
 
 [GitHub Actions run 40313464522](https://github.com/almaprintes/Fielens/actions/runs/40313464522) para commit `1d716519ddfca19f5d22b47287666ef7ddeda002`: **compilación iOS y todos los tests Swift del job superados** (Xcode 26.6 / simulador iOS). Los cambios posteriores a ese commit son únicamente documentales. **NO existe aún prueba del seguimiento automático en el iPhone físico** ni medición de FPS/temperatura; ese es el próximo paso antes de aceptar H-016.
+
+## 2026-10-26 11:50 — DEV 0.1.12: objeto detectado, pero foto con demasiada escena
+
+- El creador confirma mejora de detección y de facilidad de manejo en 0.1.11, pero señala que **la foto resultante incluye mucho más que el objeto detectado**.
+- Identificada causa: el rectángulo de la vista previa era únicamente overlay; `AVCapturePhotoOutput` capturaba campo completo y `PhotoExportService` reducía resolución sin recortar geometría.
+- Añadido `SurfacePhotoProcessor.swift` con detección Vision **sobre el JPEG recién capturado** (no asumir preview idéntica a still); sobre derivado ImageIO a escala del perfil, aplicar perspectiva `CIFilter.perspectiveCorrection` si contorno rectangular tiene confianza/área suficiente.
+- `PhotoExportService` devuelve `PreparedPhoto.didFrameObject`, preserva original byte a byte y limita tamaño largo después del enderezado. `ContentView` habilita ajuste automático por defecto en derivados y ofrece toggle para comparar resultado con imagen completa; Original queda sin tocar.
+- Si falla detección: la app **no mutila ni sustituye en silencio la foto**, presenta imagen completa y mensaje de falta de contorno fiable.
+- `SurfacePhotoProcessorTests.swift` prueba geometría, límite de longitud, rechazo de degenerados y archivo original intacto.
+- Versionado 0.1.12 build 13. El primer build detectó un error de sintaxis con optional chaining en detector; corregido commit `9c3687aa`. Compilación del commit `a71f9003` [en verde en GitHub Actions](https://github.com/almaprintes/Fielens/actions/runs/40318890182); tests en simulador en curso al registrar.
+- Limitaciones: heurística de selección puede elegir otro rectángulo si hay varios; corrección digital no reemplaza perpendicularidad real, imagen final reducida puede tener menor detalle óptico. [QA](DEV_0.1.12_OBJECT_FRAMING.md).
