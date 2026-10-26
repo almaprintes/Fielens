@@ -8,6 +8,9 @@ nonisolated final class CameraSession: @unchecked Sendable {
 
     private let queue = DispatchQueue(label: "com.almaprintes.fielens.camera.session")
     private let photoOutput = AVCapturePhotoOutput()
+    private let videoOutput = AVCaptureVideoDataOutput()
+    private let surfaceSampler = SurfaceFrameSampler()
+    private var hasFrameOutput = false
     private var isConfigured = false
     private var captureDelegate: PhotoCaptureDelegate?
     private var maximumDimensions: CMVideoDimensions?
@@ -34,10 +37,23 @@ nonisolated final class CameraSession: @unchecked Sendable {
     }
 
     func stop() {
+        surfaceSampler.cancel()
         queue.async { [self] in
             if session.isRunning {
                 session.stopRunning()
             }
+        }
+    }
+
+    func scanSurfaces(
+        completion: @escaping @MainActor @Sendable (Result<[DetectedSurface], SurfaceScanError>) -> Void
+    ) {
+        queue.async { [self] in
+            guard hasFrameOutput, session.isRunning else {
+                Task { @MainActor in completion(.failure(.unavailable)) }
+                return
+            }
+            surfaceSampler.requestScan(completion: completion)
         }
     }
 
@@ -111,6 +127,18 @@ nonisolated final class CameraSession: @unchecked Sendable {
             }
             session.addOutput(photoOutput)
             photoOutput.maxPhotoQualityPrioritization = .quality
+
+            // Optional video tap for EXPLICITLY requested Vision scans.
+            // Failure to attach it must not break the working photo camera.
+            videoOutput.alwaysDiscardsLateVideoFrames = true
+            videoOutput.setSampleBufferDelegate(
+                surfaceSampler,
+                queue: surfaceSampler.sampleQueue
+            )
+            if session.canAddOutput(videoOutput) {
+                session.addOutput(videoOutput)
+                hasFrameOutput = true
+            }
 
             session.commitConfiguration()
 
