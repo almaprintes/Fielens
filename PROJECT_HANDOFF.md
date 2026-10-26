@@ -178,3 +178,8 @@ Captura del usuario: Git fast-forward `a96bc9d..6ada2ba` y Xcode con errores de 
 - Servicio nuevo `PhotoLibrarySaver.swift`: permisos Photos `.addOnly`, guarda el archivo JPEG exacto de `PreparedPhoto` con `PHAssetCreationRequest` y `addResource`; no requiere acceso a lectura de carrete. UI Guardar en Fotos con progreso/resultado y bloqueos de navegación/cambio de archivo hasta terminar.
 - Xcode proyecto: versión 0.1.13, build 14 y `NSPhotoLibraryAddUsageDescription` en Debug/Release.
 - **Pendiente** CI SHA `d024229a` y QA físico: la app comienza en bienvenida sin cámara; desde captura se guarda la versión seleccionada/corregida y se ve en Fotos tras autorización add-only; volver de revisión/cámara a inicio no reactiva cámara. [Plan](docs/DEV_0.1.13_HOME_AND_PHOTOS.md).
+
+
+### Primera verificación CI — 2026-10-26
+
+[GitHub Actions run 40321151785](https://github.com/almaprintes/Fielens/actions/runs/40321151785), commit `d024229a994b965834415401135ce4fae987337a`: **compilación iOS exitosa con Xcode 26.6**. Los cambios posteriores a este SHA fueron únicamente documentales. El job «Swift unit tests on iOS simulator» seguía ejecutándose en la última comprobación, por lo que no se puede afirmar aún que las pruebas terminaran en verde. La autorización add-only y la aparición real en el carrete **no se pueden verificar en CI** y exigen ensayo físico.
