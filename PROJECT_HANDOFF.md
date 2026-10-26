@@ -122,3 +122,12 @@ Captura del usuario: Git fast-forward `a96bc9d..6ada2ba` y Xcode con errores de 
 - `RectangularSurfaceDetector.swift` acepta `CVPixelBuffer`; `CameraPreview.swift` dibuja trazos seleccionables sobre preview mediante `AVCaptureVideoPreviewLayer`; `ContentView.swift` añade botón e informa limitaciones.
 - Pruebas nuevas de geometría, protocolo `docs/DEV_0.1.6_SURFACE_PREVIEW.md`, Xcode versión 0.1.6 build 7.
 - CRÍTICO: comprobar primero CI y luego iPhone. Asegurarse de que el nivel y la calidad del JPEG nativo (antes 48,77 MP) no sufren regresión al añadir videoOutput. Calibrar dibujo de esquinas/orientación en retrato con A4. No afirmar nivel de perpendicularidad.
+
+## DEV 0.1.6→0.1.8 — Resultados de prueba y corrección táctil (2026-10-26 09:55)
+
+- El creador probó DEV 0.1.6 sobre hoja: contorno menta y selección visibles, pero denuncia «La detección al toque no es nada precisa». Nivel X +0,9°, Y −5,1°; revisión con Ligera **1200 × 1600, 1,92 MP, 345 KB** (foto reducida mostrada correctamente). No guardar screenshots con texto del papel en el repo público.
+- DEV 0.1.7 (build 8) compacta nivel gravitatorio (no mide perpendicularidad), lo mueve hacia arriba y permite desplegarlo.
+- DEV 0.1.8 (build 9) corrige selección táctil: `SurfaceViewPoint`, `SurfaceScreenPolygon`, `SurfaceScreenSelector`, `SurfacePendingTap` en `SurfaceGeometry.swift`; `CameraPreview.swift` dibuja y selecciona con los mismos puntos proyectados a pantalla. `CameraViewModel` sincroniza toque inicial con análisis asíncrono; `ContentView` ofrece botón «Otro» para varios candidatos; nuevas pruebas de geometría.
+- Build CI **success** en [run 40304171632](https://github.com/almaprintes/Fielens/actions/runs/40304171632) para commit `13240f46`. Tests Swift siguen pendientes de confirmación, junto a primera prueba física de 0.1.8.
+- Procedimiento Mac: comprobar `git status --short` por cambios locales, luego `git pull --ff-only`, Xcode `⌘B`/`⌘R`. Probar centro/cuadrantes de hoja, cuadros interiores, toque directo sin Buscar, botón Otro, salida al fondo, y regresión Ligera 1,92 MP. Ver `docs/DEV_0.1.8_TOUCH_PRECISION.md`.
+- Sigue sin haber normal 3D ni perpendicularidad al objeto; el contorno no se recorta automáticamente y podría quedar atrasado al mover el iPhone. No crear nuevos grandes cambios hasta ver precisión real de la selección.
