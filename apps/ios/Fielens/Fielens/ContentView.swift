@@ -51,7 +51,14 @@ struct ContentView: View {
 
     private var liveCamera: some View {
         ZStack {
-            CameraPreview(session: camera.session)
+            CameraPreview(
+                session: camera.session,
+                surfaces: camera.surfaceCandidates,
+                selectedSurfaceID: camera.selectedSurfaceID,
+                onSurfaceTap: { point in
+                    camera.selectSurface(at: point)
+                }
+            )
                 .ignoresSafeArea()
                 .accessibilityHidden(true)
 
@@ -71,7 +78,7 @@ struct ContentView: View {
                         .font(.headline)
                         .tracking(2)
                     Spacer()
-                    Text("DEV 0.1.5")
+                    Text("DEV 0.1.6")
                         .font(.caption.monospaced())
                         .foregroundStyle(.white.opacity(0.8))
                 }
@@ -80,6 +87,32 @@ struct ContentView: View {
                 Spacer()
 
                 LevelOverlay(status: level.status, reading: level.reading)
+
+                VStack(spacing: 6) {
+                    Button {
+                        camera.scanSurfaces()
+                    } label: {
+                        Label(
+                            camera.isScanningSurface ? "Analizando…" : "Buscar contorno",
+                            systemImage: camera.isScanningSurface
+                                ? "hourglass"
+                                : "viewfinder"
+                        )
+                        .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(.mint)
+                    .disabled(camera.status != .running || camera.isScanningSurface || camera.isCapturing)
+
+                    Text(camera.surfaceMessage)
+                        .font(.caption)
+                        .multilineTextAlignment(.center)
+                        .lineLimit(3)
+                        .foregroundStyle(.white)
+                }
+                .padding(10)
+                .background(.black.opacity(0.58), in: RoundedRectangle(cornerRadius: 14))
+                .accessibilityElement(children: .contain)
 
                 statusPanel
 
@@ -228,7 +261,7 @@ private struct PhotoReviewView: View {
                     .font(.headline)
                     .tracking(2)
                 Spacer()
-                Text("DEV 0.1.5")
+                Text("DEV 0.1.6")
                     .font(.caption.monospaced())
             }
             .foregroundStyle(.white)
