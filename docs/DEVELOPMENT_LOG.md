@@ -171,3 +171,13 @@ El creador precisa que el selector **después de tomar la foto funciona correcta
 - Como mejora UX independiente, **DEV 0.1.7** incorporó nivel gravitatorio compacto, desplegable por toque y ubicado junto al encabezado, despejando el papel.
 - En [CI DEV 0.1.6](https://github.com/almaprintes/Fielens/actions/runs/40297687145) compiló, pero falló `SurfaceGeometryTests.previewCoordinateConversionIsInvertible()`: comparación de Double exacta; corregido test con tolerancia 1e-12 en `8fe94b73`. No atribuir esto a calidad táctil del iPhone.
 - DEV 0.1.8 (build 9) ya **compiló** en [Actions run 40304171632](https://github.com/almaprintes/Fielens/actions/runs/40304171632); tests Swift en simulador y QA físico aún pendientes en la última comprobación. No afirmar que el toque está corregido hasta probar sobre iPhone.
+
+## 2026-10-26 10:15–10:16 — Evidencia y corrección de proyección de contornos
+
+- Capturas DEV 0.1.8 en iPhone: hoja con texto sobre superficie estampada; **cuadrilátero verde claramente desplazado respecto a los bordes físicos**, incluyendo parte del fondo. La selección en coordenadas de pantalla no corrige por sí sola la mala proyección de Vision. No subir esas capturas privadas al repositorio público.
+- Segunda captura: modo «Compartir» **1800 × 2400 píxeles (4,32 MP), ~1,2 MB**; esto valida la salida reducida esperada en pantalla. Falta auditoría integral de compartir y metadatos.
+- Nivel gravitatorio compacto visible y con X −1,1° / Y −3,1°, indicador naranja. No mide perpendicularidad al documento.
+- Apple documenta que `AVCaptureVideoPreviewLayer.layerPointConverted(fromCaptureDevicePoint:)` trabaja con coordenadas de imagen **sin rotar**. Vision usaba `.right`, que rota 90° al interpretar el buffer. La conversión anterior aplicaba solo flip Y.
+- DEV 0.1.9: nueva conversión `(xRaw, yRaw)=(1-yVision,1-xVision)`; se fija explícitamente `AVCaptureVideoDataOutput.connection.videoRotationAngle=0` antes de capturar y se evita mostrar contornos si el pixel buffer no es apaisado, como asume esta transformación. Tests de cuatro esquinas y de punto asimétrico preparados.
+- **Estado:** código subido; **no se ha verificado aún que el contorno coincida con las esquinas reales**. Los cambios se han centrado en orientación y no modifican captura/sistema de resoluciones. [Plan DEV 0.1.9](DEV_0.1.9_ORIENTATION_MAPPING.md).
+- La foto tras seleccionar hoja **sigue incluyendo el fondo**; aún no existe recorte por contorno. Una versión futura podrá proponer recorte opcional preservando el original.
