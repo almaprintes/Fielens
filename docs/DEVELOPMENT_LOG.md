@@ -125,3 +125,13 @@ La pantalla de cámara negra de las dos capturas se debía a que era de noche y 
 ## Aclaración y corrección de UX — 2026-10-26 07:56
 
 El creador precisa que el selector **después de tomar la foto funciona correctamente**. La incidencia afecta solo al menú desplegable sobre la vista previa de cámara, antes del disparo. La reparación final **conserva el Picker ya probado de revisión** y cambia exclusivamente el selector previo al disparo por un botón legible que abre una hoja con cuatro filas de tamaño, una selección marcada y cierre inmediato. Ambas pantallas siguen compartiendo la elección de exportación. Commit de ajuste final: `f541d4ae`. Confirmar compilación cloud y probar físicamente el desplegable previo; no cambiar el sistema de captura fotográfica ni afirmar que la elección reduce la resolución del sensor.
+
+
+## 2026-10-26 08:00 — Xcode muestra errores de índice tras sincronizar
+
+- El usuario comparte captura de Xcode inmediatamente después de `git pull --ff-only` a commit `6ada2ba`. En el terminal se ve Fast-forward 4 archivos; panel Xcode lista errores `Cannot find type 'ExportResolution' in scope`, `Cannot find 'PhotoExportService' in scope`, `Generic parameter V could not be inferred`, warning de variable sin usar.
+- En barra superior aparece **Build Succeeded a las 07:59**, ANTES de actualización del repo a las 08:00; ese build previo no prueba la versión recién descargada.
+- La CI de GitHub sobre **SHA 6ada2ba** verificó **Compile iOS without signing = success** en macOS 26 / Xcode 26.6. Ambos símbolos existen en `PhotoExportService.swift` de main y el directorio sincronizado de proyecto Xcode los incluye en la compilación cloud.
+- Interpretación provisional: diagnósticos obsoletos de indexación de Xcode al actualizar fuentes mientras el proyecto está abierto; NO probar un error confirmado del código local sin `⌘B` reciente.
+- Paso recomendado sin modificaciones al código: `Product → Clean Build Folder` (`⇧⌘K`), compilar (`⌘B`), y lanzar (`⌘R`) si compila. Si falla, solicitar captura/log del build nuevo, no inventar arreglos.
+- Estado tests Swift cloud del mismo commit pendiente al registrar esta incidencia. No publicar diagnóstico como fallo confirmado hasta reproducir.
