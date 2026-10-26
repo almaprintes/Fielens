@@ -69,11 +69,15 @@ struct SurfaceGeometryTests {
         for vision in corners {
             let capture = SurfaceCoordinateMapper.capturePoint(fromVision: vision)
             let roundTrip = SurfaceCoordinateMapper.visionPoint(fromCapture: capture)
-            #expect(roundTrip == vision)
+            // 1 - (1 - 0.1) is not bit-for-bit equal to 0.1 in IEEE 754.
+            #expect(abs(roundTrip.x - vision.x) < 1e-12)
+            #expect(abs(roundTrip.y - vision.y) < 1e-12)
         }
-        #expect(SurfaceCoordinateMapper.capturePoint(
+        let converted = SurfaceCoordinateMapper.capturePoint(
             fromVision: SurfacePoint(x: 0.2, y: 0.9)
-        ) == SurfacePoint(x: 0.2, y: 0.1))
+        )
+        #expect(abs(converted.x - 0.2) < 1e-12)
+        #expect(abs(converted.y - 0.1) < 1e-12)
     }
 
     @Test func tiltedConvexSurfaceCanBeSelected() {
