@@ -111,3 +111,12 @@ La pantalla de cámara negra de las dos capturas se debía a que era de noche y 
 
 - [GitHub Actions run](https://github.com/almaprintes/Fielens/actions/runs/40247295733): job de compilación iOS (Xcode 26.6, sin firma) **success** para el commit `687dc7ffe436543b2d681f76ba61387013ec7591` con el detector y pruebas de geometría ya en el repo.
 - El job de pruebas Swift en simulador aún no había concluido al registrar esta comprobación. No afirmar tests verdes ni uso de cámara en iPhone.
+
+## 2026-10-26 — DEV 0.1.4: resolución adecuada al destino
+
+- El creador pide poder elegir distintas resoluciones: enviar un DNI por WhatsApp no justifica 48,77 MP.
+- Decisión experimental: **captura a máxima resolución + elección de resolución de exportación** para poder compartir la misma fotografía en varios tamaños sin volver a capturar. La opción inicial es «Compartir» 2400 px de lado mayor (≈4,3 MP si 4:3). Además: Ligera 1600 px, Detalle 4000 px, Original sin cambios. Las cifras son cotas máximas, no promesas de tamaño en MB ni nitidez.
+- Implementado con ImageIO en `PhotoExportService.swift`, integración en `ContentView.swift` tanto antes de fotografiar como al revisar, procesamiento fuera del hilo principal, hoja de compartir y borrado de copia temporal al cerrar. El original de la sesión no se modifica.
+- Privacidad: los derivados no copian EXIF original; la elección «Original» conserva todos los metadatos. No hay envío remoto automático ni pruebas con identificaciones reales.
+- Añadidos `PhotoExportTests.swift` para original sin cambios, resolución de derivados, no ampliación y exclusión de GPS. Identificado como DEV 0.1.4 build 5. El motor EXP-002 de detección de rectángulos sigue independiente de interfaz.
+- **Estado:** cambios subidos a `main`; pendiente confirmar CI de commit final, tests completos y prueba funcional en el iPhone. [Protocolo](DEV_0.1.4_EXPORT.md).
