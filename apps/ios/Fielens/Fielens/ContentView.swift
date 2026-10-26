@@ -90,7 +90,7 @@ struct ContentView: View {
                         Image(systemName: "slider.horizontal.3")
                             .foregroundStyle(.mint)
                         VStack(alignment: .leading, spacing: 3) {
-                            Text("TAMAÑO AL COMPARTIR")
+                            Text("RESOLUCIÓN DE FOTO")
                                 .font(.caption2.weight(.medium))
                                 .foregroundStyle(.white.opacity(0.7))
                             Text(exportResolution.title)
@@ -201,16 +201,28 @@ struct ContentView: View {
 }
 
 private struct PhotoReviewView: View {
+    /// High-resolution camera source is kept untouched only for this session.
     let photo: CapturedPhoto
     @Binding var selectedResolution: ExportResolution
     let onRetake: () -> Void
+    @State private var preparedPhoto: PreparedPhoto?
+    @State private var preparingResult = false
+    @State private var preparationErrorMessage: String?
     @State private var showingShareSheet = false
-    @State private var isPreparing = false
-    @State private var shareErrorMessage: String?
-    @State private var temporaryShareURL: URL?
+    @State private var shareURL: URL?
+
+    private var currentResult: PreparedPhoto? {
+        guard let preparedPhoto, preparedPhoto.resolution == selectedResolution else {
+            return nil
+        }
+        return preparedPhoto
+    }
+
+    /// Changes both on reselecting a quality and when capturing a new photo.
+    private var reviewKey: String { photo.id.uuidString + "-" + selectedResolution.rawValue }
 
     var body: some View {
-        VStack(spacing: 18) {
+        VStack(spacing: 14) {
             HStack {
                 Text("FIELENS")
                     .font(.headline)
@@ -225,45 +237,60 @@ private struct PhotoReviewView: View {
 
             Spacer(minLength: 0)
 
-            if let image = UIImage(contentsOfFile: photo.fileURL.path) {
+            if let result = currentResult,
+               let image = UIImage(contentsOfFile: result.fileURL.path) {
                 Image(uiImage: image)
                     .resizable()
                     .scaledToFit()
-                    .accessibilityLabel("Fotografía original capturada")
+                    .accessibilityLabel("Fotografía resultante a resolución \(selectedResolution.title)")
                     .padding(.horizontal, 10)
-            } else {
+            } else if preparingResult {
+                ProgressView("Preparando \(selectedResolution.title)…")
+                    .tint(.mint)
+                    .foregroundStyle(.white)
+            } else if let preparationErrorMessage {
                 ContentUnavailableView(
-                    "No se puede previsualizar",
-                    systemImage: "photo.badge.exclamationmark",
-                    description: Text("No se han encontrado los datos de la captura.")
+                    "No se pudo preparar la foto",
+                    systemImage: "exclamationmark.triangle",
+                    description: Text(preparationErrorMessage)
                 )
                 .foregroundStyle(.white)
+            } else {
+                ProgressView("Preparando fotografía…")
+                    .tint(.mint)
             }
 
             Spacer(minLength: 0)
 
             VStack(spacing: 4) {
-                Text("\(photo.pixelWidth) × \(photo.pixelHeight) píxeles · \(String(format: "%.2f", photo.megapixels)) MP")
-                    .font(.subheadline.monospacedDigit())
-                    .foregroundStyle(.white)
-                Text(ByteCountFormatter.string(fromByteCount: Int64(photo.byteCount), countStyle: .file))
-                    .font(.footnote)
-                    .foregroundStyle(.white.opacity(0.8))
-                Text("JPEG original · Sin recortes, filtros ni recompresión")
-                    .font(.footnote)
-                    .multilineTextAlignment(.center)
-                    .foregroundStyle(.white.opacity(0.8))
+                if let result = currentResult {
+                    Text("\(result.pixelWidth) × \(result.pixelHeight) píxeles · \(String(format: "%.2f", result.megapixels)) MP")
+                        .font(.subheadline.monospacedDigit())
+                        .foregroundStyle(.white)
+                    Text(ByteCountFormatter.string(fromByteCount: Int64(result.byteCount), countStyle: .file))
+                        .font(.footnote)
+                        .foregroundStyle(.white.opacity(0.8))
+                    Text(selectedResolution == .original
+                         ? "Original de cámara · Sin recortes ni recompresión"
+                         : "Resultado \(selectedResolution.title) · JPEG listo para compartir")
+                        .font(.footnote)
+                        .multilineTextAlignment(.center)
+                        .foregroundStyle(.white.opacity(0.8))
+                } else {
+                    Text("Calculando la resolución real del resultado…")
+                        .font(.footnote)
+                        .foregroundStyle(.white.opacity(0.8))
+                }
             }
 
             VStack(alignment: .leading, spacing: 6) {
-                Picker("Resolución de envío", selection: $selectedResolution) {
+                Picker("Resolución de la foto", selection: $selectedResolution) {
                     ForEach(ExportResolution.allCases) { choice in
                         Text(choice.title).tag(choice)
                     }
                 }
                 .pickerStyle(.menu)
                 .tint(.mint)
-                .disabled(isPreparing)
                 Text(selectedResolution.recommendation)
                     .font(.footnote)
                     .foregroundStyle(.white.opacity(0.83))
@@ -271,78 +298,100 @@ private struct PhotoReviewView: View {
             .padding(.horizontal, 20)
             .frame(maxWidth: .infinity, alignment: .leading)
 
-            if let shareErrorMessage {
-                Text(shareErrorMessage)
-                    .font(.footnote)
-                    .foregroundStyle(.orange)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 20)
-            }
-
             HStack(spacing: 12) {
-                Button(action: onRetake) {
+                Button(action: retakeAndCleanup) {
                     Label("Repetir", systemImage: "arrow.counterclockwise")
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.bordered)
                 .tint(.white)
-                .disabled(isPreparing)
 
                 Button {
-                    prepareAndShare()
+                    guard let result = currentResult else { return }
+                    // Share EXACTLY the same JPEG the user sees in review.
+                    shareURL = result.fileURL
+                    showingShareSheet = true
                 } label: {
-                    Label(isPreparing ? "Preparando…" : "Compartir", systemImage: "square.and.arrow.up")
+                    Label("Compartir", systemImage: "square.and.arrow.up")
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(.mint)
-                .disabled(isPreparing)
+                .disabled(currentResult == nil)
             }
             .padding(.horizontal, 16)
-            .padding(.bottom, 12)
 
-            Text("El original permanece intacto en esta sesión. La copia para compartir puede tener menos resolución y no conserva los metadatos originales.")
+            Text("El resultado mostrado es el archivo que se comparte. La captura completa queda temporalmente disponible por si cambias de calidad.")
                 .font(.footnote)
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.white.opacity(0.8))
                 .padding(.horizontal, 20)
                 .padding(.bottom, 8)
         }
-        .sheet(isPresented: $showingShareSheet, onDismiss: clearTemporaryShare) {
-            OriginalFileShareSheet(fileURL: temporaryShareURL ?? photo.fileURL)
+        .task(id: reviewKey) {
+            await prepareSelectedResult()
+        }
+        .sheet(isPresented: $showingShareSheet, onDismiss: {
+            shareURL = nil
+        }) {
+            if let shareURL {
+                OriginalFileShareSheet(fileURL: shareURL)
+            }
+        }
+        .onDisappear {
+            // The original is deleted by CameraViewModel on Repetir.
+            // Never delete a file while the native share sheet is using it.
+            if !showingShareSheet, let preparedPhoto {
+                PhotoExportService.discardTemporaryCopy(preparedPhoto.fileURL, original: photo)
+            }
         }
     }
 
-    private func prepareAndShare() {
-        guard !isPreparing else { return }
-        shareErrorMessage = nil
-        isPreparing = true
+    private func prepareSelectedResult() async {
         let source = photo
         let choice = selectedResolution
+        let previous = preparedPhoto
+        preparedPhoto = nil
+        preparationErrorMessage = nil
+        preparingResult = true
 
-        Task {
-            do {
-                let url = try await Task.detached(priority: .userInitiated) {
-                    try PhotoExportService.prepare(photo: source, resolution: choice)
-                }.value
-                temporaryShareURL = url
-                showingShareSheet = true
-            } catch {
-                shareErrorMessage = error.localizedDescription
+        // Release old derived JPEG before creating another; never remove the original.
+        if let previous {
+            PhotoExportService.discardTemporaryCopy(previous.fileURL, original: source)
+        }
+
+        do {
+            let result = try await Task.detached(priority: .userInitiated) {
+                try PhotoExportService.prepareForReview(photo: source, resolution: choice)
+            }.value
+
+            guard !Task.isCancelled,
+                  source.id == photo.id,
+                  selectedResolution == choice else {
+                PhotoExportService.discardTemporaryCopy(result.fileURL, original: source)
+                return
             }
-            isPreparing = false
+            preparedPhoto = result
+        } catch {
+            if !Task.isCancelled {
+                preparationErrorMessage = error.localizedDescription
+            }
+        }
+        if !Task.isCancelled {
+            preparingResult = false
         }
     }
 
-    private func clearTemporaryShare() {
-        if let temporaryShareURL {
-            PhotoExportService.discardTemporaryCopy(temporaryShareURL, original: photo)
+    private func retakeAndCleanup() {
+        if let preparedPhoto {
+            PhotoExportService.discardTemporaryCopy(preparedPhoto.fileURL, original: photo)
         }
-        temporaryShareURL = nil
+        preparedPhoto = nil
+        onRetake()
     }
 }
 
-/// One explicit, readable choice per row for the camera preview.
+/// One explicit choice per row for the camera preview.
 /// The already-working Picker in photo review remains unchanged.
 private struct ResolutionSelectionSheet: View {
     @Binding var selectedResolution: ExportResolution
@@ -352,7 +401,7 @@ private struct ResolutionSelectionSheet: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 10) {
-                    Text("La fotografía se captura a máxima resolución. Aquí eliges el tamaño de la copia que vas a enviar.")
+                    Text("Elige la resolución que verás después de fotografiar. La captura completa permanece disponible temporalmente para cambiar de calidad.")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                         .padding(.bottom, 4)
