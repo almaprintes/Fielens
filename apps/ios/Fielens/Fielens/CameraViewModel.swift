@@ -121,6 +121,19 @@ final class CameraViewModel: ObservableObject {
         }
     }
 
+    /// Return to the welcome screen without reopening the camera.
+    /// Discards the current temporary source, including sensitive documents.
+    func endSession() {
+        stop()
+        if let previous = photo {
+            TemporaryPhotoStore.discard(previous)
+        }
+        photo = nil
+        isCapturing = false
+        captureErrorMessage = nil
+        status = .idle
+    }
+
     func retake() {
         if let previous = photo {
             TemporaryPhotoStore.discard(previous)
