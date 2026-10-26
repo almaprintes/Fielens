@@ -109,16 +109,27 @@ nonisolated enum SurfaceSelector {
 }
 
 
-/// Transform normalized Vision bottom-left points to normalized
-/// AVFoundation device points (top-left), and vice versa.
-/// Preview layer performs the remaining crop/scale/orientation conversion.
+/// Convert RECTANGLES OBSERVED WITH Vision orientation '.right' back into
+/// AVFoundation capture-device coordinates (unrotated image, TOP-LEFT origin).
+///
+/// This is NOT just a Y flip. The source buffer is landscape-native and Vision
+/// rotates it clockwise into portrait for analysis. In normalized coordinates:
+///
+/// upright image top-left (Vision x=0, y=1) -> raw sensor bottom-left (0, 1)
+/// upright image top-right (Vision x=1, y=1) -> raw sensor top-left (0, 0)
+/// upright image bottom-right (Vision x=1, y=0) -> raw sensor top-right (1, 0)
+///
+/// After this inverse 90° transform, AVCaptureVideoPreviewLayer applies its
+/// OWN rotation and aspect-fill crop to the layer. Only valid while the scanner
+/// passes '.right' to VNImageRequestHandler and the video data buffer is raw
+/// landscape. Device rotations and rotated video buffers require a new mapping.
 nonisolated enum SurfaceCoordinateMapper {
     static func capturePoint(fromVision point: SurfacePoint) -> SurfacePoint {
-        SurfacePoint(x: point.x, y: 1 - point.y)
+        SurfacePoint(x: 1 - point.y, y: 1 - point.x)
     }
 
     static func visionPoint(fromCapture point: SurfacePoint) -> SurfacePoint {
-        SurfacePoint(x: point.x, y: 1 - point.y)
+        SurfacePoint(x: 1 - point.y, y: 1 - point.x)
     }
 }
 
