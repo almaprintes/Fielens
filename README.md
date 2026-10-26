@@ -100,3 +100,7 @@ Corrige un fallo de experiencia de la DEV 0.1.4: elegir Ligera antes de fotograf
 ## DEV 0.1.6 — Prototipo de detección de contornos
 
 En la cámara, el usuario puede pulsar **Buscar contorno** o tocar un objeto rectangular para intentar localizarlo mediante Apple Vision y seleccionar su cuadrilátero en pantalla. El detector se ejecuta **bajo demanda**, no de forma continua. No realiza seguimiento ni mide aún perpendicularidad relativa al objeto. **Pendiente validación física y calibración de coordenadas.** [Protocolo de QA](docs/DEV_0.1.6_SURFACE_PREVIEW.md).
+
+## DEV 0.1.11 — Cámara que detecta el objetivo sin tocar
+
+La detección de rectángulos ahora comienza **automáticamente al abrir la cámara**, elige un contorno principal y actualiza su posición al mover el dispositivo; el toque y el menú de corrección son opcionales. El cálculo utiliza Apple Vision con cadencia limitada para proteger el rendimiento. **Todavía no mide la perpendicularidad al soporte ni dispara solo**. Pendiente QA real en iPhone. [Protocolo y riesgos](docs/DEV_0.1.11_AUTOMATIC_SURFACES.md).
