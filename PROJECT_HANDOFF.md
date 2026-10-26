@@ -68,3 +68,11 @@ La pantalla de cámara negra de las dos capturas se debía a que era de noche y 
 - [Compilación verde](https://github.com/almaprintes/Fielens/actions/runs/40246527085) del commit `adb1b0be`, confirmada en GitHub.
 - Se añadió ejecución separada de tests `FielensTests` en simulador iOS 26.5; todavía no se puede afirmar que hayan pasado hasta recibir el resultado.
 - Documentación `docs/IOS_CI.md`. GitHub CI no reemplaza QA de cámara, nivel y óptica en dispositivo real.
+
+## EXP-002 / DEV 0.1.4a — motor inicial de selección de superficies
+
+- El creador pidió detectar el objeto al tocarlo, delimitar contorno y luego guiar perpendicularidad relativa a ese objeto. Es la dirección del producto; las limitaciones geométricas se especifican en `docs/SURFACE_TARGETING_DESIGN.md`.
+- Código inicial separado de la cámara: `SurfaceGeometry.swift` (puntos normalizados, cuadriláteros convexos, selección por toque), `RectangularSurfaceDetector.swift` (Vision), `SurfaceGeometryTests.swift` (tests de geometría). **No integrado aún en interfaz ni en captura**.
+- Pruebas en GitHub Actions pendientes de validar para esos archivos. No existe estimación 3D ni nivel del objeto todavía; solo el nivel gravitatorio de la 0.1.3.
+- Próxima iteración: overlay y selección de rectángulos en preview con transformación coordenadas/crop/aspect fill/orientación correcta, muestreo sin bloquear captura. Luego cálculo de pose del plano calibrada con patrones conocidos, siempre con incertidumbre.
+- Si CI falla, corregir errores antes de integrar con la UI. No modificar fotos originales, no subir datos personales a GitHub.
