@@ -120,3 +120,8 @@ La pantalla de cámara negra de las dos capturas se debía a que era de noche y 
 - Privacidad: los derivados no copian EXIF original; la elección «Original» conserva todos los metadatos. No hay envío remoto automático ni pruebas con identificaciones reales.
 - Añadidos `PhotoExportTests.swift` para original sin cambios, resolución de derivados, no ampliación y exclusión de GPS. Identificado como DEV 0.1.4 build 5. El motor EXP-002 de detección de rectángulos sigue independiente de interfaz.
 - **Estado:** cambios subidos a `main`; pendiente confirmar CI de commit final, tests completos y prueba funcional en el iPhone. [Protocolo](DEV_0.1.4_EXPORT.md).
+
+
+## Aclaración y corrección de UX — 2026-10-26 07:56
+
+El creador precisa que el selector **después de tomar la foto funciona correctamente**. La incidencia afecta solo al menú desplegable sobre la vista previa de cámara, antes del disparo. La reparación final **conserva el Picker ya probado de revisión** y cambia exclusivamente el selector previo al disparo por un botón legible que abre una hoja con cuatro filas de tamaño, una selección marcada y cierre inmediato. Ambas pantallas siguen compartiendo la elección de exportación. Commit de ajuste final: `f541d4ae`. Confirmar compilación cloud y probar físicamente el desplegable previo; no cambiar el sistema de captura fotográfica ni afirmar que la elección reduce la resolución del sensor.
