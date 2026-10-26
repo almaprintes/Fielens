@@ -24,13 +24,16 @@ final class CameraViewModel: ObservableObject {
     @Published private(set) var correctedSurfaceCorners: [UUID: [SurfaceViewPoint]] = [:]
     @Published private(set) var pendingSurfaceTap: SurfacePendingTap?
     @Published private(set) var isScanningSurface = false
-    @Published private(set) var surfaceMessage = "Toca el objeto o pulsa Buscar contorno."
+    @Published private(set) var surfaceMessage = "Buscando superficie automáticamente…"
 
     private let cameraSession = CameraSession()
     private var isRequestingPermission = false
     private var shouldRun = false
     private var runID = 0
     private var scanID = 0
+    private var automaticScanTask: Task<Void, Never>?
+    private var scanningPausedForEditing = false
+    private var consecutiveNoSurfaceScans = 0
 
     var session: AVCaptureSession { cameraSession.session }
 
@@ -73,6 +76,9 @@ final class CameraViewModel: ObservableObject {
     }
 
     func stop() {
+        automaticScanTask?.cancel()
+        automaticScanTask = nil
+        consecutiveNoSurfaceScans = 0
         scanID += 1
         isScanningSurface = false
         surfaceCandidates = []
@@ -90,6 +96,8 @@ final class CameraViewModel: ObservableObject {
     func capturePhoto() {
         guard status == .running && !isCapturing && photo == nil else { return }
         isCapturing = true
+        automaticScanTask?.cancel()
+        automaticScanTask = nil
         captureErrorMessage = nil
 
         cameraSession.capture { [weak self] result in
@@ -107,6 +115,7 @@ final class CameraViewModel: ObservableObject {
                 self.stop() // No running preview or battery use while reviewing.
             case .failure(let error):
                 self.captureErrorMessage = error.localizedDescription
+                self.scheduleAutomaticScan(afterMilliseconds: 650)
             }
         }
     }
@@ -124,6 +133,8 @@ final class CameraViewModel: ObservableObject {
 
     func scanSurfaces(selecting touchedPoint: SurfaceViewPoint? = nil) {
         guard status == .running && photo == nil && !isScanningSurface else { return }
+        automaticScanTask?.cancel()
+        automaticScanTask = nil
         isScanningSurface = true
         surfaceCandidates = []
         selectedSurfaceID = nil
@@ -140,6 +151,7 @@ final class CameraViewModel: ObservableObject {
                 return
             }
             self.isScanningSurface = false
+            self.scheduleAutomaticScan(afterMilliseconds: 700)
             switch result {
             case .success(let candidates):
                 self.surfaceCandidates = candidates
@@ -161,7 +173,11 @@ final class CameraViewModel: ObservableObject {
     }
 
     func surfaceTapped(at point: SurfaceViewPoint, matching renderedSurfaceID: UUID?) {
-        guard status == .running, !isScanningSurface else { return }
+        guard status == .running else { return }
+        if isScanningSurface {
+            pendingSurfaceTap = SurfacePendingTap(id: UUID(), point: point)
+            return
+        }
         if let renderedSurfaceID,
            surfaceCandidates.contains(where: { $0.id == renderedSurfaceID }) {
             pendingSurfaceTap = nil
@@ -209,6 +225,114 @@ final class CameraViewModel: ObservableObject {
         surfaceMessage = "Otro contorno seleccionado. Comprueba que coincide con el objeto."
     }
 
+    /// Corner adjustment is strictly optional. While editing, freeze analysis
+    /// so automatic updates cannot fight the user's finger.
+    func setCornerEditing(_ editing: Bool) {
+        scanningPausedForEditing = editing
+        if editing {
+            automaticScanTask?.cancel()
+            automaticScanTask = nil
+        } else {
+            // A manually adjusted polygon belongs to one old frame.
+            // Return to live camera-following after leaving the editor.
+            correctedSurfaceCorners = [:]
+            scheduleAutomaticScan(afterMilliseconds: 250)
+        }
+    }
+
+    private func scheduleAutomaticScan(afterMilliseconds delay: Int) {
+        automaticScanTask?.cancel()
+        automaticScanTask = nil
+        guard shouldRun, status == .running, photo == nil,
+              !isCapturing, !scanningPausedForEditing else { return }
+
+        let expectedRun = runID
+        automaticScanTask = Task { [weak self] in
+            do {
+                try await Task.sleep(for: .milliseconds(delay))
+            } catch {
+                return
+            }
+            guard let self, !Task.isCancelled,
+                  self.runID == expectedRun,
+                  self.shouldRun, self.status == .running,
+                  self.photo == nil, !self.isCapturing,
+                  !self.scanningPausedForEditing else { return }
+            self.scanAutomatically()
+        }
+    }
+
+    private func scanAutomatically() {
+        guard shouldRun, status == .running, photo == nil,
+              !isCapturing, !scanningPausedForEditing else { return }
+        if isScanningSurface {
+            scheduleAutomaticScan(afterMilliseconds: 350)
+            return
+        }
+
+        isScanningSurface = true
+        scanID += 1
+        let expectedScan = scanID
+        let expectedRun = runID
+
+        cameraSession.scanSurfaces { [weak self] result in
+            guard let self, self.shouldRun, self.status == .running,
+                  self.photo == nil, self.runID == expectedRun,
+                  self.scanID == expectedScan else { return }
+            self.isScanningSurface = false
+            guard !self.scanningPausedForEditing, !self.isCapturing else { return }
+
+            switch result {
+            case .success(let detections):
+                if detections.isEmpty {
+                    self.consecutiveNoSurfaceScans += 1
+                    if self.consecutiveNoSurfaceScans >= 2 {
+                        self.surfaceCandidates = []
+                        self.selectedSurfaceID = nil
+                        self.correctedSurfaceCorners = [:]
+                        self.pendingSurfaceTap = nil
+                        self.surfaceMessage = "Buscando superficie…"
+                    }
+                    self.scheduleAutomaticScan(afterMilliseconds: 850)
+                    return
+                }
+
+                self.consecutiveNoSurfaceScans = 0
+                let previousSelected = self.selectedSurfaceID
+                let update = AutomaticSurfaceTracker.update(
+                    previous: self.surfaceCandidates,
+                    incoming: detections,
+                    selectedID: self.selectedSurfaceID
+                )
+                self.surfaceCandidates = update.surfaces
+                self.selectedSurfaceID = update.selectedID
+                if previousSelected != update.selectedID {
+                    self.correctedSurfaceCorners = [:]
+                }
+                if self.pendingSurfaceTap != nil {
+                    // PreviewView resolves it using the projected screen polygons.
+                    self.surfaceMessage = "Seleccionando el objeto tocado…"
+                } else {
+                    self.surfaceMessage = update.selectedID == nil
+                        ? "Buscando un borde de documento…"
+                        : "Superficie detectada · Seguimiento automático"
+                }
+                self.scheduleAutomaticScan(afterMilliseconds: 550)
+
+            case .failure:
+                self.consecutiveNoSurfaceScans += 1
+                if self.consecutiveNoSurfaceScans >= 2 {
+                    self.surfaceCandidates = []
+                    self.selectedSurfaceID = nil
+                    self.correctedSurfaceCorners = [:]
+                    self.pendingSurfaceTap = nil
+                }
+                self.surfaceMessage = "Buscando superficie… La cámara sigue disponible."
+                self.scheduleAutomaticScan(afterMilliseconds: 1800)
+            }
+        }
+    }
+
     func clearCaptureError() {
         captureErrorMessage = nil
     }
@@ -223,6 +347,10 @@ final class CameraViewModel: ObservableObject {
             self.status = started
                 ? .running
                 : .unavailable(errorMessage ?? "La cámara no está disponible.")
+            if started {
+                self.surfaceMessage = "Buscando superficie automáticamente…"
+                self.scheduleAutomaticScan(afterMilliseconds: 300)
+            }
         }
     }
 }
