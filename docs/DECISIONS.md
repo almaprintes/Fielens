@@ -69,3 +69,7 @@ No compensar visualmente por píxeles arbitrarios el desplazamiento de contornos
 ## D-017 — 2026-10-26 — DEV 0.1.10 — El usuario puede corregir esquinas incorrectas
 
 La detección automática no es infalible. Cuando Vision ubique mal un vértice, se ofrecerá un modo específico de **ajuste de cuatro esquinas**, con vista despejada, arrastre, validación convexa y restauración al resultado automático. Esto NO debe modificar el original ni provocar recorte automático. Preferir un estado «ajuste manual» explícito a presentar una geometría errónea como perfecta; seguir invirtiendo en reconocimiento robusto. Reducir tolerancia geométrica inicial de Vision con respaldo permisivo para preservar capacidad de editar en escenas difíciles. Registrar sensibilidad, falsos negativos y latencia antes de adoptar umbrales definitivos.
+
+## D-016 — 2026-10-26 — Aceptada provisionalmente — Detección automática como comportamiento principal
+
+La detección de superficies es una función asistiva, no una actividad que deba exigir pulsar botones. Al abrir la cámara, Vision busca rectángulos de forma periódica con cadencia limitada, selecciona un candidato principal, conserva continuidad al mover el teléfono suavemente y lo visualiza sin llenar el visor de alternativas. Toque y edición quedan para casos difíciles, en menú secundario. Se prioriza mantener cámara, JPEG nativo, nivel y fluidez; la cadencia y el umbral se ajustarán con pruebas físicas. Este cambio NO implica medir la normal de un plano 3D ni habilitar auto-disparo antes de verificar la geometría y el enfoque.
