@@ -21,6 +21,7 @@ final class CameraViewModel: ObservableObject {
     @Published private(set) var captureErrorMessage: String?
     @Published private(set) var surfaceCandidates: [DetectedSurface] = []
     @Published private(set) var selectedSurfaceID: UUID?
+    @Published private(set) var pendingSurfaceTap: SurfacePendingTap?
     @Published private(set) var isScanningSurface = false
     @Published private(set) var surfaceMessage = "Toca el objeto o pulsa Buscar contorno."
 
@@ -75,6 +76,7 @@ final class CameraViewModel: ObservableObject {
         isScanningSurface = false
         surfaceCandidates = []
         selectedSurfaceID = nil
+        pendingSurfaceTap = nil
         shouldRun = false
         runID += 1
         cameraSession.stop()
@@ -118,11 +120,12 @@ final class CameraViewModel: ObservableObject {
         start()
     }
 
-    func scanSurfaces(selecting touchedPoint: SurfacePoint? = nil) {
+    func scanSurfaces(selecting touchedPoint: SurfaceViewPoint? = nil) {
         guard status == .running && photo == nil && !isScanningSurface else { return }
         isScanningSurface = true
         surfaceCandidates = []
         selectedSurfaceID = nil
+        pendingSurfaceTap = touchedPoint.map { SurfacePendingTap(id: UUID(), point: $0) }
         surfaceMessage = "Buscando rectángulos…"
         scanID += 1
         let expectedScan = scanID
@@ -137,33 +140,56 @@ final class CameraViewModel: ObservableObject {
             switch result {
             case .success(let candidates):
                 self.surfaceCandidates = candidates
-                if let touchedPoint,
-                   let selected = SurfaceSelector.selected(at: touchedPoint, in: candidates) {
-                    self.selectedSurfaceID = selected.id
-                    self.surfaceMessage = "Contorno seleccionado · No mide perpendicularidad. Si mueves el móvil, vuelve a buscar."
+                if candidates.isEmpty {
+                    self.pendingSurfaceTap = nil
+                    self.surfaceMessage = "No se detectó un rectángulo. Mejora luz o encuadre y prueba otra vez."
+                } else if touchedPoint != nil {
+                    // PreviewView will select by screen-space hit testing using
+                    // the EXACT same projected polygons that it draws.
+                    self.surfaceMessage = "Comprobando qué contorno coincide con tu toque…"
                 } else {
-                    self.surfaceMessage = candidates.isEmpty
-                        ? "No se detectó un rectángulo. Cambia luz o encuadre y vuelve a buscar."
-                        : "Se encontraron \(candidates.count) contornos. Toca uno en la cámara."
+                    self.surfaceMessage = "Detectados \(candidates.count) contornos. Toca la hoja, no los cuadros interiores."
                 }
             case .failure(let error):
+                self.pendingSurfaceTap = nil
                 self.surfaceMessage = error.localizedDescription
             }
         }
     }
 
-    func selectSurface(at point: SurfacePoint) {
-        guard !surfaceCandidates.isEmpty else {
+    func surfaceTapped(at point: SurfaceViewPoint, matching renderedSurfaceID: UUID?) {
+        guard status == .running, !isScanningSurface else { return }
+        if let renderedSurfaceID,
+           surfaceCandidates.contains(where: { $0.id == renderedSurfaceID }) {
+            pendingSurfaceTap = nil
+            selectedSurfaceID = renderedSurfaceID
+            surfaceMessage = "Contorno seleccionado · No mide perpendicularidad. Repite búsqueda si mueves el móvil."
+        } else {
+            // A one-step tap asks Vision for a fresh frame and then resolves the
+            // original touch against the actual polygons DRAWN by PreviewView.
             scanSurfaces(selecting: point)
+        }
+    }
+
+    func resolvePendingSurfaceTap(requestID: UUID, renderedSurfaceID: UUID?) {
+        guard pendingSurfaceTap?.id == requestID else { return }
+        pendingSurfaceTap = nil
+        guard let renderedSurfaceID,
+              surfaceCandidates.contains(where: { $0.id == renderedSurfaceID }) else {
+            surfaceMessage = "Ese punto no pertenece a un contorno detectado. Toca el borde de la hoja o busca de nuevo."
             return
         }
-        guard let candidate = SurfaceSelector.selected(at: point, in: surfaceCandidates) else {
-            // The tapped object may not have been present when the last scan ran.
-            scanSurfaces(selecting: point)
-            return
-        }
-        selectedSurfaceID = candidate.id
-        surfaceMessage = "Contorno seleccionado · No mide perpendicularidad. Vuelve a buscar si mueves el móvil."
+        selectedSurfaceID = renderedSurfaceID
+        surfaceMessage = "Contorno seleccionado · No mide perpendicularidad. Repite búsqueda si mueves el móvil."
+    }
+
+    func selectAnotherSurface() {
+        guard surfaceCandidates.count > 1 else { return }
+        let ordered = surfaceCandidates.sorted { $0.areaFraction > $1.areaFraction }
+        let currentIndex = ordered.firstIndex { $0.id == selectedSurfaceID } ?? -1
+        selectedSurfaceID = ordered[(currentIndex + 1) % ordered.count].id
+        pendingSurfaceTap = nil
+        surfaceMessage = "Otro contorno seleccionado. Comprueba que coincide con el objeto."
     }
 
     func clearCaptureError() {
