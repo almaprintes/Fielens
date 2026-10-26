@@ -55,8 +55,15 @@ struct ContentView: View {
                 session: camera.session,
                 surfaces: camera.surfaceCandidates,
                 selectedSurfaceID: camera.selectedSurfaceID,
-                onSurfaceTap: { point in
-                    camera.selectSurface(at: point)
+                pendingTap: camera.pendingSurfaceTap,
+                onSurfaceTap: { point, renderedSurfaceID in
+                    camera.surfaceTapped(at: point, matching: renderedSurfaceID)
+                },
+                onScanTapResolved: { requestID, renderedSurfaceID in
+                    camera.resolvePendingSurfaceTap(
+                        requestID: requestID,
+                        renderedSurfaceID: renderedSurfaceID
+                    )
                 }
             )
                 .ignoresSafeArea()
@@ -78,7 +85,7 @@ struct ContentView: View {
                         .font(.headline)
                         .tracking(2)
                     Spacer()
-                    Text("DEV 0.1.7")
+                    Text("DEV 0.1.8")
                         .font(.caption.monospaced())
                         .foregroundStyle(.white.opacity(0.8))
                 }
@@ -91,20 +98,33 @@ struct ContentView: View {
                 Spacer(minLength: 14)
 
                 VStack(spacing: 6) {
-                    Button {
-                        camera.scanSurfaces()
-                    } label: {
-                        Label(
-                            camera.isScanningSurface ? "Analizando…" : "Buscar contorno",
-                            systemImage: camera.isScanningSurface
-                                ? "hourglass"
-                                : "viewfinder"
-                        )
-                        .frame(maxWidth: .infinity)
+                    HStack(spacing: 8) {
+                        Button {
+                            camera.scanSurfaces()
+                        } label: {
+                            Label(
+                                camera.isScanningSurface ? "Analizando…" : "Buscar contorno",
+                                systemImage: camera.isScanningSurface
+                                    ? "hourglass"
+                                    : "viewfinder"
+                            )
+                            .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .tint(.mint)
+                        .disabled(camera.status != .running || camera.isScanningSurface || camera.isCapturing)
+
+                        if camera.surfaceCandidates.count > 1 {
+                            Button {
+                                camera.selectAnotherSurface()
+                            } label: {
+                                Label("Otro", systemImage: "square.on.square")
+                            }
+                            .buttonStyle(.bordered)
+                            .tint(.white)
+                            .accessibilityHint("Recorre los contornos alternativos detectados")
+                        }
                     }
-                    .buttonStyle(.borderedProminent)
-                    .tint(.mint)
-                    .disabled(camera.status != .running || camera.isScanningSurface || camera.isCapturing)
 
                     Text(camera.surfaceMessage)
                         .font(.caption)
@@ -263,7 +283,7 @@ private struct PhotoReviewView: View {
                     .font(.headline)
                     .tracking(2)
                 Spacer()
-                Text("DEV 0.1.7")
+                Text("DEV 0.1.8")
                     .font(.caption.monospaced())
             }
             .foregroundStyle(.white)
