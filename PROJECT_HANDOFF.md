@@ -89,3 +89,10 @@ La pantalla de cámara negra de las dos capturas se debía a que era de noche y 
 - Captura nativa continúa al máximo; el tamaño elegido rige **el archivo para compartir**, no la cámara ni el JPEG original guardado temporalmente. Genera JPEG con ImageIO sin arrastrar EXIF original, en hilo de fondo; descarta copia temporal tras cerrar hoja del sistema.
 - **Sin prueba física todavía**. Protocolo `docs/DEV_0.1.4_EXPORT.md`; comprobar CI del último SHA y que las pruebas Swift pasen. Medir dimensiones y bytes exportados/legibilidad sobre documento ficticio.
 - El motor de superficies EXP-002 sigue en código sin UI; no existe aún nivel de perpendicularidad de objetos.
+
+## Incidencia CI 0.1.4 y siguiente prueba local — 2026-10-26
+
+- GitHub Actions del SHA `28da3efe`: compilación de iOS superada; falló `PhotoExportTests.aSmallPhotoIsNeverUpscaled()`.
+- Se corrigió el fixture UIKit para escala de renderizado 1x, commit `4eb6809e`. Nueva CI: https://github.com/almaprintes/Fielens/actions/runs/40288358518 (resultado pendiente al redactar).
+- Usuario ha vuelto al Mac. Primero `cd ~/Developer/Fielens && git status --short`; solo si no hay cambios locales, `git pull --ff-only`. Abrir proyecto Xcode y `⌘B`, `⌘R` con iPhone físico.
+- Verificar exportación en Archivos para 1600 / 2400 / 4000 px lado mayor y Original; comparar orientación, dimensiones, peso, legibilidad, JPEG y eliminación de metadatos en derivados con documento ficticio. No enviar documentos reales al repositorio.
