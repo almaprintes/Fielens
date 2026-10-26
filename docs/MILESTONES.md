@@ -24,6 +24,7 @@
 | H-019 · DEV 0.1.10: ajustar manualmente cuatro esquinas | 2026-10-26 10:40 | **Compilación iOS confirmada; tests y QA física pendientes** | En 0.1.9 solo una esquina de la hoja se detecta muy baja, formando una diagonal. Modo de 4 puntos arrastrables, Restaurar/Listo y detección estricta con respaldo. [QA](DEV_0.1.10_MANUAL_CORNERS.md) |
 | H-016 · DEV 0.1.11: detección automática de superficies | 2026-10-26 11:05 | **Código en main; CI final y test en iPhone pendientes** | Detecta automáticamente al abrir cámara, estabiliza rectángulos, sigue objetivo sin pulsar Buscar. Corrección por toque opcional. [QA](DEV_0.1.11_AUTOMATIC_SURFACES.md). No mide perpendicularidad ni dispara sola |
 | H-017 · DEV 0.1.12: reencuadre real del objeto | 2026-10-26 11:50 | **Código en main, compilación Xcode verificada; tests e iPhone pendientes** | Vision reanaliza foto recién tomada y Core Image corrige perspectiva; resultado visible y compartido ajustado al objeto si hay contorno fiable. JPEG original intacto. [QA](DEV_0.1.12_OBJECT_FRAMING.md) |
+| H-018 · DEV 0.1.13: inicio y guardar en carrete | 2026-10-26 12:11 | **Código en main; compilación y prueba física pendientes** | Menú de bienvenida antes de cámara y acceso a Photos para añadir solo el JPEG de revisión, conservando calidad/recorte. [Protocolo](DEV_0.1.13_HOME_AND_PHOTOS.md) |
 | H-010 · Candidatura Shipaton 2027 | Ago–sep 2027 objetivo | Condicional | Comprobar reglas de la convocatoria 2027 antes de primera publicación pública |
 
 ## Lecciones y fallos útiles
