@@ -108,3 +108,7 @@ La detección de rectángulos ahora comienza **automáticamente al abrir la cám
 ## DEV 0.1.12 — Ajustar la foto al objeto detectado
 
 Al fotografiar documentos y superficies rectangulares, la revisión de las copias Ligera/Compartir/Detalle intenta recortar y enderezar automáticamente el objeto detectado, de modo que ocupe el encuadre en vez de mostrar toda la mesa. Si Vision no reconoce bordes fiables, muestra imagen completa e informa del motivo; el ajuste se puede desactivar. La opción Original es siempre el JPEG íntegro sin recortes. **Pendiente validación física en iPhone.** [Protocolo de pruebas](docs/DEV_0.1.12_OBJECT_FRAMING.md).
+
+## DEV 0.1.13 — Inicio y guardado directo en Fotos
+
+Fielens abre una pantalla inicial antes de encender la cámara y los sensores. La revisión permite **Guardar en Fotos** el JPEG visible (recorte y calidad seleccionados), con permiso iOS para **añadir fotos sin leer el carrete**, y conserva Compartir/Guardar en Archivos. [Pruebas pendientes](docs/DEV_0.1.13_HOME_AND_PHOTOS.md).
