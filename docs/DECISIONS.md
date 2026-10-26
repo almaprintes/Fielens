@@ -61,3 +61,7 @@ La calidad elegida por el usuario antes de disparar o después debe corresponder
 ## D-015 — 2026-10-26 — Provisional DEV 0.1.6 — Detección bajo demanda
 
 No iniciar Vision continuamente hasta medir latencia, geometría y consumo. El prototipo analiza un único frame cuando el usuario pulsa Buscar contorno o toca el objeto; dibuja cuadriláteros y permite seleccionar uno, manteniendo la fotografía original y el nivel de gravedad independientes. El contorno seleccionado no certifica ángulo ni planitud; confirmar alineación de coordenadas en iPhone y advertir que la superposición queda obsoleta tras mover el móvil. Si la salida secundaria de vídeo afecta a la captura 48 MP, priorizar preservar la calidad fotográfica y replanificar la arquitectura.
+
+## D-016 — 2026-10-26 — Experimental DEV 0.1.9 — Alinear Vision con sensor sin rotar
+
+No compensar visualmente por píxeles arbitrarios el desplazamiento de contornos. Corregir el marco de referencia: `VNImageRequestHandler` con orientación `.right` sobre buffer no rotado requiere deshacer 90° para pasar los puntos a `AVCaptureVideoPreviewLayer.layerPointConverted(fromCaptureDevicePoint:)`; transformar `(x,y) → (1-y,1-x)`. Fijar `videoRotationAngle=0` en VideoDataOutput, comprobar ancho > alto y bloquear únicamente detección (no la cámara) cuando no se cumpla la suposición. Estado sujeto a prueba física en iPhone y recalibración de cualquier zoom/crop diferente entre salidas.
