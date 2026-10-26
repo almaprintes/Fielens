@@ -53,3 +53,7 @@ Mantener Core Motion de gravedad como modo independiente y auxiliar; estudiar es
 ## D-013 — 2026-10-26 — Aceptada para DEV 0.1.4 — Resolución de envío independiente de captura
 
 Priorizar legibilidad y ligereza en mensajería; permitir al usuario seleccionar una de cuatro resoluciones antes del disparo o en revisión, generando **una copia temporal reducida únicamente al compartir**. Preservar el JPEG original de captura para compartirlo sin transformación si lo elige. No confundir resolución con calidad; medir nitidez, tamaño, tiempo, orientación y formato reales. Usar 2400 px lado mayor como predeterminado experimental y limitar ampliación. Evitar copiar EXIF a los derivados; advertir de metadatos en Original. La captura nativa a menor resolución se evaluará tras comparar rendimiento y texto pequeño.
+
+## D-014 — 2026-10-26 — Aceptada DEV 0.1.5 — La resolución elegida define el resultado visible
+
+La calidad elegida por el usuario antes de disparar o después debe corresponder a **la imagen que Fielens presenta y comparte**. No mostrar el número de megapíxeles del JPEG maestro cuando el usuario ha elegido Ligera. Para el prototipo, mantener solo temporalmente el JPEG de máxima resolución como fuente editable y preparar archivo reducido de salida con metadatos reales; compartir ese archivo exacto. A futuro experimentar con adquisición directamente a menor resolución y medir coste, sin destruir la fuente por defecto ni prometer mejoras no probadas.
