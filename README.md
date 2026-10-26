@@ -104,3 +104,7 @@ En la cámara, el usuario puede pulsar **Buscar contorno** o tocar un objeto rec
 ## DEV 0.1.11 — Cámara que detecta el objetivo sin tocar
 
 La detección de rectángulos ahora comienza **automáticamente al abrir la cámara**, elige un contorno principal y actualiza su posición al mover el dispositivo; el toque y el menú de corrección son opcionales. El cálculo utiliza Apple Vision con cadencia limitada para proteger el rendimiento. **Todavía no mide la perpendicularidad al soporte ni dispara solo**. Pendiente QA real en iPhone. [Protocolo y riesgos](docs/DEV_0.1.11_AUTOMATIC_SURFACES.md).
+
+## DEV 0.1.12 — Ajustar la foto al objeto detectado
+
+Al fotografiar documentos y superficies rectangulares, la revisión de las copias Ligera/Compartir/Detalle intenta recortar y enderezar automáticamente el objeto detectado, de modo que ocupe el encuadre en vez de mostrar toda la mesa. Si Vision no reconoce bordes fiables, muestra imagen completa e informa del motivo; el ajuste se puede desactivar. La opción Original es siempre el JPEG íntegro sin recortes. **Pendiente validación física en iPhone.** [Protocolo de pruebas](docs/DEV_0.1.12_OBJECT_FRAMING.md).
