@@ -2,14 +2,16 @@ import AVFoundation
 import SwiftUI
 import UIKit
 
-/// Camera preview and prototype Vision overlay. No preview frames are saved.
-/// Each Vision coordinate is normalized bottom-left and must map through the
-/// preview layer's own capture-device conversion (including aspect-fill crop).
+/// The same four projected vertices are used both to DRAW the contour
+/// and to HIT-TEST a tap. This prevents a separate Vision -> touch mapping
+/// from picking a different object than the one seen by the user.
 struct CameraPreview: UIViewRepresentable {
     let session: AVCaptureSession
     var surfaces: [DetectedSurface] = []
     var selectedSurfaceID: UUID?
-    var onSurfaceTap: ((SurfacePoint) -> Void)?
+    var pendingTap: SurfacePendingTap?
+    var onSurfaceTap: ((SurfaceViewPoint, UUID?) -> Void)?
+    var onScanTapResolved: ((UUID, UUID?) -> Void)?
 
     func makeUIView(context: Context) -> PreviewView {
         let view = PreviewView()
@@ -17,7 +19,9 @@ struct CameraPreview: UIViewRepresentable {
         view.previewLayer.session = session
         view.surfaces = surfaces
         view.selectedSurfaceID = selectedSurfaceID
+        view.pendingTap = pendingTap
         view.onSurfaceTap = onSurfaceTap
+        view.onScanTapResolved = onScanTapResolved
         return view
     }
 
@@ -27,7 +31,9 @@ struct CameraPreview: UIViewRepresentable {
         }
         uiView.surfaces = surfaces
         uiView.selectedSurfaceID = selectedSurfaceID
+        uiView.pendingTap = pendingTap
         uiView.onSurfaceTap = onSurfaceTap
+        uiView.onScanTapResolved = onScanTapResolved
         uiView.updateContours()
     }
 }
@@ -35,10 +41,13 @@ struct CameraPreview: UIViewRepresentable {
 final class PreviewView: UIView {
     var surfaces: [DetectedSurface] = []
     var selectedSurfaceID: UUID?
-    var onSurfaceTap: ((SurfacePoint) -> Void)?
+    var pendingTap: SurfacePendingTap?
+    var onSurfaceTap: ((SurfaceViewPoint, UUID?) -> Void)?
+    var onScanTapResolved: ((UUID, UUID?) -> Void)?
 
     private let suggestionLayer = CAShapeLayer()
     private let selectionLayer = CAShapeLayer()
+    private var lastResolvedTapID: UUID?
 
     override class var layerClass: AnyClass {
         AVCaptureVideoPreviewLayer.self
@@ -82,21 +91,42 @@ final class PreviewView: UIView {
         updateContours()
     }
 
-    /// Mapping is provisional until measured against a physical A4 reference.
-    /// The detector's .right orientation expects a rear camera in portrait.
+    private func projectedCorners(of surface: DetectedSurface) -> [CGPoint] {
+        surface.corners.map { corner in
+            let normalized = SurfaceCoordinateMapper.capturePoint(fromVision: corner)
+            return previewLayer.layerPointConverted(fromCaptureDevicePoint: CGPoint(
+                x: normalized.x,
+                y: normalized.y
+            ))
+        }
+    }
+
+    private func renderedPolygons() -> [SurfaceScreenPolygon] {
+        guard bounds.width > 0, bounds.height > 0 else { return [] }
+        return surfaces.filter(\.isValid).map { surface in
+            SurfaceScreenPolygon(
+                id: surface.id,
+                corners: projectedCorners(of: surface).map { point in
+                    SurfaceViewPoint(
+                        x: Double(point.x / bounds.width),
+                        y: Double(point.y / bounds.height)
+                    )
+                }
+            )
+        }
+    }
+
+    private func hitTest(_ normalizedTouch: SurfaceViewPoint) -> UUID? {
+        SurfaceScreenSelector.selected(at: normalizedTouch, from: renderedPolygons())
+    }
+
     func updateContours() {
         let suggestions = UIBezierPath()
         let selected = UIBezierPath()
 
         for surface in surfaces where surface.isValid {
             let path = selectedSurfaceID == surface.id ? selected : suggestions
-            let points = surface.corners.map { corner in
-                let normalized = SurfaceCoordinateMapper.capturePoint(fromVision: corner)
-                return previewLayer.layerPointConverted(fromCaptureDevicePoint: CGPoint(
-                    x: normalized.x,
-                    y: normalized.y
-                ))
-            }
+            let points = projectedCorners(of: surface)
             guard let first = points.first else { continue }
             path.move(to: first)
             for point in points.dropFirst() {
@@ -107,17 +137,36 @@ final class PreviewView: UIView {
 
         suggestionLayer.path = suggestions.cgPath
         selectionLayer.path = selected.cgPath
+        resolvePendingTapWhenPossible()
+    }
+
+    private func resolvePendingTapWhenPossible() {
+        guard !surfaces.isEmpty, let pendingTap,
+              pendingTap.id != lastResolvedTapID,
+              bounds.width > 0, bounds.height > 0 else { return }
+        lastResolvedTapID = pendingTap.id
+
+        let selectedID = hitTest(pendingTap.point)
+        let requestID = pendingTap.id
+        // Never mutate @Published SwiftUI model synchronously from updateUIView.
+        DispatchQueue.main.async { [weak self] in
+            self?.onScanTapResolved?(requestID, selectedID)
+        }
     }
 
     @objc private func didTapPreview(_ recognizer: UITapGestureRecognizer) {
-        guard recognizer.state == .ended else { return }
-        let viewPoint = recognizer.location(in: self)
-        let capturePoint = previewLayer.captureDevicePointConverted(fromLayerPoint: viewPoint)
-        let normalized = SurfaceCoordinateMapper.visionPoint(fromCapture: SurfacePoint(
-            x: Double(capturePoint.x),
-            y: Double(capturePoint.y)
-        ))
-        guard normalized.isNormalized else { return }
-        onSurfaceTap?(normalized)
+        guard recognizer.state == .ended,
+              bounds.width > 0, bounds.height > 0 else { return }
+        let point = recognizer.location(in: self)
+        let normalizedTouch = SurfaceViewPoint(
+            x: Double(point.x / bounds.width),
+            y: Double(point.y / bounds.height)
+        )
+        guard normalizedTouch.isFinite,
+              (0...1).contains(normalizedTouch.x),
+              (0...1).contains(normalizedTouch.y) else { return }
+        // Crucially, we select the polygon that is ACTUALLY drawn under
+        // this finger, not a separate converted point with another orientation.
+        onSurfaceTap?(normalizedTouch, hitTest(normalizedTouch))
     }
 }
