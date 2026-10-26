@@ -41,3 +41,11 @@ Mantener `docs/MILESTONES.md` y `docs/DEVELOPMENT_LOG.md`, con estados separados
 ## D-010 — 2026-10-25 — Provisional para experimento — Nivel digital de dos ejes
 
 Se adopta Core Motion (`CMMotionManager`) y `CMDeviceMotion.gravity` en el prototipo iOS; muestreo objetivo 20 Hz, suavizado de gravedad (alfa 0,25), bloqueo de falsas lecturas en pose invertida y tolerancia inicial ±2°. La tolerancia está **sin calibrar** y no certifica precisión. La lectura es relativa al horizonte, jamás prueba perpendicularidad respecto a una hoja o cuadro inclinado. Detener sensores fuera de la vista de cámara. Evaluar el rendimiento, orientación horizontal y errores en hardware real antes de dar la decisión por definitiva.
+
+## D-011 — 2026-10-25 — Aceptada para prototipo — Selección por toque del soporte
+
+Permitir que el usuario elija el soporte que quiere capturar tocando la imagen; detector de cuadriláteros para primeras superficies rectangulares con Apple Vision. Debe mostrarse contorno y confirmarse, con corrección manual en iteración posterior. El toque no equivale a prueba de planitud, normal del plano o perpendicularidad. Priorizar experiencia local, accesible y sin subida de fotos.
+
+## D-012 — 2026-10-25 — Decisión experimental — Nivel relativo al plano, no un falso «perfecto»
+
+Mantener Core Motion de gravedad como modo independiente y auxiliar; estudiar estimación de normal del plano mediante cámara calibrada, geometría de cuadrilátero/líneas de fuga y fusión de movimiento. En objetos planos irregulares o volumétricos, ofrecer métodos dependientes de capacidades (ARKit/otras observaciones) y mostrar incertidumbre. Nunca marcar verde por un rectángulo detectado sin pose validada. Ver `docs/SURFACE_TARGETING_DESIGN.md`.
