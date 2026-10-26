@@ -82,6 +82,7 @@ nonisolated struct PreparedPhoto: Sendable {
     let pixelWidth: Int
     let pixelHeight: Int
     let byteCount: Int
+    let didFrameObject: Bool
 
     var megapixels: Double {
         Double(pixelWidth) * Double(pixelHeight) / 1_000_000
@@ -93,9 +94,15 @@ nonisolated enum PhotoExportService {
     /// Called off MainActor: ImageIO decoding or encoding can take time.
     static func prepareForReview(
         photo: CapturedPhoto,
-        resolution: ExportResolution
+        resolution: ExportResolution,
+        frameObject: Bool = false
     ) throws -> PreparedPhoto {
-        let url = try prepare(photo: photo, resolution: resolution)
+        let prepared = try prepareInternal(
+            photo: photo,
+            resolution: resolution,
+            frameObject: frameObject
+        )
+        let url = prepared.url
         do {
             guard let source = CGImageSourceCreateWithURL(url as CFURL, nil),
                   let rawProperties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as NSDictionary?,
@@ -113,7 +120,8 @@ nonisolated enum PhotoExportService {
                 resolution: resolution,
                 pixelWidth: width,
                 pixelHeight: height,
-                byteCount: bytes.intValue
+                byteCount: bytes.intValue,
+                didFrameObject: prepared.didFrame
             )
         } catch {
             discardTemporaryCopy(url, original: photo)
@@ -123,12 +131,20 @@ nonisolated enum PhotoExportService {
 
 
     static func prepare(photo: CapturedPhoto, resolution: ExportResolution) throws -> URL {
+        try prepareInternal(photo: photo, resolution: resolution, frameObject: false).url
+    }
+
+    private static func prepareInternal(
+        photo: CapturedPhoto,
+        resolution: ExportResolution,
+        frameObject: Bool
+    ) throws -> (url: URL, didFrame: Bool) {
         // Exact original, including its metadata, remains available when requested.
         guard resolution.maximumLongEdge != nil else {
             guard FileManager.default.fileExists(atPath: photo.fileURL.path) else {
                 throw PhotoExportError.invalidSource
             }
-            return photo.fileURL
+            return (photo.fileURL, false)
         }
 
         guard let source = CGImageSourceCreateWithURL(photo.fileURL as CFURL, nil),
@@ -148,6 +164,21 @@ nonisolated enum PhotoExportService {
             throw PhotoExportError.cannotCreateImage
         }
 
+        // Detect on the STILL image, not the preceding preview frame. The
+        // still lens crop/orientation can differ from the preview. Only frame
+        // if a fresh, large, reliable rectangle exists in this exact image.
+        var renderedImage = thumbnail
+        var didFrameObject = false
+        if frameObject,
+           let surface = SurfacePhotoProcessor.bestSurface(in: thumbnail),
+           let framed = SurfacePhotoProcessor.rectifiedImage(
+               from: thumbnail,
+               surface: surface
+           ) {
+            renderedImage = framed
+            didFrameObject = true
+        }
+
         // The generated file is in the same app-private temporary folder as the
         // source. It will be removed after the system share sheet is dismissed.
         let destinationURL = photo.fileURL.deletingLastPathComponent()
@@ -164,13 +195,13 @@ nonisolated enum PhotoExportService {
         let jpegOptions: [CFString: Any] = [
             kCGImageDestinationLossyCompressionQuality: resolution.jpegQuality
         ]
-        CGImageDestinationAddImage(destination, thumbnail, jpegOptions as CFDictionary)
+        CGImageDestinationAddImage(destination, renderedImage, jpegOptions as CFDictionary)
 
         guard CGImageDestinationFinalize(destination) else {
             try? FileManager.default.removeItem(at: destinationURL)
             throw PhotoExportError.cannotFinishFile
         }
-        return destinationURL
+        return (destinationURL, didFrameObject)
     }
 
     static func discardTemporaryCopy(_ url: URL, original: CapturedPhoto) {
