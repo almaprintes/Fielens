@@ -106,3 +106,10 @@ El creador precisa que el selector **después de tomar la foto funciona correcta
 ## Xcode tras pull — 2026-10-26 08:00
 
 Captura del usuario: Git fast-forward `a96bc9d..6ada2ba` y Xcode con errores de `ExportResolution`/`PhotoExportService`, pero Build Succeeded a las 07:59 (anterior al pull de 08:00). CI compila el commit `6ada2ba` correctamente: [build](https://github.com/almaprintes/Fielens/actions/runs/40289092036). Antes de editar código: Clean Build Folder ⇧⌘K → ⌘B → ⌘R. Solo investigar logs si fallan de nuevo. No asumir error de target ni añadir import sin prueba.
+
+## DEV 0.1.5 — Resolución real tras disparar
+
+- El usuario seleccionó Ligera antes de fotografiar y vio aún 48,77 MP; esto reveló defecto de UX en DEV 0.1.4 (revisión presentaba el JPEG maestro, no derivado).
+- DEV 0.1.5 build 6 en main corrige: `PreparedPhoto` identifica el JPEG concreto, sus píxeles/bytes reales; `PhotoReviewView` muestra ese JPEG y envía sus mismos bytes. Cambio de perfil regenera copia en tarea asíncrona; muestra progreso/error y limpia duplicados. La captura máxima queda como fuente temporal.
+- QA `docs/DEV_0.1.5_REVIEW_RESOLUTION.md`. **No afirmar compilación/test ni ejecución física hasta comprobar SHA de CI y probar en iPhone**.
+- Prueba prioritaria: elegir Ligera antes de fotografiar, revisar que la pantalla muestre alrededor de 1600 × 1200 (1,92 MP) y que Archivos conserve esas dimensiones; cambiar a Original y verificar 48,77 MP, sin repetir foto.
