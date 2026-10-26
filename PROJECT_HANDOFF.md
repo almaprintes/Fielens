@@ -148,3 +148,11 @@ Captura del usuario: Git fast-forward `a96bc9d..6ada2ba` y Xcode con errores de 
 - [CI](https://github.com/almaprintes/Fielens/actions/runs/40310449733) compilación iOS del commit `eb7628c5` correcta; comprobar tests en simulador para ese mismo SHA. QA física con iPhone PENDIENTE. [Protocolo](docs/DEV_0.1.10_MANUAL_CORNERS.md).
 - En el Mac: `git status --short`, si limpio `git pull --ff-only`, `⌘B`, `⌘R`. Elegir hoja → Ajustar esquinas → arrastrar esquina superior derecha a vértice de papel → Listo. Comprobar persiste, Restablecer restaura, Buscar de nuevo reinicia, capturas Ligera/Compartir no regresan.
 - No publicar fotos del usuario en GitHub público. Aún no hay rectificación/crop 3D ni modo de congelación de imagen para ajustar.
+
+## DEV 0.1.11 — Detección automática de superficies (26/10/2026 ~11:05)
+
+- El creador rechaza el flujo de múltiples pulsaciones porque sostener el iPhone y seleccionar un objetivo a mano resulta difícil. En consecuencia el funcionamiento normal se cambia a **detección continua limitada de Vision**, selección y mantenimiento del contorno primario automática, sin pulsar Buscar. Corrección mediante toque o menú opcional «…».
+- Código en `main`: `AutomaticSurfaceTracker.swift` (asociación estable de IDs, suavizado, heurística de rectángulo principal), `AutomaticSurfaceTrackerTests.swift`, modificaciones `CameraViewModel.swift`, `ContentView.swift`, `CameraPreview.swift`, versión 0.1.11 build 12.
+- Muestreo experimental ~550 ms entre detecciones correctas (más tiempo de Vision); 850 ms sin objeto, 1800 ms ante fallos. No superponer peticiones. Se para con revisión, fondo o cámara inactiva. Toque corrector y editor avanzado siguen disponibles pero no necesarios normalmente.
+- Corrección de un primer error de compilación del tracker (variable `center` sombreaba función, commit `1d716519`). **Verificar nuevo GitHub Actions verde ANTES de pedir probar en iPhone.** QA `docs/DEV_0.1.11_AUTOMATIC_SURFACES.md`.
+- Riesgos: parpadeo/latencia y CPU; si se quiere seguimiento más fluido evaluar `VNTrackRectangleRequest` y detección ocasional; medir FPS, temperatura y si videoOutput altera la fotografía 48.77 MP. No confundir contorno menta con perpendicularidad certificada; disparo continúa manual.
