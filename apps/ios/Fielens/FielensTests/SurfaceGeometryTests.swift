@@ -202,4 +202,38 @@ struct SurfaceGeometryTests {
         #expect(!nan.contains(SurfaceViewPoint(x: 0.5, y: 0.5)))
     }
 
+
+    @Test func oneCornerCanMoveWithoutBreakingConvexity() {
+        let id = UUID()
+        let initial = [
+            SurfaceViewPoint(x: 0.1, y: 0.2),
+            SurfaceViewPoint(x: 0.8, y: 0.45), // Misidentified top-right.
+            SurfaceViewPoint(x: 0.8, y: 0.85),
+            SurfaceViewPoint(x: 0.1, y: 0.85)
+        ]
+        #expect(SurfaceScreenPolygon(id: id, corners: initial).isConvex)
+
+        var corrected = initial
+        corrected[1] = SurfaceViewPoint(x: 0.8, y: 0.2)
+        let adjusted = SurfaceScreenPolygon(id: id, corners: corrected)
+        #expect(adjusted.isConvex)
+        #expect(adjusted.contains(SurfaceViewPoint(x: 0.75, y: 0.25)))
+        #expect(abs(adjusted.area - 0.455) < 1e-12)
+    }
+
+    @Test func draggingCornerAcrossOppositeEdgeIsRejected() {
+        let id = UUID()
+        let crossing = SurfaceScreenPolygon(
+            id: id,
+            corners: [
+                SurfaceViewPoint(x: 0.2, y: 0.2),
+                SurfaceViewPoint(x: 0.8, y: 0.2),
+                SurfaceViewPoint(x: 0.1, y: 0.9), // dragged across left edge
+                SurfaceViewPoint(x: 0.2, y: 0.8)
+            ]
+        )
+        #expect(!crossing.isConvex)
+        #expect(!crossing.contains(SurfaceViewPoint(x: 0.4, y: 0.4)))
+    }
+
 }
