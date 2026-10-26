@@ -84,3 +84,7 @@ La DEV 0.1.2 ya tiene confirmadas por el creador captura, botón Repetir y expor
 ## Calidad y compilación cloud
 
 [Fielens iOS Build](.github/workflows/ios-build.yml) permite compilar en GitHub Actions con Xcode 26.6 sin el Mac local. [Primer build verde](https://github.com/almaprintes/Fielens/actions/runs/40246527085). Se añadió un job de tests Swift en simulador iOS 26.5, sujeto a validación del primer resultado. Ver [manual CI](docs/IOS_CI.md).
+
+## EXP-002 — Selección por toque y guía relativa al soporte
+
+[Diseño de detección de superficies y perpendicularidad](docs/SURFACE_TARGETING_DESIGN.md). La DEV 0.1.4a aporta un primer módulo de detección de cuadriláteros con Vision y selección por toque, actualmente **sin UI conectada ni orientación relativa al objeto**. La detección es un candidato para soportes planos rectangulares, no un detector universal de plano/normal.
