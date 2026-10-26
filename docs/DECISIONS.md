@@ -65,3 +65,7 @@ No iniciar Vision continuamente hasta medir latencia, geometría y consumo. El p
 ## D-016 — 2026-10-26 — Experimental DEV 0.1.9 — Alinear Vision con sensor sin rotar
 
 No compensar visualmente por píxeles arbitrarios el desplazamiento de contornos. Corregir el marco de referencia: `VNImageRequestHandler` con orientación `.right` sobre buffer no rotado requiere deshacer 90° para pasar los puntos a `AVCaptureVideoPreviewLayer.layerPointConverted(fromCaptureDevicePoint:)`; transformar `(x,y) → (1-y,1-x)`. Fijar `videoRotationAngle=0` en VideoDataOutput, comprobar ancho > alto y bloquear únicamente detección (no la cámara) cuando no se cumpla la suposición. Estado sujeto a prueba física en iPhone y recalibración de cualquier zoom/crop diferente entre salidas.
+
+## D-017 — 2026-10-26 — DEV 0.1.10 — El usuario puede corregir esquinas incorrectas
+
+La detección automática no es infalible. Cuando Vision ubique mal un vértice, se ofrecerá un modo específico de **ajuste de cuatro esquinas**, con vista despejada, arrastre, validación convexa y restauración al resultado automático. Esto NO debe modificar el original ni provocar recorte automático. Preferir un estado «ajuste manual» explícito a presentar una geometría errónea como perfecta; seguir invirtiendo en reconocimiento robusto. Reducir tolerancia geométrica inicial de Vision con respaldo permisivo para preservar capacidad de editar en escenas difíciles. Registrar sensibilidad, falsos negativos y latencia antes de adoptar umbrales definitivos.
