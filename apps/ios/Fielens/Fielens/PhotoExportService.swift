@@ -74,10 +74,57 @@ nonisolated enum PhotoExportError: Error, LocalizedError, Sendable {
 /// Creates new JPEG bytes using image downsampling, no hidden crops or filters.
 /// A reduced shareable copy deliberately does not forward EXIF metadata.
 /// Work must execute outside the main actor due to potentially large originals.
+/// Metadata for the actual JPEG the user is reviewing and will share.
+/// The camera's untouched full-resolution file is kept separately until Repetir.
+nonisolated struct PreparedPhoto: Sendable {
+    let fileURL: URL
+    let resolution: ExportResolution
+    let pixelWidth: Int
+    let pixelHeight: Int
+    let byteCount: Int
+
+    var megapixels: Double {
+        Double(pixelWidth) * Double(pixelHeight) / 1_000_000
+    }
+}
+
 nonisolated enum PhotoExportService {
+    /// Prepares the visible result. Its exact bytes will later go to the share sheet.
+    /// Called off MainActor: ImageIO decoding or encoding can take time.
+    static func prepareForReview(
+        photo: CapturedPhoto,
+        resolution: ExportResolution
+    ) throws -> PreparedPhoto {
+        let url = try prepare(photo: photo, resolution: resolution)
+        do {
+            guard let source = CGImageSourceCreateWithURL(url as CFURL, nil),
+                  let rawProperties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as NSDictionary?,
+                  let width = (rawProperties[kCGImagePropertyPixelWidth] as? NSNumber)?.intValue,
+                  let height = (rawProperties[kCGImagePropertyPixelHeight] as? NSNumber)?.intValue,
+                  width > 0, height > 0 else {
+                throw PhotoExportError.invalidSource
+            }
+            let attrs = try FileManager.default.attributesOfItem(atPath: url.path)
+            guard let bytes = attrs[.size] as? NSNumber else {
+                throw PhotoExportError.invalidSource
+            }
+            return PreparedPhoto(
+                fileURL: url,
+                resolution: resolution,
+                pixelWidth: width,
+                pixelHeight: height,
+                byteCount: bytes.intValue
+            )
+        } catch {
+            discardTemporaryCopy(url, original: photo)
+            throw error
+        }
+    }
+
+
     static func prepare(photo: CapturedPhoto, resolution: ExportResolution) throws -> URL {
         // Exact original, including its metadata, remains available when requested.
-        guard let maximum = resolution.maximumLongEdge else {
+        guard resolution.maximumLongEdge != nil else {
             guard FileManager.default.fileExists(atPath: photo.fileURL.path) else {
                 throw PhotoExportError.invalidSource
             }
