@@ -77,3 +77,11 @@ La detección de superficies es una función asistiva, no una actividad que deba
 ## D-017 — 2026-10-26 — Aceptada provisionalmente — Encuadre automático en resultado
 
 Detectar el documento solo para dibujar un contorno no basta: la fotografía visible y enviada debe llenar el encuadre con el objeto seleccionado, sin mesa extra. Inicialmente se analiza el **fotograma de alta calidad capturado** en el perfil de exportación derivado; se localizan cuatro esquinas con Vision y se endereza/corta la superficie mediante Core Image. La opción viene activada por defecto y puede desactivarse. Si el contorno no es fiable, no recortar y explicarlo. El JPEG Original de cámara debe permanecer idéntico, accesible y recuperable durante la sesión. No confundir perspectiva digital corregida con cámara físicamente perpendicular; se deben calibrar ángulos y pérdidas de detalle antes de prometer perfección.
+
+## D-018 — 2026-10-26 — Aceptada DEV 0.1.13 — Pantalla inicial, cámara solo por intención
+
+Fielens debe presentar un menú de bienvenida antes de iniciar cámara o sensores. Abrir cámara requiere un toque explícito; al volver a inicio se detiene captura/seguimiento y se descartan fotos temporales que no hayan sido guardadas. Preferir interfaz ligera y elegante, inicialmente sencilla, sin páginas inertes.
+
+## D-019 — 2026-10-26 — Aceptada DEV 0.1.13 — Guardar foto seleccionada en carrete con mínimo permiso
+
+La revisión ofrece **Guardar en Fotos** separado de Compartir/Archivos, con autorización PhotoKit **addOnly** sin lectura de biblioteca. Guardar el mismo fichero JPEG que se ve en revisión (resolución y rectificación elegidas) sin transformarlo otra vez. No guardar fotos por defecto; informar del resultado real de PhotoKit y evitar borrar temporales antes de que finalice. Original mantiene su JPEG completo y metadatos potenciales; los derivados no copian EXIF original.
