@@ -39,3 +39,8 @@ Recibida imagen de ensayo y revisada una copia de chat (JPEG 1536 × 2048, 503.9
 ### Aclaración adicional H-008 — 23:25
 
 El creador confirma que **utilizó Guardar en Archivos desde Fielens**, donde la imagen conservada tiene **11,7 MB**. La copia recibida en ChatGPT es una versión de 1536 × 2048 píxeles mucho menor; es plausible una transformación durante el envío al chat, **no demostrada por una comparación binaria**. Se confirma la ruta funcional de exportación a Archivos, sin afirmar todavía identidad de bytes ni ausencia de cambios en intermediarios. Verificación final: dimensiones en Archivos, preferiblemente comparación del archivo original sin pasarlo por el chat.
+
+
+### Evidencia parcial H-015 — CI
+
+Compilación con Xcode 26.6 **verde** para commit `dafed1ff` en [GitHub Actions](https://github.com/almaprintes/Fielens/actions/runs/40297267434). Tests de simulador y build del último commit `0705e9c3` aún sin resultado verificado. No hay ninguna prueba física de detección por cámara; H-015 permanece abierto.
