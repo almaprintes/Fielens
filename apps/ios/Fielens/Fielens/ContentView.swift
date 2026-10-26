@@ -78,15 +78,17 @@ struct ContentView: View {
                         .font(.headline)
                         .tracking(2)
                     Spacer()
-                    Text("DEV 0.1.6")
+                    Text("DEV 0.1.7")
                         .font(.caption.monospaced())
                         .foregroundStyle(.white.opacity(0.8))
                 }
                 .foregroundStyle(.white)
 
-                Spacer()
-
+                // Keep the alignment indicator high and compact so the surface
+                // underneath stays visible while selecting a contour.
                 LevelOverlay(status: level.status, reading: level.reading)
+
+                Spacer(minLength: 14)
 
                 VStack(spacing: 6) {
                     Button {
@@ -261,7 +263,7 @@ private struct PhotoReviewView: View {
                     .font(.headline)
                     .tracking(2)
                 Spacer()
-                Text("DEV 0.1.6")
+                Text("DEV 0.1.7")
                     .font(.caption.monospaced())
             }
             .foregroundStyle(.white)
