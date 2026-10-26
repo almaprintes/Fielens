@@ -441,11 +441,15 @@ private struct PhotoReviewView: View {
     @Binding var selectedResolution: ExportResolution
     @Binding var frameDetectedObject: Bool
     let onRetake: () -> Void
+    let onGoHome: () -> Void
     @State private var preparedPhoto: PreparedPhoto?
     @State private var preparingResult = false
     @State private var preparationErrorMessage: String?
     @State private var showingShareSheet = false
     @State private var shareURL: URL?
+    @State private var isSavingToPhotos = false
+    @State private var photoSaveNotice: String?
+    @State private var photoSaveFailed = false
 
     private var currentResult: PreparedPhoto? {
         guard let preparedPhoto, preparedPhoto.resolution == selectedResolution else {
@@ -462,7 +466,15 @@ private struct PhotoReviewView: View {
 
     var body: some View {
         VStack(spacing: 14) {
-            HStack {
+            HStack(spacing: 12) {
+                Button(action: onGoHome) {
+                    Label("Inicio", systemImage: "chevron.left")
+                        .labelStyle(.iconOnly)
+                        .frame(width: 36, height: 36)
+                }
+                .buttonStyle(.plain)
+                .disabled(isSavingToPhotos || showingShareSheet)
+                .accessibilityLabel("Volver al inicio")
                 Text("FIELENS")
                     .font(.headline)
                     .tracking(2)
@@ -534,6 +546,7 @@ private struct PhotoReviewView: View {
                 }
                 .pickerStyle(.menu)
                 .tint(.mint)
+                .disabled(isSavingToPhotos || showingShareSheet)
                 Text(selectedResolution.recommendation)
                     .font(.footnote)
                     .foregroundStyle(.white.opacity(0.83))
@@ -542,7 +555,7 @@ private struct PhotoReviewView: View {
                     .font(.subheadline)
                     .tint(.mint)
                     .foregroundStyle(.white)
-                    .disabled(selectedResolution == .original || showingShareSheet)
+                    .disabled(selectedResolution == .original || showingShareSheet || isSavingToPhotos)
                     .accessibilityHint("Recorta y corrige la perspectiva si Fielens detecta un rectángulo fiable")
                 if selectedResolution == .original {
                     Text("Original siempre conserva el encuadre completo.")
@@ -560,6 +573,7 @@ private struct PhotoReviewView: View {
                 }
                 .buttonStyle(.bordered)
                 .tint(.white)
+                .disabled(isSavingToPhotos || showingShareSheet)
 
                 Button {
                     guard let result = currentResult else { return }
@@ -572,9 +586,33 @@ private struct PhotoReviewView: View {
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(.mint)
-                .disabled(currentResult == nil)
+                .disabled(currentResult == nil || isSavingToPhotos)
             }
             .padding(.horizontal, 16)
+
+            Button {
+                saveCurrentResultToPhotos()
+            } label: {
+                Label(
+                    isSavingToPhotos ? "Guardando en Fotos…" : "Guardar en Fotos",
+                    systemImage: isSavingToPhotos ? "hourglass" : "square.and.arrow.down"
+                )
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.bordered)
+            .tint(.mint)
+            .disabled(currentResult == nil || isSavingToPhotos || showingShareSheet)
+            .padding(.horizontal, 16)
+
+            if let photoSaveNotice {
+                Label(photoSaveNotice, systemImage: photoSaveFailed
+                      ? "exclamationmark.triangle" : "checkmark.circle.fill")
+                    .font(.footnote)
+                    .foregroundStyle(photoSaveFailed ? Color.orange : Color.mint)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 18)
+                    .accessibilityAddTraits(.updatesFrequently)
+            }
 
             Text("Se encuadra el objeto automáticamente cuando es fiable. El original de cámara permanece temporalmente disponible.")
                 .font(.footnote)
@@ -603,6 +641,7 @@ private struct PhotoReviewView: View {
     }
 
     private func prepareSelectedResult() async {
+        photoSaveNotice = nil
         let source = photo
         let choice = selectedResolution
         let shouldFrame = frameDetectedObject
@@ -640,6 +679,25 @@ private struct PhotoReviewView: View {
         }
         if !Task.isCancelled {
             preparingResult = false
+        }
+    }
+
+    private func saveCurrentResultToPhotos() {
+        guard let result = currentResult,
+              !isSavingToPhotos, !showingShareSheet else { return }
+        isSavingToPhotos = true
+        photoSaveNotice = nil
+        let urlToSave = result.fileURL
+        Task {
+            defer { isSavingToPhotos = false }
+            do {
+                try await PhotoLibrarySaver.saveJPEG(at: urlToSave)
+                photoSaveFailed = false
+                photoSaveNotice = "Fotografía guardada en Fotos."
+            } catch {
+                photoSaveFailed = true
+                photoSaveNotice = error.localizedDescription
+            }
         }
     }
 
