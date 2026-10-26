@@ -51,3 +51,10 @@ En la pantalla de revisión, **Compartir 2400 px** genera **1800 × 2400 píxele
 - https://developer.apple.com/documentation/avfoundation/avcapturevideopreviewlayer/layerpointconverted(fromcapturedevicepoint:)
 - https://developer.apple.com/documentation/avfoundation/avcaptureconnection/videorotationangle
 - https://developer.apple.com/documentation/vision/vnimagerequesthandler
+
+
+## Verificación cloud
+
+- [GitHub Actions run 40306740823](https://github.com/almaprintes/Fielens/actions/runs/40306740823), SHA `31c06ce433c145fd255107fb6d88ddc4d0a58754`: **Compile iOS without signing = SUCCESS** con Xcode 26.6.
+- **Swift unit tests on iOS simulator: queued** en la última comprobación; no afirmar tests verdes mientras no terminen.
+- **Dispositivo físico: todavía sin prueba DEV 0.1.9**. Validar visualmente cuatro esquinas antes de dar por corregido el problema.
