@@ -13,12 +13,7 @@ struct ContentView: View {
             Color.black.ignoresSafeArea()
 
             if let photo = camera.photo {
-                PhotoReviewView(
-                    photo: photo,
-                    selectedResolution: $exportResolution,
-                    onChooseResolution: { showingResolutionSheet = true },
-                    onRetake: camera.retake
-                )
+                PhotoReviewView(photo: photo, selectedResolution: $exportResolution, onRetake: camera.retake)
             } else {
                 liveCamera
             }
@@ -208,7 +203,6 @@ struct ContentView: View {
 private struct PhotoReviewView: View {
     let photo: CapturedPhoto
     @Binding var selectedResolution: ExportResolution
-    let onChooseResolution: () -> Void
     let onRetake: () -> Void
     @State private var showingShareSheet = false
     @State private var isPreparing = false
@@ -261,33 +255,21 @@ private struct PhotoReviewView: View {
                     .foregroundStyle(.white.opacity(0.8))
             }
 
-            Button(action: onChooseResolution) {
-                HStack(spacing: 12) {
-                    Image(systemName: "slider.horizontal.3")
-                        .foregroundStyle(.mint)
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Tamaño para compartir")
-                            .font(.caption)
-                            .foregroundStyle(.white.opacity(0.8))
-                        Text(selectedResolution.title)
-                            .font(.headline)
-                            .foregroundStyle(.white)
-                        Text(selectedResolution.recommendation)
-                            .font(.caption)
-                            .foregroundStyle(.white.opacity(0.8))
-                            .fixedSize(horizontal: false, vertical: true)
+            VStack(alignment: .leading, spacing: 6) {
+                Picker("Resolución de envío", selection: $selectedResolution) {
+                    ForEach(ExportResolution.allCases) { choice in
+                        Text(choice.title).tag(choice)
                     }
-                    Spacer(minLength: 4)
-                    Image(systemName: "chevron.up.chevron.down")
-                        .foregroundStyle(.white)
                 }
-                .padding(14)
-                .background(.white.opacity(0.11), in: RoundedRectangle(cornerRadius: 14))
+                .pickerStyle(.menu)
+                .tint(.mint)
+                .disabled(isPreparing)
+                Text(selectedResolution.recommendation)
+                    .font(.footnote)
+                    .foregroundStyle(.white.opacity(0.83))
             }
-            .buttonStyle(.plain)
-            .disabled(isPreparing)
-            .padding(.horizontal, 16)
-            .accessibilityLabel("Cambiar resolución. Actual: \(selectedResolution.title)")
+            .padding(.horizontal, 20)
+            .frame(maxWidth: .infinity, alignment: .leading)
 
             if let shareErrorMessage {
                 Text(shareErrorMessage)
@@ -360,8 +342,8 @@ private struct PhotoReviewView: View {
     }
 }
 
-/// One explicit, readable choice per row. Both camera and review use
-/// the same selection state; no nested Picker inside Menu.
+/// One explicit, readable choice per row for the camera preview.
+/// The already-working Picker in photo review remains unchanged.
 private struct ResolutionSelectionSheet: View {
     @Binding var selectedResolution: ExportResolution
     @Environment(\.dismiss) private var dismiss
