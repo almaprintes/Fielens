@@ -6,6 +6,7 @@ struct ContentView: View {
     @StateObject private var level = LevelMotionModel()
     @State private var exportResolution: ExportResolution = .share
     @State private var showingResolutionSheet = false
+    @State private var isAdjustingSurface = false
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
@@ -43,6 +44,9 @@ struct ContentView: View {
                 level.stop()
             }
         }
+        .onChange(of: camera.selectedSurfaceID) { selectedID in
+            if selectedID == nil { isAdjustingSurface = false }
+        }
         .onDisappear {
             camera.stop()
             level.stop()
@@ -56,6 +60,8 @@ struct ContentView: View {
                 surfaces: camera.surfaceCandidates,
                 selectedSurfaceID: camera.selectedSurfaceID,
                 pendingTap: camera.pendingSurfaceTap,
+                isEditingCorners: isAdjustingSurface,
+                correctedCornersByID: camera.correctedSurfaceCorners,
                 onSurfaceTap: { point, renderedSurfaceID in
                     camera.surfaceTapped(at: point, matching: renderedSurfaceID)
                 },
@@ -64,6 +70,9 @@ struct ContentView: View {
                         requestID: requestID,
                         renderedSurfaceID: renderedSurfaceID
                     )
+                },
+                onCornerAdjusted: { surfaceID, corners in
+                    camera.applyManualCornerAdjustment(surfaceID: surfaceID, corners: corners)
                 }
             )
                 .ignoresSafeArea()
@@ -75,6 +84,7 @@ struct ContentView: View {
                 endPoint: .bottom
             )
             .ignoresSafeArea()
+            .opacity(isAdjustingSurface ? 0 : 1)
             .allowsHitTesting(false)
 
             VStack(spacing: 18) {
@@ -131,6 +141,17 @@ struct ContentView: View {
                         .multilineTextAlignment(.center)
                         .lineLimit(3)
                         .foregroundStyle(.white)
+
+                    if camera.selectedSurfaceID != nil {
+                        Button {
+                            isAdjustingSurface = true
+                        } label: {
+                            Label("Ajustar esquinas", systemImage: "crop.rotate")
+                                .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.bordered)
+                        .tint(.white)
+                    }
                 }
                 .padding(10)
                 .background(.black.opacity(0.58), in: RoundedRectangle(cornerRadius: 14))
@@ -204,7 +225,47 @@ struct ContentView: View {
                     .foregroundStyle(.white.opacity(0.85))
             }
             .padding(24)
+            .opacity(isAdjustingSurface ? 0 : 1)
+            .allowsHitTesting(!isAdjustingSurface)
+
+            if isAdjustingSurface, camera.selectedSurfaceID != nil {
+                cornerAdjustmentControls
+            }
         }
+    }
+
+    private var cornerAdjustmentControls: some View {
+        VStack(spacing: 8) {
+            HStack(spacing: 10) {
+                Text("AJUSTAR ESQUINAS")
+                    .font(.subheadline.weight(.bold))
+                    .foregroundStyle(.white)
+                Spacer(minLength: 4)
+                Button("Restaurar") {
+                    camera.resetManualCornerAdjustment()
+                }
+                .foregroundStyle(.white)
+                Button("Listo") {
+                    isAdjustingSurface = false
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(.mint)
+            }
+            .padding(10)
+            .background(.black.opacity(0.76), in: RoundedRectangle(cornerRadius: 14))
+
+            Text("Arrastra cada punto verde a la esquina real del papel. El ajuste no recorta la foto.")
+                .font(.caption)
+                .multilineTextAlignment(.center)
+                .foregroundStyle(.white)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(.black.opacity(0.70), in: RoundedRectangle(cornerRadius: 12))
+
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, 14)
+        .padding(.top, 8)
     }
 
     @ViewBuilder
