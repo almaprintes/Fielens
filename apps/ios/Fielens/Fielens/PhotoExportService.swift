@@ -173,7 +173,8 @@ nonisolated enum PhotoExportService {
            let surface = SurfacePhotoProcessor.bestSurface(in: thumbnail),
            let framed = SurfacePhotoProcessor.rectifiedImage(
                from: thumbnail,
-               surface: surface
+               surface: surface,
+               maximumLongEdge: resolution.maximumLongEdge
            ) {
             renderedImage = framed
             didFrameObject = true
