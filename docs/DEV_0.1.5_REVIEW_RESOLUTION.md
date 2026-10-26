@@ -46,3 +46,10 @@ Esto **no implementa aún adquisición nativa a 2, 4 o 12 MP en AVCapturePhotoOu
 La elección antes del disparo debe afectar la fotografía que el usuario **ve y obtiene**, aunque internamente se conserve temporalmente una fuente maestra. Nunca publicar una app en que elegir «Ligera» termine visualmente con un resultado de 48,77 MP sin explicación. En Fielens, claridad de UX y fidelidad al archivo están por encima de la implementación interna.
 
 **Sin datos de DNI reales ni fotos personales en el repositorio público.**
+
+
+## CI preliminar
+
+- [Run GitHub Actions del SHA f588fdce](https://github.com/almaprintes/Fielens/actions/runs/40290313526): **compilación iOS correcta** con Xcode 26.6, sin firma, incluyendo la nueva revisión y test.
+- El job de tests del simulador aún no había terminado al registrar esta comprobación; no afirmar que está verde sin ver resultado.
+- Prueba física desde el Mac del creador todavía pendiente.
