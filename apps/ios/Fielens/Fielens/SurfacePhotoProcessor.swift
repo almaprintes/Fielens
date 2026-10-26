@@ -10,8 +10,12 @@ nonisolated enum SurfacePhotoProcessor {
     /// The processor should only frame a reasonably large, confident object.
     /// A bad detection must NEVER silently crop the user's only photograph.
     static func bestSurface(in image: CGImage) -> DetectedSurface? {
-        (try? RectangularSurfaceDetector.detect(in: image, orientation: .up))
-            ?.filter { $0.isValid && $0.confidence >= 0.45
+        guard let candidates = try? RectangularSurfaceDetector.detect(
+            in: image,
+            orientation: .up
+        ) else { return nil }
+        return candidates
+            .filter { $0.isValid && $0.confidence >= 0.45
                     && $0.areaFraction >= 0.075
                     && $0.areaFraction <= 0.97 }
             .max { score($0) < score($1) }
