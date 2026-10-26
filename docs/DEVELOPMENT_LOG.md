@@ -219,3 +219,14 @@ El creador precisa que el selector **después de tomar la foto funciona correcta
 - `SurfacePhotoProcessorTests.swift` prueba geometría, límite de longitud, rechazo de degenerados y archivo original intacto.
 - Versionado 0.1.12 build 13. El primer build detectó un error de sintaxis con optional chaining en detector; corregido commit `9c3687aa`. Compilación del commit `a71f9003` [en verde en GitHub Actions](https://github.com/almaprintes/Fielens/actions/runs/40318890182); tests en simulador en curso al registrar.
 - Limitaciones: heurística de selección puede elegir otro rectángulo si hay varios; corrección digital no reemplaza perpendicularidad real, imagen final reducida puede tener menor detalle óptico. [QA](DEV_0.1.12_OBJECT_FRAMING.md).
+
+## 2026-10-26 12:11 — DEV 0.1.13: inicio antes de cámara y guardar en carrete
+
+- El creador informa que el ajuste al objeto de DEV 0.1.12 está «casi perfecto» incluso con iluminación no favorable. Quiere desconectar el teléfono para probar en exteriores y solicita un **menú previo**, en lugar de abrir siempre la cámara, y **guardar al carrete de iOS**.
+- `ContentView.swift`: pantalla de inicio elegante con tono beige y fondo oscuro; botones Abrir cámara y Resolución, navegación de regreso desde cámara y revisión; la cámara/IMU se inician solo al entrar explícitamente. Versión visual DEV 0.1.13.
+- `CameraViewModel.swift`: `endSession()` detiene captura/seguimiento y descarta JPEG temporal actual al volver al inicio sin abrir cámara de nuevo.
+- `PhotoLibrarySaver.swift`: permiso de Photos `.addOnly`, `PHAssetCreationRequest.addResource` sobre el fichero JPEG ya preparado en revisión. Sin recomprimir, sin solicitar permiso de lectura del resto de fotos, y sin guardar automáticamente.
+- `ContentView.swift`: botón Guardar en Fotos con progreso y confirmación/error; mientras guarda deshabilita Repetir, cambio de resolución, compartir y navegación para no eliminar el archivo.
+- `project.pbxproj`: versión `0.1.13`, build 14, y `NSPhotoLibraryAddUsageDescription` en Debug/Release.
+- Se mantiene Compartir por hoja nativa y resolución/crop existente; no se tocan algoritmos Vision, Core Motion ni AVFoundation. [Protocolo completo](DEV_0.1.13_HOME_AND_PHOTOS.md).
+- **Estado:** código en `main`; validar primero GitHub Actions SHA final, después permiso de Fotos y archivo creado en iPhone. No afirmar éxito antes de prueba real.
