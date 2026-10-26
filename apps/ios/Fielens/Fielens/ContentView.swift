@@ -4,6 +4,7 @@ import UIKit
 struct ContentView: View {
     @StateObject private var camera = CameraViewModel()
     @StateObject private var level = LevelMotionModel()
+    @State private var exportResolution: ExportResolution = .share
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
@@ -11,7 +12,7 @@ struct ContentView: View {
             Color.black.ignoresSafeArea()
 
             if let photo = camera.photo {
-                PhotoReviewView(photo: photo, onRetake: camera.retake)
+                PhotoReviewView(photo: photo, selectedResolution: $exportResolution, onRetake: camera.retake)
             } else {
                 liveCamera
             }
@@ -77,6 +78,19 @@ struct ContentView: View {
                 LevelOverlay(status: level.status, reading: level.reading)
 
                 statusPanel
+
+                Menu {
+                    Picker("Resolución para compartir", selection: $exportResolution) {
+                        ForEach(ExportResolution.allCases) { choice in
+                            Text(choice.title).tag(choice)
+                        }
+                    }
+                } label: {
+                    Label("Envío: \(exportResolution.title)", systemImage: "slider.horizontal.3")
+                        .font(.footnote.weight(.medium))
+                        .foregroundStyle(.white)
+                }
+                .accessibilityHint("El original se captura a máxima resolución; eliges el tamaño de la copia para enviar")
 
                 if camera.status == .running {
                     Button(action: camera.capturePhoto) {
@@ -167,8 +181,12 @@ struct ContentView: View {
 
 private struct PhotoReviewView: View {
     let photo: CapturedPhoto
+    @Binding var selectedResolution: ExportResolution
     let onRetake: () -> Void
     @State private var showingShareSheet = false
+    @State private var isPreparing = false
+    @State private var shareErrorMessage: String?
+    @State private var temporaryShareURL: URL?
 
     var body: some View {
         VStack(spacing: 18) {
@@ -216,6 +234,30 @@ private struct PhotoReviewView: View {
                     .foregroundStyle(.white.opacity(0.8))
             }
 
+            VStack(alignment: .leading, spacing: 6) {
+                Picker("Resolución de envío", selection: $selectedResolution) {
+                    ForEach(ExportResolution.allCases) { choice in
+                        Text(choice.title).tag(choice)
+                    }
+                }
+                .pickerStyle(.menu)
+                .tint(.mint)
+                .disabled(isPreparing)
+                Text(selectedResolution.recommendation)
+                    .font(.footnote)
+                    .foregroundStyle(.white.opacity(0.83))
+            }
+            .padding(.horizontal, 20)
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+            if let shareErrorMessage {
+                Text(shareErrorMessage)
+                    .font(.footnote)
+                    .foregroundStyle(.orange)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 20)
+            }
+
             HStack(spacing: 12) {
                 Button(action: onRetake) {
                     Label("Repetir", systemImage: "arrow.counterclockwise")
@@ -223,29 +265,59 @@ private struct PhotoReviewView: View {
                 }
                 .buttonStyle(.bordered)
                 .tint(.white)
+                .disabled(isPreparing)
 
                 Button {
-                    showingShareSheet = true
+                    prepareAndShare()
                 } label: {
-                    Label("Compartir original", systemImage: "square.and.arrow.up")
+                    Label(isPreparing ? "Preparando…" : "Compartir", systemImage: "square.and.arrow.up")
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(.mint)
+                .disabled(isPreparing)
             }
             .padding(.horizontal, 16)
             .padding(.bottom, 12)
 
-            Text("La foto es temporal. Para conservarla, compártela o guárdala desde el menú.")
+            Text("El original permanece intacto en esta sesión. La copia para compartir puede tener menos resolución y no conserva los metadatos originales.")
                 .font(.footnote)
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.white.opacity(0.8))
                 .padding(.horizontal, 20)
                 .padding(.bottom, 8)
         }
-        .sheet(isPresented: $showingShareSheet) {
-            OriginalFileShareSheet(fileURL: photo.fileURL)
+        .sheet(isPresented: $showingShareSheet, onDismiss: clearTemporaryShare) {
+            OriginalFileShareSheet(fileURL: temporaryShareURL ?? photo.fileURL)
         }
+    }
+
+    private func prepareAndShare() {
+        guard !isPreparing else { return }
+        shareErrorMessage = nil
+        isPreparing = true
+        let source = photo
+        let choice = selectedResolution
+
+        Task {
+            do {
+                let url = try await Task.detached(priority: .userInitiated) {
+                    try PhotoExportService.prepare(photo: source, resolution: choice)
+                }.value
+                temporaryShareURL = url
+                showingShareSheet = true
+            } catch {
+                shareErrorMessage = error.localizedDescription
+            }
+            isPreparing = false
+        }
+    }
+
+    private func clearTemporaryShare() {
+        if let temporaryShareURL {
+            PhotoExportService.discardTemporaryCopy(temporaryShareURL, original: photo)
+        }
+        temporaryShareURL = nil
     }
 }
 
