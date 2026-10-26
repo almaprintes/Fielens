@@ -54,3 +54,8 @@
 Cuando la detección y el seguimiento sean fiables, estimar plano 3D respecto al eje óptico (con calibración y estimación de confianza), mostrar correcciones sin confundirlas con gravedad y evaluar disparo automático **optativo** solo tras asegurar foco, estabilidad y geometría. Hasta entonces no inventar un indicador de «perpendicular perfecto».
 
 **Señal de calidad:** poder abrir la cámara, apuntar al documento, verlo resaltado sin pulsar ninguna herramienta y fotografiarlo normalmente. Esa es la prueba clave de esta versión.
+
+
+### Verificación CI — 2026-10-26
+
+[GitHub Actions run 40313464522](https://github.com/almaprintes/Fielens/actions/runs/40313464522) para commit `1d716519ddfca19f5d22b47287666ef7ddeda002`: **compilación iOS y todos los tests Swift del job superados** (Xcode 26.6 / simulador iOS). Los cambios posteriores a ese commit son únicamente documentales. **NO existe aún prueba del seguimiento automático en el iPhone físico** ni medición de FPS/temperatura; ese es el próximo paso antes de aceptar H-016.
