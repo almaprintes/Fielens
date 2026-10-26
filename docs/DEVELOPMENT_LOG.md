@@ -154,3 +154,10 @@ El creador precisa que el selector **después de tomar la foto funciona correcta
 - Se aísla `SurfaceCoordinateMapper` y se añaden pruebas geométricas. La transformación de Vision a `AVCaptureVideoPreviewLayer` **no está validada en el iPhone** y requiere papel A4 con vértices visibles.
 - Riesgos: AVFoundation y videoDataOutput pueden afectar máxima resolución fotográfica / rendimiento; para esta fase conservar pruebas 48 MP y tasas de FPS.
 - Versión DEV 0.1.6 build 7; protocolo [DEV_0.1.6_SURFACE_PREVIEW.md](DEV_0.1.6_SURFACE_PREVIEW.md). **No afirmar Build Succeeded ni prueba física hasta verificar el run de CI final**.
+
+
+### Verificación parcial de DEV 0.1.6
+
+- [Run de GitHub Actions con commit dafed1ff](https://github.com/almaprintes/Fielens/actions/runs/40297267434) superó la **compilación iOS** con Xcode 26.6. El job de tests Swift seguía activo en el momento de la consulta.
+- Después se añadió timeout seguro de 4 segundos a `SurfaceFrameSampler` (IDs por solicitud) para evitar estado «Analizando…» indefinido. La nueva ejecución para `0705e9c3` está [aquí](https://github.com/almaprintes/Fielens/actions/runs/40297687145) y **no debe darse por superada hasta ver conclusión**.
+- La prueba física en iPhone, especialmente posición de las esquinas y conservación de captura 48,77 MP, sigue totalmente pendiente.
