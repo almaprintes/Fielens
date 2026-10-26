@@ -59,4 +59,34 @@ struct SurfaceGeometryTests {
         )
         #expect(!bowTie.isValid)
     }
+    @Test func previewCoordinateConversionIsInvertible() {
+        let corners = [
+            SurfacePoint(x: 0, y: 0),
+            SurfacePoint(x: 0.1, y: 0.85),
+            SurfacePoint(x: 0.5, y: 0.5),
+            SurfacePoint(x: 1, y: 1)
+        ]
+        for vision in corners {
+            let capture = SurfaceCoordinateMapper.capturePoint(fromVision: vision)
+            let roundTrip = SurfaceCoordinateMapper.visionPoint(fromCapture: capture)
+            #expect(roundTrip == vision)
+        }
+        #expect(SurfaceCoordinateMapper.capturePoint(
+            fromVision: SurfacePoint(x: 0.2, y: 0.9)
+        ) == SurfacePoint(x: 0.2, y: 0.1))
+    }
+
+    @Test func tiltedConvexSurfaceCanBeSelected() {
+        let shape = DetectedSurface(
+            topLeft: SurfacePoint(x: 0.25, y: 0.85),
+            topRight: SurfacePoint(x: 0.65, y: 0.79),
+            bottomRight: SurfacePoint(x: 0.79, y: 0.24),
+            bottomLeft: SurfacePoint(x: 0.19, y: 0.16),
+            confidence: 0.9
+        )
+        #expect(shape.isValid)
+        #expect(shape.contains(SurfacePoint(x: 0.5, y: 0.5)))
+        #expect(!shape.contains(SurfacePoint(x: 0.9, y: 0.9)))
+    }
+
 }
