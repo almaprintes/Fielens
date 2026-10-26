@@ -144,3 +144,13 @@ El creador precisa que el selector **después de tomar la foto funciona correcta
 - La captura nativa **sigue siendo 48MP cuando el hardware lo admita** para poder cambiar de calidad posteriormente. No afirmar reducción de coste del sensor; la versión visible y enviada sí es reducida.
 - Se añade test de salida real Ligera (1600 × 1200 en fixture 4:3), identidad del JPEG original y correspondencia de tamaño. Se sube como DEV 0.1.5 build 6. 
 - Resultado de CI y validación en iPhone pendientes de consultar. [QA](DEV_0.1.5_REVIEW_RESOLUTION.md). No subir documentos de identidad al repositorio.
+
+## 2026-10-26 09:01 — DEV 0.1.6: superficies visibles y selección con un toque
+
+- Nueva iteración centrada en EXP-002, tras confirmar que la DEV 0.1.5 tuvo **compilación y tests Swift exitosos** en [CI run 40290313526](https://github.com/almaprintes/Fielens/actions/runs/40290313526). La 0.1.5 todavía no tiene test físico registrado que pruebe las salidas de píxeles de la elección.
+- Implementada salida `AVCaptureVideoDataOutput` opcional, delegado `SurfaceFrameSampler` (un solo fotograma por petición y descarte de frames tardíos), `VNDetectRectanglesRequest` sobre `CVPixelBuffer`.
+- El usuario puede tocar la cámara para intentar detectar el cuadrilátero que cubre el punto, o pulsar «Buscar contorno» para ver todos. Candidatos con trazo blanco discontinuo y selección menta mediante overlay sobre `AVCaptureVideoPreviewLayer`.
+- Se mantienen disparo, selector de resolución, revisión y nivel Core Motion. Sin tracking continuo ni pose/perpendicularidad; el contorno se puede volver obsoleto si se mueve el móvil y el texto lo advierte.
+- Se aísla `SurfaceCoordinateMapper` y se añaden pruebas geométricas. La transformación de Vision a `AVCaptureVideoPreviewLayer` **no está validada en el iPhone** y requiere papel A4 con vértices visibles.
+- Riesgos: AVFoundation y videoDataOutput pueden afectar máxima resolución fotográfica / rendimiento; para esta fase conservar pruebas 48 MP y tasas de FPS.
+- Versión DEV 0.1.6 build 7; protocolo [DEV_0.1.6_SURFACE_PREVIEW.md](DEV_0.1.6_SURFACE_PREVIEW.md). **No afirmar Build Succeeded ni prueba física hasta verificar el run de CI final**.
