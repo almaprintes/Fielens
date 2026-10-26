@@ -96,3 +96,8 @@ La pantalla de cámara negra de las dos capturas se debía a que era de noche y 
 - Se corrigió el fixture UIKit para escala de renderizado 1x, commit `4eb6809e`. Nueva CI: https://github.com/almaprintes/Fielens/actions/runs/40288358518 (resultado pendiente al redactar).
 - Usuario ha vuelto al Mac. Primero `cd ~/Developer/Fielens && git status --short`; solo si no hay cambios locales, `git pull --ff-only`. Abrir proyecto Xcode y `⌘B`, `⌘R` con iPhone físico.
 - Verificar exportación en Archivos para 1600 / 2400 / 4000 px lado mayor y Original; comparar orientación, dimensiones, peso, legibilidad, JPEG y eliminación de metadatos en derivados con documento ficticio. No enviar documentos reales al repositorio.
+
+
+## Aclaración y corrección de UX — 2026-10-26 07:56
+
+El creador precisa que el selector **después de tomar la foto funciona correctamente**. La incidencia afecta solo al menú desplegable sobre la vista previa de cámara, antes del disparo. La reparación final **conserva el Picker ya probado de revisión** y cambia exclusivamente el selector previo al disparo por un botón legible que abre una hoja con cuatro filas de tamaño, una selección marcada y cierre inmediato. Ambas pantallas siguen compartiendo la elección de exportación. Commit de ajuste final: `f541d4ae`. Confirmar compilación cloud y probar físicamente el desplegable previo; no cambiar el sistema de captura fotográfica ni afirmar que la elección reduce la resolución del sensor.
