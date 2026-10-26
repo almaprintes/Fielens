@@ -152,21 +152,30 @@ nonisolated enum PhotoExportService {
             throw PhotoExportError.invalidSource
         }
 
-        // ImageIO produces a downsampled, orientation-corrected raster without
-        // first decoding the full 48 MP image into a giant UIImage.
-        let options: [CFString: Any] = [
-            kCGImageSourceCreateThumbnailFromImageAlways: true,
-            kCGImageSourceCreateThumbnailWithTransform: true,
-            kCGImageSourceThumbnailMaxPixelSize: resolution.expectedLongEdge(for: photo),
-            kCGImageSourceShouldCacheImmediately: true
-        ]
-        guard let thumbnail = CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary) else {
+        // Framing must happen BEFORE reducing the OBJECT to its final size.
+        // Otherwise a small document in a large scene could lose most of its
+        // available pixels when cropped from an already 1600px-wide full frame.
+        let desiredLongEdge = resolution.expectedLongEdge(for: photo)
+        let workingLongEdge = frameObject
+            ? min(4800, max(desiredLongEdge * 2, 3200))
+            : desiredLongEdge
+
+        func makeThumbnail(maximumEdge: Int) -> CGImage? {
+            let options: [CFString: Any] = [
+                kCGImageSourceCreateThumbnailFromImageAlways: true,
+                kCGImageSourceCreateThumbnailWithTransform: true,
+                kCGImageSourceThumbnailMaxPixelSize: maximumEdge,
+                kCGImageSourceShouldCacheImmediately: true
+            ]
+            return CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary)
+        }
+
+        guard let thumbnail = makeThumbnail(maximumEdge: workingLongEdge) else {
             throw PhotoExportError.cannotCreateImage
         }
 
-        // Detect on the STILL image, not the preceding preview frame. The
-        // still lens crop/orientation can differ from the preview. Only frame
-        // if a fresh, large, reliable rectangle exists in this exact image.
+        // Detect on the STILL photo rather than the old preview frame.
+        // Bound the working raster to protect memory on older iPhones.
         var renderedImage = thumbnail
         var didFrameObject = false
         if frameObject,
@@ -174,10 +183,17 @@ nonisolated enum PhotoExportService {
            let framed = SurfacePhotoProcessor.rectifiedImage(
                from: thumbnail,
                surface: surface,
-               maximumLongEdge: resolution.maximumLongEdge
+               maximumLongEdge: desiredLongEdge
            ) {
             renderedImage = framed
             didFrameObject = true
+        } else if workingLongEdge > desiredLongEdge {
+            // No valid rectangle: preserve the whole frame but STILL obey
+            // the chosen Ligera/Compartir/Detalle resolution.
+            guard let fallback = makeThumbnail(maximumEdge: desiredLongEdge) else {
+                throw PhotoExportError.cannotCreateImage
+            }
+            renderedImage = fallback
         }
 
         // The generated file is in the same app-private temporary folder as the
