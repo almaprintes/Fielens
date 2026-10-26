@@ -13,7 +13,12 @@ struct PhotoExportTests {
     }
 
     @Test func originalExportIsIdenticalAndReducedExportKeepsSourceUnchanged() throws {
-        let image = UIGraphicsImageRenderer(size: CGSize(width: 2400, height: 1600)).image { ctx in
+        let format = UIGraphicsImageRendererFormat.default()
+        format.scale = 1
+        let image = UIGraphicsImageRenderer(
+            size: CGSize(width: 2400, height: 1600),
+            format: format
+        ).image { ctx in
             UIColor.white.setFill()
             ctx.fill(CGRect(x: 0, y: 0, width: 2400, height: 1600))
             UIColor.black.setFill()
@@ -79,7 +84,12 @@ struct PhotoExportTests {
     }
 
     @Test func aSmallPhotoIsNeverUpscaled() throws {
-        let image = UIGraphicsImageRenderer(size: CGSize(width: 64, height: 48)).image { context in
+        let format = UIGraphicsImageRendererFormat.default()
+        format.scale = 1
+        let image = UIGraphicsImageRenderer(
+            size: CGSize(width: 64, height: 48),
+            format: format
+        ).image { context in
             UIColor.white.setFill()
             context.fill(CGRect(x: 0, y: 0, width: 64, height: 48))
         }
