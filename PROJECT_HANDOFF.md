@@ -113,3 +113,12 @@ Captura del usuario: Git fast-forward `a96bc9d..6ada2ba` y Xcode con errores de 
 - DEV 0.1.5 build 6 en main corrige: `PreparedPhoto` identifica el JPEG concreto, sus píxeles/bytes reales; `PhotoReviewView` muestra ese JPEG y envía sus mismos bytes. Cambio de perfil regenera copia en tarea asíncrona; muestra progreso/error y limpia duplicados. La captura máxima queda como fuente temporal.
 - QA `docs/DEV_0.1.5_REVIEW_RESOLUTION.md`. **No afirmar compilación/test ni ejecución física hasta comprobar SHA de CI y probar en iPhone**.
 - Prueba prioritaria: elegir Ligera antes de fotografiar, revisar que la pantalla muestre alrededor de 1600 × 1200 (1,92 MP) y que Archivos conserve esas dimensiones; cambiar a Original y verificar 48,77 MP, sin repetir foto.
+
+## DEV 0.1.6 — Superficies visibles (2026-10-26 09:01)
+
+- El creador quiere seguir con la detección/tap de superficies y futuro nivel relativo al objeto. Implementado el primer circuito de UI para detectar **rectángulos** y seleccionarlos por toque, sin medir todavía perpendicularidad.
+- `SurfaceFrameSampler.swift`: petición de análisis de un solo fotograma desde vídeo; no guardar ni enviar frames; cola de callbacks.
+- `CameraSession.swift`: añade `AVCaptureVideoDataOutput` solo si compatible; no bloquear PhotoOutput si falla; `CameraViewModel.swift` estados de candidatos/escaneo/tap e invalidación al salir.
+- `RectangularSurfaceDetector.swift` acepta `CVPixelBuffer`; `CameraPreview.swift` dibuja trazos seleccionables sobre preview mediante `AVCaptureVideoPreviewLayer`; `ContentView.swift` añade botón e informa limitaciones.
+- Pruebas nuevas de geometría, protocolo `docs/DEV_0.1.6_SURFACE_PREVIEW.md`, Xcode versión 0.1.6 build 7.
+- CRÍTICO: comprobar primero CI y luego iPhone. Asegurarse de que el nivel y la calidad del JPEG nativo (antes 48,77 MP) no sufren regresión al añadir videoOutput. Calibrar dibujo de esquinas/orientación en retrato con A4. No afirmar nivel de perpendicularidad.
