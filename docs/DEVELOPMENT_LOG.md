@@ -192,3 +192,14 @@ El creador precisa que el selector **después de tomar la foto funciona correcta
 - Detección Vision ahora intenta primero `quadratureTolerance=22`, confianza 0,45 y tamaño 0,12; si no aparecen candidatos grandes usa parámetros anteriores (35/0,35/0,08). Estrategia experimental cuyo rendimiento y falsos negativos se medirán.
 - Tests Swift geometría añadidos para corrección de una esquina y rechazo de cruces. En [Actions CI 40310449733](https://github.com/almaprintes/Fielens/actions/runs/40310449733), compilación iOS del commit `eb7628c5` **en verde**; tests del simulador todavía activos en la última consulta. Prueba física en iPhone pendiente.
 - [Plan de validación DEV 0.1.10](DEV_0.1.10_MANUAL_CORNERS.md).
+
+## 2026-10-26 11:05 — DEV 0.1.11: eliminar la intervención manual para detectar contornos
+
+- El creador señala que el flujo anterior exige demasiados toques mientras intenta sostener el iPhone. Prioridad de experiencia: detectar, seleccionar y seguir superficies **automáticamente**, con toque solo corrector. No introducir auto-disparo sin calibración.
+- En DEV 0.1.10 se reconocían rectángulos solo al pulsar Buscar o tocar, y se mostraban varias líneas. 0.1.11 programa búsquedas repetidas cuando la cámara entra en estado running; Vision sigue ejecutándose bajo demanda, no sobre todos los frames.
+- `AutomaticSurfaceTracker.swift`: ordena candidatos por superficie/centralidad/confianza, mantiene ID estable entre frames mediante correspondencia de posiciones y tamaños, suaviza las cuatro esquinas, no selecciona recuadros muy pequeños, evita persistir un contorno perdido.
+- `CameraViewModel.swift`: ciclo sin solicitudes paralelas, intervalo experimental de 550 ms tras detección, 850 ms sin rectángulos, 1800 ms ante error, con invalidación de generaciones al pausar/revisar/salir. Mantiene selección manual mientras corresponda al mismo objeto.
+- `ContentView.swift`: elimina botón Buscar del flujo ordinario, panel discreto con estado; menú de tres puntos concentra «Elegir otro», «Corregir esquinas» y «Buscar de nuevo» si hacen falta.
+- `CameraPreview.swift`: muestra solo el contorno seleccionado, para no llenar el visor de cuadros. La interfaz usa DEV 0.1.11, build 12.
+- `AutomaticSurfaceTrackerTests.swift` añade casos geométricos y de estabilidad. [Plan y riesgos](DEV_0.1.11_AUTOMATIC_SURFACES.md).
+- El primer build del tracker falló por sombreado del método `center` con una variable local; se identificó en los logs del run `40313150060` y corrigió en commit `1d716519`. Se está revisando CI nueva. **No se ha probado aún en hardware real.**
