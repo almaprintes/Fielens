@@ -83,6 +83,39 @@ struct PhotoExportTests {
         #expect(copyProps[kCGImagePropertyGPSDictionary] == nil)
     }
 
+    @Test func selectedResultMetadataMatchesActualJPEGAndOriginalStaysIntact() throws {
+        let format = UIGraphicsImageRendererFormat.default()
+        format.scale = 1
+        let image = UIGraphicsImageRenderer(
+            size: CGSize(width: 2000, height: 1500),
+            format: format
+        ).image { context in
+            UIColor.white.setFill()
+            context.fill(CGRect(x: 0, y: 0, width: 2000, height: 1500))
+            UIColor.black.setFill()
+            context.fill(CGRect(x: 200, y: 200, width: 700, height: 100))
+        }
+        let jpeg = try #require(image.jpegData(compressionQuality: 0.9))
+        let source = try TemporaryPhotoStore.saveOriginalJPEG(jpeg)
+        defer { TemporaryPhotoStore.discard(source) }
+
+        let light = try PhotoExportService.prepareForReview(photo: source, resolution: .compact)
+        defer { PhotoExportService.discardTemporaryCopy(light.fileURL, original: source) }
+
+        #expect(light.resolution == .compact)
+        #expect(light.pixelWidth == 1600)
+        #expect(light.pixelHeight == 1200)
+        #expect(light.byteCount == (try Data(contentsOf: light.fileURL)).count)
+        #expect(light.megapixels == 1.92)
+        #expect(try Data(contentsOf: source.fileURL) == jpeg)
+
+        let original = try PhotoExportService.prepareForReview(photo: source, resolution: .original)
+        #expect(original.fileURL == source.fileURL)
+        #expect(original.pixelWidth == 2000)
+        #expect(original.pixelHeight == 1500)
+        #expect(original.byteCount == jpeg.count)
+    }
+
     @Test func aSmallPhotoIsNeverUpscaled() throws {
         let format = UIGraphicsImageRendererFormat.default()
         format.scale = 1
