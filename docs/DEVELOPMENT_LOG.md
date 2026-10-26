@@ -135,3 +135,12 @@ El creador precisa que el selector **después de tomar la foto funciona correcta
 - Interpretación provisional: diagnósticos obsoletos de indexación de Xcode al actualizar fuentes mientras el proyecto está abierto; NO probar un error confirmado del código local sin `⌘B` reciente.
 - Paso recomendado sin modificaciones al código: `Product → Clean Build Folder` (`⇧⌘K`), compilar (`⌘B`), y lanzar (`⌘R`) si compila. Si falla, solicitar captura/log del build nuevo, no inventar arreglos.
 - Estado tests Swift cloud del mismo commit pendiente al registrar esta incidencia. No publicar diagnóstico como fallo confirmado hasta reproducir.
+
+## 2026-10-26 08:05 — Fallo UX DEV 0.1.4, corregido en DEV 0.1.5
+
+- El creador confirma que elegir «Ligera» **antes del disparo** sigue mostrando 48,77 MP en revisión.
+- Causa identificada: hasta 0.1.4, Fielens generaba versiones reducidas solo al pulsar Compartir, mientras la vista de revisión pintaba el original y sus metadatos. Selector y resultado visible no coincidían.
+- Corrección 0.1.5: `PhotoExportService.prepareForReview` crea archivo JPEG de perfil escogido e inspecciona dimensiones/tamaño reales; `PhotoReviewView` muestra y comparte exactamente ese fichero, no el master; trabajo en tarea separada, advertencia/error si no se pudo generar y limpieza de temporales al cambiar y repetir. En Original devuelve el archivo fuente sin transformar.
+- La captura nativa **sigue siendo 48MP cuando el hardware lo admita** para poder cambiar de calidad posteriormente. No afirmar reducción de coste del sensor; la versión visible y enviada sí es reducida.
+- Se añade test de salida real Ligera (1600 × 1200 en fixture 4:3), identidad del JPEG original y correspondencia de tamaño. Se sube como DEV 0.1.5 build 6. 
+- Resultado de CI y validación en iPhone pendientes de consultar. [QA](DEV_0.1.5_REVIEW_RESOLUTION.md). No subir documentos de identidad al repositorio.
