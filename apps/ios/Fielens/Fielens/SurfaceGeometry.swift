@@ -121,3 +121,70 @@ nonisolated enum SurfaceCoordinateMapper {
         SurfacePoint(x: point.x, y: 1 - point.y)
     }
 }
+
+
+// MARK: - Touch selection in the ACTUAL rendered preview coordinates
+
+/// Normalized UIKit preview coordinates. Origin is TOP-LEFT, unlike Vision.
+/// Hit testing MUST be performed here using the same projected corners we draw.
+nonisolated struct SurfaceViewPoint: Equatable, Sendable {
+    let x: Double
+    let y: Double
+
+    var isFinite: Bool { x.isFinite && y.isFinite }
+}
+
+nonisolated struct SurfaceScreenPolygon: Sendable {
+    let id: UUID
+    /// The four points used for the rendered overlay, in preview coordinates.
+    let corners: [SurfaceViewPoint]
+
+    var area: Double {
+        guard corners.count == 4, corners.allSatisfy(\.isFinite) else { return 0 }
+        let twiceArea = corners.indices.reduce(0.0) { sum, i in
+            let a = corners[i]
+            let b = corners[(i + 1) % corners.count]
+            return sum + a.x * b.y - b.x * a.y
+        }
+        return abs(twiceArea) / 2
+    }
+
+    func contains(_ point: SurfaceViewPoint) -> Bool {
+        guard point.isFinite, corners.count == 4, area > 0.000001 else {
+            return false
+        }
+        // Convex polygon, coordinates correspond to the actual drawn screen path.
+        var sign = 0
+        for index in corners.indices {
+            let a = corners[index]
+            let b = corners[(index + 1) % corners.count]
+            let cross = (b.x - a.x) * (point.y - a.y) -
+                (b.y - a.y) * (point.x - a.x)
+            if abs(cross) <= 1e-9 { continue }
+            let nextSign = cross > 0 ? 1 : -1
+            if sign != 0 && sign != nextSign { return false }
+            sign = nextSign
+        }
+        return true
+    }
+}
+
+/// One visual tap picks the OUTERMOST containing candidate by default, avoiding
+/// accidental selection of tiny printed boxes/text inside a sheet of paper.
+/// The UI also offers an explicit "Other contour" action for nested surfaces.
+nonisolated enum SurfaceScreenSelector {
+    static func selected(
+        at tap: SurfaceViewPoint,
+        from polygons: [SurfaceScreenPolygon]
+    ) -> UUID? {
+        polygons
+            .filter { $0.contains(tap) }
+            .max { $0.area < $1.area }?
+            .id
+    }
+}
+
+nonisolated struct SurfacePendingTap: Equatable, Sendable {
+    let id: UUID
+    let point: SurfaceViewPoint
+}
