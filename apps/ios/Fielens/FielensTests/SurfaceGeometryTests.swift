@@ -93,4 +93,82 @@ struct SurfaceGeometryTests {
         #expect(!shape.contains(SurfacePoint(x: 0.9, y: 0.9)))
     }
 
+
+    @Test func touchUsesTheSameVisibleScreenPolygon() throws {
+        let outerID = UUID()
+        let innerID = UUID()
+        let outer = SurfaceScreenPolygon(
+            id: outerID,
+            corners: [
+                SurfaceViewPoint(x: 0.1, y: 0.1),
+                SurfaceViewPoint(x: 0.9, y: 0.1),
+                SurfaceViewPoint(x: 0.9, y: 0.85),
+                SurfaceViewPoint(x: 0.1, y: 0.85)
+            ]
+        )
+        let inner = SurfaceScreenPolygon(
+            id: innerID,
+            corners: [
+                SurfaceViewPoint(x: 0.4, y: 0.4),
+                SurfaceViewPoint(x: 0.6, y: 0.4),
+                SurfaceViewPoint(x: 0.6, y: 0.6),
+                SurfaceViewPoint(x: 0.4, y: 0.6)
+            ]
+        )
+        #expect(outer.contains(SurfaceViewPoint(x: 0.5, y: 0.5)))
+        #expect(inner.contains(SurfaceViewPoint(x: 0.5, y: 0.5)))
+        // Text inside a document must not steal selection of the whole page.
+        #expect(SurfaceScreenSelector.selected(
+            at: SurfaceViewPoint(x: 0.5, y: 0.5),
+            from: [inner, outer]
+        ) == outerID)
+        #expect(SurfaceScreenSelector.selected(
+            at: SurfaceViewPoint(x: 0.02, y: 0.5),
+            from: [inner, outer]
+        ) == nil)
+    }
+
+    @Test func selectsConvexTrapezoidAtRenderedCoordinates() throws {
+        let id = UUID()
+        let sheet = SurfaceScreenPolygon(
+            id: id,
+            corners: [
+                SurfaceViewPoint(x: 0.25, y: 0.18),
+                SurfaceViewPoint(x: 0.78, y: 0.16),
+                SurfaceViewPoint(x: 0.7, y: 0.83),
+                SurfaceViewPoint(x: 0.15, y: 0.79)
+            ]
+        )
+        #expect(sheet.contains(SurfaceViewPoint(x: 0.5, y: 0.5)))
+        #expect(!sheet.contains(SurfaceViewPoint(x: 0.9, y: 0.8)))
+        #expect(SurfaceScreenSelector.selected(
+            at: SurfaceViewPoint(x: 0.5, y: 0.5),
+            from: [sheet]
+        ) == id)
+        #expect(sheet.area > 0.2)
+    }
+
+    @Test func rejectsCollapsedOrNotFiniteRenderedQuads() {
+        let invalid = SurfaceScreenPolygon(
+            id: UUID(),
+            corners: [
+                SurfaceViewPoint(x: 0.5, y: 0.5),
+                SurfaceViewPoint(x: 0.5, y: 0.5),
+                SurfaceViewPoint(x: 0.5, y: 0.5),
+                SurfaceViewPoint(x: 0.5, y: 0.5)
+            ]
+        )
+        #expect(!invalid.contains(SurfaceViewPoint(x: 0.5, y: 0.5)))
+        let nan = SurfaceScreenPolygon(
+            id: UUID(),
+            corners: [
+                SurfaceViewPoint(x: Double.nan, y: 0.2),
+                SurfaceViewPoint(x: 0.8, y: 0.2),
+                SurfaceViewPoint(x: 0.8, y: 0.8),
+                SurfaceViewPoint(x: 0.2, y: 0.8)
+            ]
+        )
+        #expect(!nan.contains(SurfaceViewPoint(x: 0.5, y: 0.5)))
+    }
+
 }
