@@ -32,6 +32,7 @@ nonisolated final class SurfaceFrameSampler: NSObject,
 
     private var pendingScan:
         (@MainActor @Sendable (Result<[DetectedSurface], SurfaceScanError>) -> Void)?
+    private var pendingScanID: UUID?
 
     func requestScan(
         completion: @escaping @MainActor @Sendable (Result<[DetectedSurface], SurfaceScanError>) -> Void
@@ -41,12 +42,16 @@ nonisolated final class SurfaceFrameSampler: NSObject,
                 Task { @MainActor in completion(.failure(.busy)) }
                 return
             }
+            let requestID = UUID()
             pendingScan = completion
+            pendingScanID = requestID
             // Some devices may deliver no sample buffers despite a live preview.
             // Finish the request instead of leaving "Analizando…" indefinitely.
             sampleQueue.asyncAfter(deadline: .now() + .seconds(4)) { [self] in
-                guard let timedOut = pendingScan else { return }
+                guard pendingScanID == requestID,
+                      let timedOut = pendingScan else { return }
                 pendingScan = nil
+                pendingScanID = nil
                 Task { @MainActor in timedOut(.failure(.unavailable)) }
             }
         }
@@ -55,6 +60,7 @@ nonisolated final class SurfaceFrameSampler: NSObject,
     func cancel() {
         sampleQueue.async { [self] in
             pendingScan = nil
+            pendingScanID = nil
         }
     }
 
@@ -65,6 +71,7 @@ nonisolated final class SurfaceFrameSampler: NSObject,
     ) {
         guard let completion = pendingScan else { return }
         pendingScan = nil
+        pendingScanID = nil
 
         guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {
             Task { @MainActor in completion(.failure(.unavailable)) }
