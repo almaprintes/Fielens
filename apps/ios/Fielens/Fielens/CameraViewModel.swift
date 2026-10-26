@@ -22,7 +22,7 @@ final class CameraViewModel: ObservableObject {
     @Published private(set) var surfaceCandidates: [DetectedSurface] = []
     @Published private(set) var selectedSurfaceID: UUID?
     @Published private(set) var isScanningSurface = false
-    @Published private(set) var surfaceMessage = "Busca un contorno; después tócalo para seleccionarlo."
+    @Published private(set) var surfaceMessage = "Toca el objeto o pulsa Buscar contorno."
 
     private let cameraSession = CameraSession()
     private var isRequestingPermission = false
@@ -118,7 +118,7 @@ final class CameraViewModel: ObservableObject {
         start()
     }
 
-    func scanSurfaces() {
+    func scanSurfaces(selecting touchedPoint: SurfacePoint? = nil) {
         guard status == .running && photo == nil && !isScanningSurface else { return }
         isScanningSurface = true
         surfaceCandidates = []
@@ -137,9 +137,15 @@ final class CameraViewModel: ObservableObject {
             switch result {
             case .success(let candidates):
                 self.surfaceCandidates = candidates
-                self.surfaceMessage = candidates.isEmpty
-                    ? "No se detectó un rectángulo. Cambia luz o encuadre y vuelve a buscar."
-                    : "Se encontraron \(candidates.count) contornos. Toca uno en la cámara."
+                if let touchedPoint,
+                   let selected = SurfaceSelector.selected(at: touchedPoint, in: candidates) {
+                    self.selectedSurfaceID = selected.id
+                    self.surfaceMessage = "Contorno seleccionado · No mide perpendicularidad. Si mueves el móvil, vuelve a buscar."
+                } else {
+                    self.surfaceMessage = candidates.isEmpty
+                        ? "No se detectó un rectángulo. Cambia luz o encuadre y vuelve a buscar."
+                        : "Se encontraron \(candidates.count) contornos. Toca uno en la cámara."
+                }
             case .failure(let error):
                 self.surfaceMessage = error.localizedDescription
             }
@@ -147,10 +153,13 @@ final class CameraViewModel: ObservableObject {
     }
 
     func selectSurface(at point: SurfacePoint) {
-        guard !surfaceCandidates.isEmpty else { return }
+        guard !surfaceCandidates.isEmpty else {
+            scanSurfaces(selecting: point)
+            return
+        }
         guard let candidate = SurfaceSelector.selected(at: point, in: surfaceCandidates) else {
-            selectedSurfaceID = nil
-            surfaceMessage = "Toca dentro del contorno que quieres fotografiar."
+            // The tapped object may not have been present when the last scan ran.
+            scanSurfaces(selecting: point)
             return
         }
         selectedSurfaceID = candidate.id
