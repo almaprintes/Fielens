@@ -52,7 +52,10 @@ nonisolated enum SurfacePhotoProcessor {
         correction.bottomLeft = bl
 
         guard let result = correction.outputImage,
-              result.extent.isFinite,
+              result.extent.origin.x.isFinite,
+              result.extent.origin.y.isFinite,
+              result.extent.width.isFinite,
+              result.extent.height.isFinite,
               result.extent.width >= 80,
               result.extent.height >= 80,
               result.extent.width <= width * 2,
