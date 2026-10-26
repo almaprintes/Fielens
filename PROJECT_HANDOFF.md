@@ -156,3 +156,8 @@ Captura del usuario: Git fast-forward `a96bc9d..6ada2ba` y Xcode con errores de 
 - Muestreo experimental ~550 ms entre detecciones correctas (más tiempo de Vision); 850 ms sin objeto, 1800 ms ante fallos. No superponer peticiones. Se para con revisión, fondo o cámara inactiva. Toque corrector y editor avanzado siguen disponibles pero no necesarios normalmente.
 - Corrección de un primer error de compilación del tracker (variable `center` sombreaba función, commit `1d716519`). **Verificar nuevo GitHub Actions verde ANTES de pedir probar en iPhone.** QA `docs/DEV_0.1.11_AUTOMATIC_SURFACES.md`.
 - Riesgos: parpadeo/latencia y CPU; si se quiere seguimiento más fluido evaluar `VNTrackRectangleRequest` y detección ocasional; medir FPS, temperatura y si videoOutput altera la fotografía 48.77 MP. No confundir contorno menta con perpendicularidad certificada; disparo continúa manual.
+
+
+### Verificación CI — 2026-10-26
+
+[GitHub Actions run 40313464522](https://github.com/almaprintes/Fielens/actions/runs/40313464522) para commit `1d716519ddfca19f5d22b47287666ef7ddeda002`: **compilación iOS y todos los tests Swift del job superados** (Xcode 26.6 / simulador iOS). Los cambios posteriores a ese commit son únicamente documentales. **NO existe aún prueba del seguimiento automático en el iPhone físico** ni medición de FPS/temperatura; ese es el próximo paso antes de aceptar H-016.
