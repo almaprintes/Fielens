@@ -57,3 +57,7 @@ Priorizar legibilidad y ligereza en mensajería; permitir al usuario seleccionar
 ## D-014 — 2026-10-26 — Aceptada DEV 0.1.5 — La resolución elegida define el resultado visible
 
 La calidad elegida por el usuario antes de disparar o después debe corresponder a **la imagen que Fielens presenta y comparte**. No mostrar el número de megapíxeles del JPEG maestro cuando el usuario ha elegido Ligera. Para el prototipo, mantener solo temporalmente el JPEG de máxima resolución como fuente editable y preparar archivo reducido de salida con metadatos reales; compartir ese archivo exacto. A futuro experimentar con adquisición directamente a menor resolución y medir coste, sin destruir la fuente por defecto ni prometer mejoras no probadas.
+
+## D-015 — 2026-10-26 — Provisional DEV 0.1.6 — Detección bajo demanda
+
+No iniciar Vision continuamente hasta medir latencia, geometría y consumo. El prototipo analiza un único frame cuando el usuario pulsa Buscar contorno o toca el objeto; dibuja cuadriláteros y permite seleccionar uno, manteniendo la fotografía original y el nivel de gravedad independientes. El contorno seleccionado no certifica ángulo ni planitud; confirmar alineación de coordenadas en iPhone y advertir que la superposición queda obsoleta tras mover el móvil. Si la salida secundaria de vídeo afecta a la captura 48 MP, priorizar preservar la calidad fotográfica y replanificar la arquitectura.
