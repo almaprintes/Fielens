@@ -20,6 +20,7 @@
 | H-015 · DEV 0.1.6: contornos en cámara y selección por toque | 2026-10-26 09:49–09:55 | **Detección visible confirmada en iPhone; precisión táctil insuficiente** | Captura real: contorno menta sobre hoja y varios candidatos; usuario confirma «La detección al toque no es nada precisa». Sin pose 3D. [QA](DEV_0.1.6_SURFACE_PREVIEW.md) |
 | H-016 · DEV 0.1.7: nivel compacto | 2026-10-26 | **Implementado en main; sin prueba física** | Nivel se reduce y desplaza hacia arriba para despejar el objetivo. [QA](DEV_0.1.7_COMPACT_LEVEL.md) |
 | H-017 · DEV 0.1.8: precisión del toque | 2026-10-26 | **Compilación remota verde; tests e iPhone pendientes** | Selección por el mismo polígono proyectado que se dibuja, prioridad a hoja frente a pequeños recuadros, botón Otro. [QA](DEV_0.1.8_TOUCH_PRECISION.md) |
+| H-018 · DEV 0.1.9: orientar correctamente el contorno | 2026-10-26 10:16 | **Código en main, QA física pendiente** | Captura de iPhone DEV 0.1.8 confirma que el polígono no sigue la hoja; corregida inversión de rotación `.right` entre Vision y sensor, forzado videoRotationAngle=0 y tests de esquinas. [QA](DEV_0.1.9_ORIENTATION_MAPPING.md) |
 | H-010 · Candidatura Shipaton 2027 | Ago–sep 2027 objetivo | Condicional | Comprobar reglas de la convocatoria 2027 antes de primera publicación pública |
 
 ## Lecciones y fallos útiles
