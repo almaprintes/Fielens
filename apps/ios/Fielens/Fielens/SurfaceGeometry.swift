@@ -160,8 +160,29 @@ nonisolated struct SurfaceScreenPolygon: Sendable {
         return abs(twiceArea) / 2
     }
 
+    /// Guard against bow-tie, concave and collapsed edits. A manually dragged
+    /// corner is only accepted if the four vertices remain a convex polygon.
+    var isConvex: Bool {
+        guard corners.count == 4,
+              corners.allSatisfy(\.isFinite),
+              area > 0.0001 else { return false }
+        var direction = 0
+        for index in 0..<4 {
+            let a = corners[index]
+            let b = corners[(index + 1) % 4]
+            let c = corners[(index + 2) % 4]
+            let cross = (b.x - a.x) * (c.y - b.y) -
+                (b.y - a.y) * (c.x - b.x)
+            if abs(cross) < 1e-6 { return false }
+            let nextDirection = cross > 0 ? 1 : -1
+            if direction != 0 && nextDirection != direction { return false }
+            direction = nextDirection
+        }
+        return true
+    }
+
     func contains(_ point: SurfaceViewPoint) -> Bool {
-        guard point.isFinite, corners.count == 4, area > 0.000001 else {
+        guard point.isFinite, isConvex else {
             return false
         }
         // Convex polygon, coordinates correspond to the actual drawn screen path.
