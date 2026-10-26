@@ -8,18 +8,22 @@ struct ContentView: View {
     @State private var showingResolutionSheet = false
     @State private var frameDetectedObject = true
     @State private var isAdjustingSurface = false
+    @State private var isCameraOpen = false
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
         ZStack {
             Color.black.ignoresSafeArea()
 
-            if let photo = camera.photo {
+            if !isCameraOpen {
+                welcomeScreen
+            } else if let photo = camera.photo {
                 PhotoReviewView(
                     photo: photo,
                     selectedResolution: $exportResolution,
                     frameDetectedObject: $frameDetectedObject,
-                    onRetake: camera.retake
+                    onRetake: camera.retake,
+                    onGoHome: closeCamera
                 )
             } else {
                 liveCamera
@@ -29,22 +33,24 @@ struct ContentView: View {
             ResolutionSelectionSheet(selectedResolution: $exportResolution)
         }
         .onAppear {
-            if scenePhase == .active {
+            if isCameraOpen && scenePhase == .active {
                 camera.start()
                 if camera.photo == nil { level.start() }
             }
         }
         .onChange(of: scenePhase) { newPhase in
             if newPhase == .active {
-                camera.start()
-                if camera.photo == nil { level.start() }
+                if isCameraOpen {
+                    camera.start()
+                    if camera.photo == nil { level.start() }
+                }
             } else {
                 camera.stop()
                 level.stop()
             }
         }
         .onChange(of: camera.photo?.id) { newPhotoID in
-            if newPhotoID == nil && scenePhase == .active {
+            if isCameraOpen && newPhotoID == nil && scenePhase == .active {
                 level.start()
             } else {
                 level.stop()
@@ -60,6 +66,109 @@ struct ContentView: View {
             camera.stop()
             level.stop()
         }
+    }
+
+    // No camera session or sensor updates are started on the home screen.
+    // Only an explicit user interaction opens the camera.
+    private var welcomeScreen: some View {
+        VStack(spacing: 0) {
+            Spacer(minLength: 28)
+
+            ZStack {
+                Circle()
+                    .fill(Color(red: 0.85, green: 0.79, blue: 0.68).opacity(0.14))
+                    .frame(width: 170, height: 170)
+                Circle()
+                    .strokeBorder(
+                        Color(red: 0.86, green: 0.78, blue: 0.64).opacity(0.6),
+                        lineWidth: 1
+                    )
+                    .frame(width: 136, height: 136)
+                Image(systemName: "camera.aperture")
+                    .font(.system(size: 74, weight: .ultraLight))
+                    .foregroundStyle(Color(red: 0.91, green: 0.84, blue: 0.72))
+            }
+            .accessibilityHidden(true)
+
+            Text("Fielens")
+                .font(.system(size: 43, weight: .light, design: .serif))
+                .tracking(1.5)
+                .foregroundStyle(Color(red: 0.95, green: 0.90, blue: 0.82))
+                .padding(.top, 26)
+
+            Text("FOTOGRAFÍAS FIELES, SIN COMPLICACIONES")
+                .font(.caption.weight(.medium))
+                .tracking(1.2)
+                .multilineTextAlignment(.center)
+                .foregroundStyle(.white.opacity(0.65))
+                .padding(.top, 12)
+
+            Text("Encuadra documentos, fotografías y otras superficies con ayuda del nivel y la detección automática.")
+                .font(.subheadline)
+                .multilineTextAlignment(.center)
+                .foregroundStyle(.white.opacity(0.75))
+                .padding(.horizontal, 20)
+                .padding(.top, 24)
+
+            Spacer(minLength: 38)
+
+            VStack(spacing: 16) {
+                Button {
+                    isCameraOpen = true
+                    if scenePhase == .active {
+                        camera.start()
+                        level.start()
+                    }
+                } label: {
+                    Label("Abrir cámara", systemImage: "camera")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 15)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(Color(red: 0.86, green: 0.78, blue: 0.64))
+                .foregroundStyle(.black)
+
+                Button {
+                    showingResolutionSheet = true
+                } label: {
+                    HStack(spacing: 12) {
+                        Image(systemName: "slider.horizontal.3")
+                        Text("Resolución de foto")
+                        Spacer(minLength: 4)
+                        Text(exportResolution.title)
+                            .foregroundStyle(.white.opacity(0.7))
+                        Image(systemName: "chevron.right")
+                    }
+                    .font(.subheadline)
+                    .padding(16)
+                    .background(.white.opacity(0.09), in: RoundedRectangle(cornerRadius: 14))
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(.white)
+            }
+
+            Spacer(minLength: 25)
+
+            Text("Las imágenes se procesan en tu iPhone.")
+                .font(.caption)
+                .foregroundStyle(.white.opacity(0.63))
+            Text("DEV 0.1.13")
+                .font(.caption.monospaced())
+                .foregroundStyle(.white.opacity(0.38))
+                .padding(.top, 10)
+        }
+        .padding(.horizontal, 28)
+        .padding(.bottom, 24)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.black)
+    }
+
+    private func closeCamera() {
+        isCameraOpen = false
+        isAdjustingSurface = false
+        camera.endSession()
+        level.stop()
     }
 
     private var liveCamera: some View {
@@ -98,13 +207,21 @@ struct ContentView: View {
 
             VStack(spacing: 18) {
                 HStack(spacing: 8) {
+                    Button(action: closeCamera) {
+                        Image(systemName: "chevron.left")
+                            .font(.headline)
+                            .frame(width: 38, height: 38)
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(camera.isCapturing)
+                    .accessibilityLabel("Volver al inicio")
                     Image(systemName: "viewfinder")
                         .foregroundStyle(.mint)
                     Text("FIELENS")
                         .font(.headline)
                         .tracking(2)
                     Spacer()
-                    Text("DEV 0.1.12")
+                    Text("DEV 0.1.13")
                         .font(.caption.monospaced())
                         .foregroundStyle(.white.opacity(0.8))
                 }
@@ -350,7 +467,7 @@ private struct PhotoReviewView: View {
                     .font(.headline)
                     .tracking(2)
                 Spacer()
-                Text("DEV 0.1.12")
+                Text("DEV 0.1.13")
                     .font(.caption.monospaced())
             }
             .foregroundStyle(.white)
