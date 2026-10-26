@@ -67,7 +67,7 @@ struct ContentView: View {
                         .font(.headline)
                         .tracking(2)
                     Spacer()
-                    Text("DEV 0.1.3")
+                    Text("DEV 0.1.4")
                         .font(.caption.monospaced())
                         .foregroundStyle(.white.opacity(0.8))
                 }
@@ -195,7 +195,7 @@ private struct PhotoReviewView: View {
                     .font(.headline)
                     .tracking(2)
                 Spacer()
-                Text("DEV 0.1.3")
+                Text("DEV 0.1.4")
                     .font(.caption.monospaced())
             }
             .foregroundStyle(.white)
