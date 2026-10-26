@@ -131,3 +131,11 @@ Captura del usuario: Git fast-forward `a96bc9d..6ada2ba` y Xcode con errores de 
 - Build CI **success** en [run 40304171632](https://github.com/almaprintes/Fielens/actions/runs/40304171632) para commit `13240f46`. Tests Swift siguen pendientes de confirmación, junto a primera prueba física de 0.1.8.
 - Procedimiento Mac: comprobar `git status --short` por cambios locales, luego `git pull --ff-only`, Xcode `⌘B`/`⌘R`. Probar centro/cuadrantes de hoja, cuadros interiores, toque directo sin Buscar, botón Otro, salida al fondo, y regresión Ligera 1,92 MP. Ver `docs/DEV_0.1.8_TOUCH_PRECISION.md`.
 - Sigue sin haber normal 3D ni perpendicularidad al objeto; el contorno no se recorta automáticamente y podría quedar atrasado al mover el iPhone. No crear nuevos grandes cambios hasta ver precisión real de la selección.
+
+## DEV 0.1.9 — Evidencia campo y corrección geométrica (2026-10-26 10:16)
+
+- Usuario envió dos capturas DEV 0.1.8: contorno verde sobre hoja **evidentemente desplazado**, aunque el hit testing del contorno dibujado funcionara. Foto «Compartir» sale 1800 × 2400, 4,32 MP, ~1,2 MB. Nivel compacto funcionando X −1,1°, Y −3,1°. No copiar pantallazos con texto a repo público.
+- Causa probable confirmada en fuente: visión `.right` normalizada rotada vs método `layerPointConverted(fromCaptureDevicePoint:)` en imagen RAW sin rotación. Antes `(x,1-y)` (incompleto), DEV 0.1.9 corrige `(1-y,1-x)`.
+- `CameraSession` intenta videoRotationAngle=0 en videoDataOutput (sin forzar preview/photo output), `SurfaceFrameSampler` rechaza frames no apaisados para no mostrar geometría falsa. Tests de conversión incluyen esquinas que habrían fallado con el mapeo anterior.
+- DEV 0.1.9 build 10. [Protocolo](docs/DEV_0.1.9_ORIENTATION_MAPPING.md), *pendiente CI y prueba física*, no anunciar como éxito en el iPhone hasta comparar 4 esquinas.
+- Foto sin recorte automático del papel sigue siendo comportamiento actual. Recorte opcional con conservación del original es siguiente proyecto, no parte de 0.1.9.
