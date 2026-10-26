@@ -44,3 +44,7 @@ Por defecto el ajuste del objeto está **activado** para los perfiles Ligera/Com
 - [ ] Registrar tiempos de procesamiento en iPhone y memoria/temperatura para perfiles y escenas. CI en simulador no sustituye esta prueba.
 
 **Puerta para cerrar el hito:** captura real en iPhone con un único documento rectangular, corrección que llena el resultado sin mutilar esquinas, alternancia de ajuste, original intacto y sin caída notable del rendimiento.
+
+### Comprobación remota de esta iteración — 26/10/2026
+
+[GitHub Actions 40319412603](https://github.com/almaprintes/Fielens/actions/runs/40319412603), código SHA `57af643312141342c103a668006e5737d34b7c64`: el job **Compile iOS without signing** terminó en **success** usando Xcode 26.6. Las pruebas Swift en simulador aún seguían en ejecución cuando se consultó; no etiquetar tests superados todavía. **Sin validación de imagen real en iPhone**.
