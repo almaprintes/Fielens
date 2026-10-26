@@ -79,6 +79,7 @@ final class CameraViewModel: ObservableObject {
         automaticScanTask?.cancel()
         automaticScanTask = nil
         consecutiveNoSurfaceScans = 0
+        scanningPausedForEditing = false
         scanID += 1
         isScanningSurface = false
         surfaceCandidates = []
