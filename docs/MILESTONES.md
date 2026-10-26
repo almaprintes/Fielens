@@ -16,6 +16,7 @@
 | H-011 · Compilación remota GitHub Actions | 2026-10-25 | **Compilación confirmada en verde** | [Run #1](https://github.com/almaprintes/Fielens/actions/runs/40246527085) con Xcode 26.6 y iOS SDK 26.5; segundo job de tests en simulador añadido, primera ejecución pendiente |
 | H-012 · Detección de superficies EXP-002 / DEV 0.1.4a | 2026-10-25/26 | **Módulo en main, compilación iOS verificada; tests en simulador pendientes** | [Build cloud](https://github.com/almaprintes/Fielens/actions/runs/40247295733), detección Vision y selección por toque en modelo. No hay interfaz ni pose 3D. [Diseño](SURFACE_TARGETING_DESIGN.md) |
 | H-013 · Resoluciones de exportación DEV 0.1.4 | 2026-10-26 | **Código y pruebas añadidos, QA pendiente** | Ligera 1600px, Compartir 2400px, Detalle 4000px, Original sin cambios. [Protocolo](DEV_0.1.4_EXPORT.md); no probado todavía en iPhone |
+| H-014 · DEV 0.1.5: resultado acorde a resolución | 2026-10-26 08:05 | **Código implementado; compilación y QA físico pendientes** | Usuario elige Ligera antes del disparo pero 0.1.4 mostraba 48,77 MP. 0.1.5 prepara y enseña archivo elegido con píxeles/bytes reales, comparte exactamente ese fichero. [QA](DEV_0.1.5_REVIEW_RESOLUTION.md) |
 | H-010 · Candidatura Shipaton 2027 | Ago–sep 2027 objetivo | Condicional | Comprobar reglas de la convocatoria 2027 antes de primera publicación pública |
 
 ## Lecciones y fallos útiles
