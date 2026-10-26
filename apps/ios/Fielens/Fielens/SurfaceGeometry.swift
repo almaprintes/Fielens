@@ -107,3 +107,17 @@ nonisolated enum SurfaceSelector {
             }
     }
 }
+
+
+/// Transform normalized Vision bottom-left points to normalized
+/// AVFoundation device points (top-left), and vice versa.
+/// Preview layer performs the remaining crop/scale/orientation conversion.
+nonisolated enum SurfaceCoordinateMapper {
+    static func capturePoint(fromVision point: SurfacePoint) -> SurfacePoint {
+        SurfacePoint(x: point.x, y: 1 - point.y)
+    }
+
+    static func visionPoint(fromCapture point: SurfacePoint) -> SurfacePoint {
+        SurfacePoint(x: point.x, y: 1 - point.y)
+    }
+}
