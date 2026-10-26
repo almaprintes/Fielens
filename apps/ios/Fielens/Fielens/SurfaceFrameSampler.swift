@@ -42,6 +42,13 @@ nonisolated final class SurfaceFrameSampler: NSObject,
                 return
             }
             pendingScan = completion
+            // Some devices may deliver no sample buffers despite a live preview.
+            // Finish the request instead of leaving "Analizando…" indefinitely.
+            sampleQueue.asyncAfter(deadline: .now() + .seconds(4)) { [self] in
+                guard let timedOut = pendingScan else { return }
+                pendingScan = nil
+                Task { @MainActor in timedOut(.failure(.unavailable)) }
+            }
         }
     }
 
