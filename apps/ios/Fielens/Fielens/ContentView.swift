@@ -6,6 +6,7 @@ struct ContentView: View {
     @StateObject private var level = LevelMotionModel()
     @State private var exportResolution: ExportResolution = .share
     @State private var showingResolutionSheet = false
+    @State private var frameDetectedObject = true
     @State private var isAdjustingSurface = false
     @Environment(\.scenePhase) private var scenePhase
 
@@ -14,7 +15,12 @@ struct ContentView: View {
             Color.black.ignoresSafeArea()
 
             if let photo = camera.photo {
-                PhotoReviewView(photo: photo, selectedResolution: $exportResolution, onRetake: camera.retake)
+                PhotoReviewView(
+                    photo: photo,
+                    selectedResolution: $exportResolution,
+                    frameDetectedObject: $frameDetectedObject,
+                    onRetake: camera.retake
+                )
             } else {
                 liveCamera
             }
@@ -98,7 +104,7 @@ struct ContentView: View {
                         .font(.headline)
                         .tracking(2)
                     Spacer()
-                    Text("DEV 0.1.11")
+                    Text("DEV 0.1.12")
                         .font(.caption.monospaced())
                         .foregroundStyle(.white.opacity(0.8))
                 }
@@ -316,6 +322,7 @@ private struct PhotoReviewView: View {
     /// High-resolution camera source is kept untouched only for this session.
     let photo: CapturedPhoto
     @Binding var selectedResolution: ExportResolution
+    @Binding var frameDetectedObject: Bool
     let onRetake: () -> Void
     @State private var preparedPhoto: PreparedPhoto?
     @State private var preparingResult = false
@@ -331,7 +338,10 @@ private struct PhotoReviewView: View {
     }
 
     /// Changes both on reselecting a quality and when capturing a new photo.
-    private var reviewKey: String { photo.id.uuidString + "-" + selectedResolution.rawValue }
+    private var reviewKey: String {
+        photo.id.uuidString + "-" + selectedResolution.rawValue
+            + "-" + String(frameDetectedObject)
+    }
 
     var body: some View {
         VStack(spacing: 14) {
@@ -340,7 +350,7 @@ private struct PhotoReviewView: View {
                     .font(.headline)
                     .tracking(2)
                 Spacer()
-                Text("DEV 0.1.11")
+                Text("DEV 0.1.12")
                     .font(.caption.monospaced())
             }
             .foregroundStyle(.white)
@@ -383,8 +393,12 @@ private struct PhotoReviewView: View {
                         .font(.footnote)
                         .foregroundStyle(.white.opacity(0.8))
                     Text(selectedResolution == .original
-                         ? "Original de cámara · Sin recortes ni recompresión"
-                         : "Resultado \(selectedResolution.title) · JPEG listo para compartir")
+                         ? "Original íntegro · sin recortes"
+                         : result.didFrameObject
+                            ? "Objeto ajustado y enderezado · JPEG listo para compartir"
+                            : frameDetectedObject
+                                ? "No hubo contorno fiable · Imagen completa, sin recortar"
+                                : "Imagen completa · JPEG listo para compartir")
                         .font(.footnote)
                         .multilineTextAlignment(.center)
                         .foregroundStyle(.white.opacity(0.8))
@@ -406,6 +420,18 @@ private struct PhotoReviewView: View {
                 Text(selectedResolution.recommendation)
                     .font(.footnote)
                     .foregroundStyle(.white.opacity(0.83))
+
+                Toggle("Ajustar automáticamente al objeto", isOn: $frameDetectedObject)
+                    .font(.subheadline)
+                    .tint(.mint)
+                    .foregroundStyle(.white)
+                    .disabled(selectedResolution == .original || showingShareSheet)
+                    .accessibilityHint("Recorta y corrige la perspectiva si Fielens detecta un rectángulo fiable")
+                if selectedResolution == .original {
+                    Text("Original siempre conserva el encuadre completo.")
+                        .font(.caption)
+                        .foregroundStyle(.white.opacity(0.72))
+                }
             }
             .padding(.horizontal, 20)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -433,7 +459,7 @@ private struct PhotoReviewView: View {
             }
             .padding(.horizontal, 16)
 
-            Text("El resultado mostrado es el archivo que se comparte. La captura completa queda temporalmente disponible por si cambias de calidad.")
+            Text("Se encuadra el objeto automáticamente cuando es fiable. El original de cámara permanece temporalmente disponible.")
                 .font(.footnote)
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.white.opacity(0.8))
@@ -462,6 +488,7 @@ private struct PhotoReviewView: View {
     private func prepareSelectedResult() async {
         let source = photo
         let choice = selectedResolution
+        let shouldFrame = frameDetectedObject
         let previous = preparedPhoto
         preparedPhoto = nil
         preparationErrorMessage = nil
@@ -474,12 +501,17 @@ private struct PhotoReviewView: View {
 
         do {
             let result = try await Task.detached(priority: .userInitiated) {
-                try PhotoExportService.prepareForReview(photo: source, resolution: choice)
+                try PhotoExportService.prepareForReview(
+                    photo: source,
+                    resolution: choice,
+                    frameObject: shouldFrame
+                )
             }.value
 
             guard !Task.isCancelled,
                   source.id == photo.id,
-                  selectedResolution == choice else {
+                  selectedResolution == choice,
+                  frameDetectedObject == shouldFrame else {
                 PhotoExportService.discardTemporaryCopy(result.fileURL, original: source)
                 return
             }
