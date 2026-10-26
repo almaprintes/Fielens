@@ -97,3 +97,12 @@ La pantalla de cámara negra de las dos capturas se debía a que era de noche y 
 - Se extendió el workflow para añadir ejecución de pruebas `Swift Testing` del target `FielensTests` con un simulador iOS 26.5 en GitHub; resultado de primera ejecución pendiente al incorporar el job. No se ejecutan tests UI ni se accede a cámara física.
 - Política: el build en la nube asegura compilabilidad bajo el SDK indicado; NO equivale a prueba en dispositivo ni a calidad fotográfica medida.
 - [Manual CI](IOS_CI.md).
+
+## 2026-10-25 — EXP-002: selección de objeto y futuro nivel relativo al plano
+
+- El creador propone tocar el objeto en pantalla, detectar su contorno y orientar el móvil **perpendicular al objeto** en lugar de solo respecto a la gravedad.
+- Contrastado con APIs Apple: Vision detecta rectángulos por cuatro esquinas; máscaras de instancia pueden identificar algunos objetos, pero una silueta arbitraria no determina el plano real. ARKit puede detectar planos, con capacidades variables por dispositivo.
+- Se define distinción estricta: superficie plana rectangular (candidata a estimar pose calibrada) frente a planos irregulares y objetos 3D (requieren datos adicionales o no tienen normal única). No prometer perpendicularidad perfecta.
+- Implementada **DEV 0.1.4a** como primer módulo aislado: `SurfaceGeometry.swift`, `RectangularSurfaceDetector.swift`, `SurfaceGeometryTests.swift`. Contornos válidos convexos y selección por toque normalizado; detección con `VNDetectRectanglesRequest` en una imagen `CGImage`, sin conexión con preview todavía.
+- Documentado protocolo y futuro flujo de UX en `docs/SURFACE_TARGETING_DESIGN.md`.
+- **Estado:** código subido a GitHub, todavía sin test en dispositivo ni contornos dibujados, pendiente de comprobar CI. Sin cambios en pipeline de captura JPEG ni en la app visible.
