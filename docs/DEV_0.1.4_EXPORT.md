@@ -55,3 +55,10 @@ El lado mayor real **nunca crece** por encima de la imagen fuente; los valores s
 ¿Conviene capturar nativamente a 12 MP cuando el usuario ha escogido «Compartir»? Antes de implementarlo, comparar coste de captura 48 MP + reducción contra 12 MP directo, manteniendo legibilidad de caracteres mínimos y experiencia de enfoque. Evitar cambios prematuros en AVFoundation sin datos.
 
 **Estado actual de aceptación:** desarrollo implementado, sin prueba física.
+
+## CI y corrección — 2026-10-26 07:50
+
+- [Run inicial DEV 0.1.4](https://github.com/almaprintes/Fielens/actions/runs/40248649964): compilación Xcode 26.6 **correcta**, pero las pruebas Swift **fallaron** en `PhotoExportTests.aSmallPhotoIsNeverUpscaled()`.
+- Causa plausible según inspección de fixture: `UIGraphicsImageRenderer` sin escala explícita hereda la densidad de pantalla del simulador y genera más píxeles que los puntos solicitados. El test comparaba contra tamaños en puntos.
+- Corregido fixture de tests para fijar `UIGraphicsImageRendererFormat.scale = 1` en ambas imágenes de la batería de exportación. Commit `4eb6809e`.
+- [Nueva ejecución](https://github.com/almaprintes/Fielens/actions/runs/40288358518): resultado todavía pendiente al redactar esta nota. No dar el módulo por testado hasta comprobar verde.
