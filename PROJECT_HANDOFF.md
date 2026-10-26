@@ -76,3 +76,8 @@ La pantalla de cámara negra de las dos capturas se debía a que era de noche y 
 - Pruebas en GitHub Actions pendientes de validar para esos archivos. No existe estimación 3D ni nivel del objeto todavía; solo el nivel gravitatorio de la 0.1.3.
 - Próxima iteración: overlay y selección de rectángulos en preview con transformación coordenadas/crop/aspect fill/orientación correcta, muestreo sin bloquear captura. Luego cálculo de pose del plano calibrada con patrones conocidos, siempre con incertidumbre.
 - Si CI falla, corregir errores antes de integrar con la UI. No modificar fotos originales, no subir datos personales a GitHub.
+
+### Verificación parcial CI de EXP-002
+
+- Build iOS cloud **succeeded** para `687dc7ff` (incluye `SurfaceGeometry.swift`, `RectangularSurfaceDetector.swift`, `SurfaceGeometryTests.swift`); [run](https://github.com/almaprintes/Fielens/actions/runs/40247295733).
+- Resultado del job de pruebas del simulador pendiente al documentar. UI y perpendicularidad real aún sin implementar.
