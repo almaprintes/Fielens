@@ -19,7 +19,7 @@ Primer flujo para la idea del creador: señalar una superficie física en la cá
 
 ### Arquitectura técnica
 
-- `SurfaceFrameSampler.swift`: `AVCaptureVideoDataOutputSampleBufferDelegate` con `alwaysDiscardsLateVideoFrames = true`. Acepta **solo un escaneo solicitado** y procesa en cola serial. No guarda frames, no llama red y no analiza en cada fotograma.
+- `SurfaceFrameSampler.swift`: `AVCaptureVideoDataOutputSampleBufferDelegate` con `alwaysDiscardsLateVideoFrames = true`. Acepta **solo un escaneo solicitado** y procesa en cola serial. La petición caduca tras 4 segundos si no llega frame; el timeout está vinculado a un identificador para no cancelar escaneos nuevos. No guarda frames, no llama red y no analiza en cada fotograma.
 - `CameraSession.swift`: salida secundaria de vídeo **opcional**. Si la sesión no puede añadirla, la cámara fotográfica debe continuar funcionando y el escaneo comunicará no disponible.
 - `RectangularSurfaceDetector.swift`: Vision `VNDetectRectanglesRequest` sobre `CVPixelBuffer` (orientación experimental `.right` para cámara trasera en modo retrato).
 - `CameraViewModel.swift`: estados `surfaceCandidates`, selección, error/mensaje, invalidación por generación al salir/volver y al capturar.
