@@ -7,12 +7,14 @@ nonisolated enum SurfaceScanError: Error, LocalizedError, Sendable {
     case unavailable
     case busy
     case failed
+    case unsupportedOrientation
 
     var errorDescription: String? {
         switch self {
         case .unavailable: "No hay fotogramas de vídeo disponibles."
         case .busy: "Ya se está buscando una superficie."
         case .failed: "No se ha podido analizar el fotograma."
+        case .unsupportedOrientation: "Orientación de vídeo incompatible con la detección. La cámara sigue disponible."
         }
     }
 }
@@ -78,9 +80,17 @@ nonisolated final class SurfaceFrameSampler: NSObject,
             return
         }
 
-        // Rear-camera sensor buffers are typically landscape-native. .right
-        // makes Vision's coordinates upright for a PORTRAIT phone UI.
-        // Landscape support and full coordinate calibration require iPhone QA.
+        // Our orientation map is explicitly for raw LANDSCAPE sensor frames.
+        // Do not display a misleading selection if AVFoundation or hardware
+        // supplies a portrait-rotated buffer despite rotationAngle = 0.
+        guard CVPixelBufferGetWidth(pixelBuffer) > CVPixelBufferGetHeight(pixelBuffer) else {
+            Task { @MainActor in completion(.failure(.unsupportedOrientation)) }
+            return
+        }
+
+        // Vision rotates the UNROTATED rear-camera landscape buffer by .right
+        // into upright portrait. Coordinate mapper undoes that same rotation.
+        // Landscape UI support will need an independent validated transform.
         do {
             let rectangles = try RectangularSurfaceDetector.detect(
                 in: pixelBuffer,
