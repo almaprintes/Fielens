@@ -106,3 +106,8 @@ La pantalla de cámara negra de las dos capturas se debía a que era de noche y 
 - Implementada **DEV 0.1.4a** como primer módulo aislado: `SurfaceGeometry.swift`, `RectangularSurfaceDetector.swift`, `SurfaceGeometryTests.swift`. Contornos válidos convexos y selección por toque normalizado; detección con `VNDetectRectanglesRequest` en una imagen `CGImage`, sin conexión con preview todavía.
 - Documentado protocolo y futuro flujo de UX en `docs/SURFACE_TARGETING_DESIGN.md`.
 - **Estado:** código subido a GitHub, todavía sin test en dispositivo ni contornos dibujados, pendiente de comprobar CI. Sin cambios en pipeline de captura JPEG ni en la app visible.
+
+### Verificación de compilación remota del módulo EXP-002
+
+- [GitHub Actions run](https://github.com/almaprintes/Fielens/actions/runs/40247295733): job de compilación iOS (Xcode 26.6, sin firma) **success** para el commit `687dc7ffe436543b2d681f76ba61387013ec7591` con el detector y pruebas de geometría ya en el repo.
+- El job de pruebas Swift en simulador aún no había concluido al registrar esta comprobación. No afirmar tests verdes ni uso de cámara en iPhone.
