@@ -170,3 +170,11 @@ Captura del usuario: Git fast-forward `a96bc9d..6ada2ba` y Xcode con errores de 
 - Compilación Xcode 26.6 superada en [run 40318890182](https://github.com/almaprintes/Fielens/actions/runs/40318890182), commit `a71f9003`. Tests del simulador pendientes de conclusión al documentar. No afirmar fotografía física validada.
 - **Próximo test iPhone:** apuntar hoja A4 rodeada de mesa, disparar Compartir, revisar que solo aparezca papel; apagar toggle debe mostrar escena completa; Original intacto. Comparar textos/dimensiones/posibles esquinas cortadas, consumo y errores. Documento ficticio, nunca DNI real en GitHub.
 - Limitación crítica: el contorno de la foto se redetecta y elige por área/centralidad/confianza; aún no está vinculado al contorno seleccionado en preview; múltiples objetos pueden equivocarse. Segunda fase: asociar objetivo y mejorar precisión/resolución del recorte sin perder píxeles.
+
+## DEV 0.1.13 — Menú de inicio y guardar en Fotos (26/10/2026 12:11)
+
+- Usuario confirmó que el recorte de objeto de 0.1.12 está casi perfecto pese a luz mala, y quiere probar sin conexión al Mac. Solicitó abrir primero un menú y guardar al carrete.
+- En `main`: `ContentView.swift` ahora presenta bienvenida antes de arrancar `CameraSession`/CoreMotion; botón Abrir cámara, selector de resolución, navegación hacia inicio desde cámara y revisión. `CameraViewModel.endSession()` cierra y descarta temporal.
+- Servicio nuevo `PhotoLibrarySaver.swift`: permisos Photos `.addOnly`, guarda el archivo JPEG exacto de `PreparedPhoto` con `PHAssetCreationRequest` y `addResource`; no requiere acceso a lectura de carrete. UI Guardar en Fotos con progreso/resultado y bloqueos de navegación/cambio de archivo hasta terminar.
+- Xcode proyecto: versión 0.1.13, build 14 y `NSPhotoLibraryAddUsageDescription` en Debug/Release.
+- **Pendiente** CI SHA `d024229a` y QA físico: la app comienza en bienvenida sin cámara; desde captura se guarda la versión seleccionada/corregida y se ve en Fotos tras autorización add-only; volver de revisión/cámara a inicio no reactiva cámara. [Plan](docs/DEV_0.1.13_HOME_AND_PHOTOS.md).
