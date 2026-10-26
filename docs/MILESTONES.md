@@ -55,3 +55,7 @@ Compilación con Xcode 26.6 **verde** para commit `dafed1ff` en [GitHub Actions]
 ### Verificación CI — 2026-10-26
 
 [GitHub Actions run 40313464522](https://github.com/almaprintes/Fielens/actions/runs/40313464522) para commit `1d716519ddfca19f5d22b47287666ef7ddeda002`: **compilación iOS y todos los tests Swift del job superados** (Xcode 26.6 / simulador iOS). Los cambios posteriores a ese commit son únicamente documentales. **NO existe aún prueba del seguimiento automático en el iPhone físico** ni medición de FPS/temperatura; ese es el próximo paso antes de aceptar H-016.
+
+### Comprobación remota de esta iteración — 26/10/2026
+
+[GitHub Actions 40319412603](https://github.com/almaprintes/Fielens/actions/runs/40319412603), código SHA `57af643312141342c103a668006e5737d34b7c64`: el job **Compile iOS without signing** terminó en **success** usando Xcode 26.6. Las pruebas Swift en simulador aún seguían en ejecución cuando se consultó; no etiquetar tests superados todavía. **Sin validación de imagen real en iPhone**.
