@@ -96,3 +96,7 @@ Se puede elegir **Ligera (1600 px), Compartir (2400 px, predeterminada), Detalle
 ## DEV 0.1.5 — Resultado según resolución
 
 Corrige un fallo de experiencia de la DEV 0.1.4: elegir Ligera antes de fotografiar debía mostrar una foto ligera, no los 48,77 MP del original. La pantalla de revisión ahora genera y muestra el **archivo del perfil elegido** con sus dimensiones y peso reales, y Compartir utiliza ese mismo JPEG. La captura completa permanece únicamente como fuente temporal por si se cambia la calidad. [Protocolo QA](docs/DEV_0.1.5_REVIEW_RESOLUTION.md). Pendiente validación en iPhone.
+
+## DEV 0.1.6 — Prototipo de detección de contornos
+
+En la cámara, el usuario puede pulsar **Buscar contorno** o tocar un objeto rectangular para intentar localizarlo mediante Apple Vision y seleccionar su cuadrilátero en pantalla. El detector se ejecuta **bajo demanda**, no de forma continua. No realiza seguimiento ni mide aún perpendicularidad relativa al objeto. **Pendiente validación física y calibración de coordenadas.** [Protocolo de QA](docs/DEV_0.1.6_SURFACE_PREVIEW.md).
