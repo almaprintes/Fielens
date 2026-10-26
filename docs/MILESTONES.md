@@ -21,6 +21,7 @@
 | H-016 · DEV 0.1.7: nivel compacto | 2026-10-26 | **Implementado en main; sin prueba física** | Nivel se reduce y desplaza hacia arriba para despejar el objetivo. [QA](DEV_0.1.7_COMPACT_LEVEL.md) |
 | H-017 · DEV 0.1.8: precisión del toque | 2026-10-26 | **Compilación remota verde; tests e iPhone pendientes** | Selección por el mismo polígono proyectado que se dibuja, prioridad a hoja frente a pequeños recuadros, botón Otro. [QA](DEV_0.1.8_TOUCH_PRECISION.md) |
 | H-018 · DEV 0.1.9: orientar correctamente el contorno | 2026-10-26 10:16 | **Código en main, QA física pendiente** | Captura de iPhone DEV 0.1.8 confirma que el polígono no sigue la hoja; corregida inversión de rotación `.right` entre Vision y sensor, forzado videoRotationAngle=0 y tests de esquinas. [QA](DEV_0.1.9_ORIENTATION_MAPPING.md) |
+| H-019 · DEV 0.1.10: ajustar manualmente cuatro esquinas | 2026-10-26 10:40 | **Compilación iOS confirmada; tests y QA física pendientes** | En 0.1.9 solo una esquina de la hoja se detecta muy baja, formando una diagonal. Modo de 4 puntos arrastrables, Restaurar/Listo y detección estricta con respaldo. [QA](DEV_0.1.10_MANUAL_CORNERS.md) |
 | H-010 · Candidatura Shipaton 2027 | Ago–sep 2027 objetivo | Condicional | Comprobar reglas de la convocatoria 2027 antes de primera publicación pública |
 
 ## Lecciones y fallos útiles
