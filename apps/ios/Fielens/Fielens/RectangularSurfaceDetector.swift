@@ -25,25 +25,34 @@ nonisolated enum RectangularSurfaceDetector {
         in pixelBuffer: CVPixelBuffer,
         orientation: CGImagePropertyOrientation = .right
     ) throws -> [DetectedSurface] {
-        let request = makeRequest()
         let handler = VNImageRequestHandler(
             cvPixelBuffer: pixelBuffer,
             orientation: orientation,
             options: [:]
         )
-        try handler.perform([request])
-        return surfaces(from: request)
+        // First try a tighter corner-angle tolerance so a single misplaced
+        // corner is less likely to look like an accepted document. Fall back
+        // to the earlier permissive detector only when no large candidate is
+        // found, allowing the user to drag corners even in poor lighting.
+        let strictRequest = makeRequest(strict: true)
+        try handler.perform([strictRequest])
+        let strictResults = surfaces(from: strictRequest)
+        if strictResults.contains(where: { $0.areaFraction >= 0.06 }) {
+            return strictResults
+        }
+        let fallbackRequest = makeRequest()
+        try handler.perform([fallbackRequest])
+        return surfaces(from: fallbackRequest)
     }
 
-    private static func makeRequest() -> VNDetectRectanglesRequest {
+    private static func makeRequest(strict: Bool = false) -> VNDetectRectanglesRequest {
         let request = VNDetectRectanglesRequest()
         request.maximumObservations = 12
         request.minimumAspectRatio = 0.15
         request.maximumAspectRatio = 1.0
-        request.minimumSize = 0.08
-        request.minimumConfidence = 0.35
-        request.quadratureTolerance = 35
-
+        request.minimumSize = strict ? 0.12 : 0.08
+        request.minimumConfidence = strict ? 0.45 : 0.35
+        request.quadratureTolerance = strict ? 22 : 35
         return request
     }
 
