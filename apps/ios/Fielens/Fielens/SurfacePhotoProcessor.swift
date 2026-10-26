@@ -17,7 +17,11 @@ nonisolated enum SurfacePhotoProcessor {
             .max { score($0) < score($1) }
     }
 
-    static func rectifiedImage(from image: CGImage, surface: DetectedSurface) -> CGImage? {
+    static func rectifiedImage(
+        from image: CGImage,
+        surface: DetectedSurface,
+        maximumLongEdge: Int? = nil
+    ) -> CGImage? {
         guard surface.isValid,
               surface.areaFraction >= 0.075,
               surface.areaFraction <= 0.97,
@@ -63,6 +67,16 @@ nonisolated enum SurfacePhotoProcessor {
             return nil
         }
 
+        // Perspective correction can change aspect ratio and pixel dimensions.
+        // Enforce the export preset AFTER correction so "1600 px" remains true.
+        if let maximumLongEdge, maximumLongEdge > 0 {
+            let longest = max(result.extent.width, result.extent.height)
+            let scale = min(1, CGFloat(maximumLongEdge) / longest)
+            let output = scale < 1
+                ? result.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
+                : result
+            return CIContext().createCGImage(output, from: output.extent)
+        }
         return CIContext().createCGImage(result, from: result.extent)
     }
 
