@@ -27,7 +27,7 @@ nonisolated enum ExportResolution: String, CaseIterable, Identifiable, Sendable 
         case .compact: "Imagen ligera; revisar textos pequeños"
         case .share: "Recomendada para documentos por mensajería"
         case .detailed: "Para textos muy pequeños o impresiones"
-        case .original: "Sin reducir ni recodificar"
+        case .original: "Sin reducir ni recodificar · Conserva los metadatos"
         }
     }
 
