@@ -137,7 +137,19 @@ nonisolated final class CameraSession: @unchecked Sendable {
             )
             if session.canAddOutput(videoOutput) {
                 session.addOutput(videoOutput)
-                hasFrameOutput = true
+                if let videoConnection = videoOutput.connection(with: .video),
+                   videoConnection.isVideoRotationAngleSupported(0) {
+                    // Vision uses '.right' to rotate LANDSCAPE sensor frames
+                    // into upright portrait. Keep this video-data connection
+                    // unrotated, independent of the portrait preview layer.
+                    // Configure before session.startRunning().
+                    videoConnection.videoRotationAngle = 0
+                    hasFrameOutput = true
+                } else {
+                    // The photo camera still works; detection is unavailable
+                    // instead of drawing unreliable geometry.
+                    hasFrameOutput = false
+                }
             }
 
             session.commitConfiguration()
