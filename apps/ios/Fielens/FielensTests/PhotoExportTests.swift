@@ -50,7 +50,7 @@ struct PhotoExportTests {
             context.fill(CGRect(x: 0, y: 0, width: 240, height: 160))
         }
         let cgImage = try #require(raster.cgImage)
-        let raw = NSMutableData()
+        let raw = try #require(CFDataCreateMutable(nil, 0))
         let destination = try #require(CGImageDestinationCreateWithData(
             raw,
             "public.jpeg" as CFString,
