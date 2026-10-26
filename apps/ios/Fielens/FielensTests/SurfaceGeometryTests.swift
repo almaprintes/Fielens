@@ -76,8 +76,39 @@ struct SurfaceGeometryTests {
         let converted = SurfaceCoordinateMapper.capturePoint(
             fromVision: SurfacePoint(x: 0.2, y: 0.9)
         )
-        #expect(abs(converted.x - 0.2) < 1e-12)
-        #expect(abs(converted.y - 0.1) < 1e-12)
+        // Vision '.right' means 90° clockwise. The inverse transform
+        // swaps the axes: (x, y) -> (1-y, 1-x) in RAW sensor space.
+        #expect(abs(converted.x - 0.1) < 1e-12)
+        #expect(abs(converted.y - 0.8) < 1e-12)
+    }
+
+    @Test func visionRightOrientationMapsEveryCornerBackToUnrotatedSensor() {
+        // Four upright corners in Vision (bottom-left origin), whose
+        // original buffer is landscape / unrotated with top-left origin.
+        let cases: [(SurfacePoint, SurfacePoint)] = [
+            (SurfacePoint(x: 0, y: 1), SurfacePoint(x: 0, y: 1)), // upright TL
+            (SurfacePoint(x: 1, y: 1), SurfacePoint(x: 0, y: 0)), // upright TR
+            (SurfacePoint(x: 1, y: 0), SurfacePoint(x: 1, y: 0)), // upright BR
+            (SurfacePoint(x: 0, y: 0), SurfacePoint(x: 1, y: 1))  // upright BL
+        ]
+        for (vision, expectedCapture) in cases {
+            let actualCapture = SurfaceCoordinateMapper.capturePoint(fromVision: vision)
+            #expect(actualCapture == expectedCapture)
+            let roundTrip = SurfaceCoordinateMapper.visionPoint(fromCapture: actualCapture)
+            #expect(roundTrip == vision)
+        }
+    }
+
+    @Test func visionRightOrientationHasNoMirrorErrorForOffCenterPoint() {
+        let point = SurfacePoint(x: 0.25, y: 0.75)
+        let capture = SurfaceCoordinateMapper.capturePoint(fromVision: point)
+        #expect(abs(capture.x - 0.25) < 1e-12)
+        #expect(abs(capture.y - 0.75) < 1e-12)
+
+        let other = SurfacePoint(x: 0.1, y: 0.2)
+        let mapped = SurfaceCoordinateMapper.capturePoint(fromVision: other)
+        #expect(abs(mapped.x - 0.8) < 1e-12)
+        #expect(abs(mapped.y - 0.9) < 1e-12)
     }
 
     @Test func tiltedConvexSurfaceCanBeSelected() {
