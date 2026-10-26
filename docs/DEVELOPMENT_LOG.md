@@ -203,3 +203,8 @@ El creador precisa que el selector **después de tomar la foto funciona correcta
 - `CameraPreview.swift`: muestra solo el contorno seleccionado, para no llenar el visor de cuadros. La interfaz usa DEV 0.1.11, build 12.
 - `AutomaticSurfaceTrackerTests.swift` añade casos geométricos y de estabilidad. [Plan y riesgos](DEV_0.1.11_AUTOMATIC_SURFACES.md).
 - El primer build del tracker falló por sombreado del método `center` con una variable local; se identificó en los logs del run `40313150060` y corrigió en commit `1d716519`. Se está revisando CI nueva. **No se ha probado aún en hardware real.**
+
+
+### Verificación CI — 2026-10-26
+
+[GitHub Actions run 40313464522](https://github.com/almaprintes/Fielens/actions/runs/40313464522) para commit `1d716519ddfca19f5d22b47287666ef7ddeda002`: **compilación iOS y todos los tests Swift del job superados** (Xcode 26.6 / simulador iOS). Los cambios posteriores a ese commit son únicamente documentales. **NO existe aún prueba del seguimiento automático en el iPhone físico** ni medición de FPS/temperatura; ese es el próximo paso antes de aceptar H-016.
