@@ -47,6 +47,9 @@ struct ContentView: View {
         .onChange(of: camera.selectedSurfaceID) { selectedID in
             if selectedID == nil { isAdjustingSurface = false }
         }
+        .onChange(of: isAdjustingSurface) { editing in
+            camera.setCornerEditing(editing)
+        }
         .onDisappear {
             camera.stop()
             level.stop()
@@ -95,7 +98,7 @@ struct ContentView: View {
                         .font(.headline)
                         .tracking(2)
                     Spacer()
-                    Text("DEV 0.1.10")
+                    Text("DEV 0.1.11")
                         .font(.caption.monospaced())
                         .foregroundStyle(.white.opacity(0.8))
                 }
@@ -107,55 +110,48 @@ struct ContentView: View {
 
                 Spacer(minLength: 14)
 
-                VStack(spacing: 6) {
-                    HStack(spacing: 8) {
-                        Button {
-                            camera.scanSurfaces()
-                        } label: {
-                            Label(
-                                camera.isScanningSurface ? "Analizando…" : "Buscar contorno",
-                                systemImage: camera.isScanningSurface
-                                    ? "hourglass"
-                                    : "viewfinder"
-                            )
-                            .frame(maxWidth: .infinity)
-                        }
-                        .buttonStyle(.borderedProminent)
-                        .tint(.mint)
-                        .disabled(camera.status != .running || camera.isScanningSurface || camera.isCapturing)
-
-                        if camera.surfaceCandidates.count > 1 {
-                            Button {
-                                camera.selectAnotherSurface()
-                            } label: {
-                                Label("Otro", systemImage: "square.on.square")
-                            }
-                            .buttonStyle(.bordered)
-                            .tint(.white)
-                            .accessibilityHint("Recorre los contornos alternativos detectados")
-                        }
-                    }
-
+                // Detection starts automatically with the camera.
+                // A tiny correction menu replaces the previous manual workflow.
+                HStack(spacing: 10) {
+                    Image(systemName: camera.selectedSurfaceID == nil
+                          ? "viewfinder"
+                          : "viewfinder.circle.fill")
+                        .foregroundStyle(.mint)
+                        .font(.body.weight(.semibold))
                     Text(camera.surfaceMessage)
                         .font(.caption)
-                        .multilineTextAlignment(.center)
-                        .lineLimit(3)
                         .foregroundStyle(.white)
+                        .lineLimit(2)
+                        .frame(maxWidth: .infinity, alignment: .leading)
 
                     if camera.selectedSurfaceID != nil {
-                        Button {
-                            isAdjustingSurface = true
+                        Menu {
+                            if camera.surfaceCandidates.count > 1 {
+                                Button("Elegir otro contorno", systemImage: "square.on.square") {
+                                    camera.selectAnotherSurface()
+                                }
+                            }
+                            Button("Corregir esquinas", systemImage: "crop.rotate") {
+                                isAdjustingSurface = true
+                            }
+                            Button("Buscar de nuevo", systemImage: "arrow.clockwise") {
+                                camera.scanSurfaces()
+                            }
                         } label: {
-                            Label("Ajustar esquinas", systemImage: "crop.rotate")
-                                .frame(maxWidth: .infinity)
+                            Image(systemName: "ellipsis.circle")
+                                .font(.title3)
+                                .foregroundStyle(.white.opacity(0.86))
+                                .frame(width: 36, height: 36)
+                                .contentShape(Rectangle())
                         }
-                        .buttonStyle(.bordered)
-                        .tint(.white)
+                        .accessibilityLabel("Opciones para corregir el contorno")
                     }
                 }
-                .padding(10)
-                .background(.black.opacity(0.58), in: RoundedRectangle(cornerRadius: 14))
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(.black.opacity(0.46), in: RoundedRectangle(cornerRadius: 12))
                 .accessibilityElement(children: .contain)
+
 
                 statusPanel
 
@@ -344,7 +340,7 @@ private struct PhotoReviewView: View {
                     .font(.headline)
                     .tracking(2)
                 Spacer()
-                Text("DEV 0.1.10")
+                Text("DEV 0.1.11")
                     .font(.caption.monospaced())
             }
             .foregroundStyle(.white)
