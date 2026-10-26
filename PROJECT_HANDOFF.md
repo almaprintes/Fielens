@@ -81,3 +81,11 @@ La pantalla de cámara negra de las dos capturas se debía a que era de noche y 
 
 - Build iOS cloud **succeeded** para `687dc7ff` (incluye `SurfaceGeometry.swift`, `RectangularSurfaceDetector.swift`, `SurfaceGeometryTests.swift`); [run](https://github.com/almaprintes/Fielens/actions/runs/40247295733).
 - Resultado del job de pruebas del simulador pendiente al documentar. UI y perpendicularidad real aún sin implementar.
+
+## DEV 0.1.4 — Resoluciones de envío (2026-10-26)
+
+- Pedido: distintas resoluciones para evitar compartir siempre 48,77 MP al enviar DNI u otros documentos.
+- Implementado en `main`: `PhotoExportService.swift` y ajustes en `ContentView.swift`, `PhotoExportTests.swift`, versión app `0.1.4` build 5. Opciones Ligera (1600 px), Compartir por defecto (2400 px), Detalle (4000 px), Original (sin recodificar).
+- Captura nativa continúa al máximo; el tamaño elegido rige **el archivo para compartir**, no la cámara ni el JPEG original guardado temporalmente. Genera JPEG con ImageIO sin arrastrar EXIF original, en hilo de fondo; descarta copia temporal tras cerrar hoja del sistema.
+- **Sin prueba física todavía**. Protocolo `docs/DEV_0.1.4_EXPORT.md`; comprobar CI del último SHA y que las pruebas Swift pasen. Medir dimensiones y bytes exportados/legibilidad sobre documento ficticio.
+- El motor de superficies EXP-002 sigue en código sin UI; no existe aún nivel de perpendicularidad de objetos.
