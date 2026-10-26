@@ -91,9 +91,10 @@ final class PreviewView: UIView {
         for surface in surfaces where surface.isValid {
             let path = selectedSurfaceID == surface.id ? selected : suggestions
             let points = surface.corners.map { corner in
-                previewLayer.layerPointConverted(fromCaptureDevicePoint: CGPoint(
-                    x: corner.x,
-                    y: 1.0 - corner.y
+                let normalized = SurfaceCoordinateMapper.capturePoint(fromVision: corner)
+                return previewLayer.layerPointConverted(fromCaptureDevicePoint: CGPoint(
+                    x: normalized.x,
+                    y: normalized.y
                 ))
             }
             guard let first = points.first else { continue }
@@ -112,10 +113,10 @@ final class PreviewView: UIView {
         guard recognizer.state == .ended else { return }
         let viewPoint = recognizer.location(in: self)
         let capturePoint = previewLayer.captureDevicePointConverted(fromLayerPoint: viewPoint)
-        let normalized = SurfacePoint(
+        let normalized = SurfaceCoordinateMapper.visionPoint(fromCapture: SurfacePoint(
             x: Double(capturePoint.x),
-            y: Double(1.0 - capturePoint.y)
-        )
+            y: Double(capturePoint.y)
+        ))
         guard normalized.isNormalized else { return }
         onSurfaceTap?(normalized)
     }
