@@ -66,10 +66,11 @@ struct SurfacePhotoProcessorTests {
             bottomLeft: SurfacePoint(x: 0.5, y: 0.5),
             confidence: 1
         )
-        #expect(SurfacePhotoProcessor.rectifiedImage(
+        let result = SurfacePhotoProcessor.rectifiedImage(
             from: original,
             surface: impossible
-        ) == nil)
+        )
+        #expect(result.map { _ in true } == nil)
     }
 
     @Test func originalFileIsNeverCroppedEvenWhenFramingIsRequested() throws {
