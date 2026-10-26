@@ -19,11 +19,16 @@ final class CameraViewModel: ObservableObject {
     @Published private(set) var photo: CapturedPhoto?
     @Published private(set) var isCapturing = false
     @Published private(set) var captureErrorMessage: String?
+    @Published private(set) var surfaceCandidates: [DetectedSurface] = []
+    @Published private(set) var selectedSurfaceID: UUID?
+    @Published private(set) var isScanningSurface = false
+    @Published private(set) var surfaceMessage = "Busca un contorno; después tócalo para seleccionarlo."
 
     private let cameraSession = CameraSession()
     private var isRequestingPermission = false
     private var shouldRun = false
     private var runID = 0
+    private var scanID = 0
 
     var session: AVCaptureSession { cameraSession.session }
 
@@ -66,6 +71,10 @@ final class CameraViewModel: ObservableObject {
     }
 
     func stop() {
+        scanID += 1
+        isScanningSurface = false
+        surfaceCandidates = []
+        selectedSurfaceID = nil
         shouldRun = false
         runID += 1
         cameraSession.stop()
@@ -107,6 +116,45 @@ final class CameraViewModel: ObservableObject {
         isCapturing = false
         status = .idle
         start()
+    }
+
+    func scanSurfaces() {
+        guard status == .running && photo == nil && !isScanningSurface else { return }
+        isScanningSurface = true
+        surfaceCandidates = []
+        selectedSurfaceID = nil
+        surfaceMessage = "Buscando rectángulos…"
+        scanID += 1
+        let expectedScan = scanID
+        let expectedRun = runID
+
+        cameraSession.scanSurfaces { [weak self] result in
+            guard let self, self.shouldRun, self.status == .running,
+                  self.runID == expectedRun, self.scanID == expectedScan else {
+                return
+            }
+            self.isScanningSurface = false
+            switch result {
+            case .success(let candidates):
+                self.surfaceCandidates = candidates
+                self.surfaceMessage = candidates.isEmpty
+                    ? "No se detectó un rectángulo. Cambia luz o encuadre y vuelve a buscar."
+                    : "Se encontraron \(candidates.count) contornos. Toca uno en la cámara."
+            case .failure(let error):
+                self.surfaceMessage = error.localizedDescription
+            }
+        }
+    }
+
+    func selectSurface(at point: SurfacePoint) {
+        guard !surfaceCandidates.isEmpty else { return }
+        guard let candidate = SurfaceSelector.selected(at: point, in: surfaceCandidates) else {
+            selectedSurfaceID = nil
+            surfaceMessage = "Toca dentro del contorno que quieres fotografiar."
+            return
+        }
+        selectedSurfaceID = candidate.id
+        surfaceMessage = "Contorno seleccionado · No mide perpendicularidad. Vuelve a buscar si mueves el móvil."
     }
 
     func clearCaptureError() {
